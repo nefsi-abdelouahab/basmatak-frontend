@@ -1,0 +1,29 @@
+{
+  "appName": "Basmatak",
+  "nav": {
+    "home": "Home",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "actions": {
+    "retry": "Try again",
+    "goHome": "Back to home",
+    "signIn": "Sign in"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of"
+  },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "arabic": "Arabic"
+  },
+  "home": {
+    "title": "Welcome to Basmatak",
+    "description": "Civic engagement platform. This is the foundation shell every screen builds on."
+  }
+}

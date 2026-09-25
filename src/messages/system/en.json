@@ -1,0 +1,43 @@
+{
+  "notFound": {
+    "title": "Page not found",
+    "description": "Sorry, we could not find the page you are looking for."
+  },
+  "forbidden": {
+    "title": "Access denied",
+    "description": "You do not have permission to view this page."
+  },
+  "suspended": {
+    "title": "Account suspended",
+    "description": "Your account has been temporarily suspended. Contact support for more information."
+  },
+  "inaccessible": {
+    "title": "Account unavailable",
+    "description": "Your account could not be accessed. Try signing in again."
+  },
+  "emailNotVerified": {
+    "title": "Email not verified",
+    "description": "Please verify your email address to continue."
+  },
+  "serverError": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again later."
+  },
+  "maintenance": {
+    "title": "Under maintenance",
+    "description": "We are currently performing maintenance. Please come back later."
+  },
+  "networkError": {
+    "title": "Connection lost",
+    "description": "Could not reach the server. Check your internet connection and try again."
+  },
+  "sessionExpired": {
+    "title": "Session expired",
+    "description": "Your sign-in session has expired. Please sign in again."
+  },
+  "rateLimited": {
+    "title": "Too many requests",
+    "description": "You have exceeded the allowed number of attempts. Wait a moment and try again."
+  },
+  "loading": "Loading…"
+}

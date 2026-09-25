@@ -1,0 +1,18 @@
+@import '../theme/tokens.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * RTL rule: use logical properties / Tailwind logical utilities (ms-*, me-*,
+ * ps-*, pe-*, start-*, end-*, text-start/end) so ar locale mirrors automatically.
+ * Never use physical ml-/mr-/pl-/pr-/left-/right- for directional layout.
+ */
+
+body {
+  font-family:
+    var(--font-inter),
+    var(--font-plex-arabic),
+    system-ui,
+    sans-serif;
+}
