@@ -17,7 +17,9 @@ import volunteerAccountEn from '../messages/volunteer-account/en.json';
 import volunteerHomeAr from '../messages/volunteer-home/ar.json';
 import volunteerHomeEn from '../messages/volunteer-home/en.json';
 import volunteerTasksAr from '../messages/volunteer-tasks/ar.json';
+import volunteerCredentialsAr from '../messages/volunteer-credentials/ar.json';
 import volunteerTasksEn from '../messages/volunteer-tasks/en.json';
+import volunteerCredentialsEn from '../messages/volunteer-credentials/en.json';
 
 // Owner decision: per-area catalogs merged here — never a single global pair.
 // Each session owns its messages/<area>/ pair; this file only merges.
@@ -28,9 +30,10 @@ import volunteerTasksEn from '../messages/volunteer-tasks/en.json';
 // F5: added the opportunityDetails area (same additive pattern; nothing changed).
 // F6: added the volunteer-tasks area (same additive pattern; nothing changed).
 // F7: added the submit-contribution area (same additive pattern; nothing changed).
+// F8: added the volunteer-credentials area (same additive pattern; nothing changed).
 const catalogs = {
-  en: { common: commonEn, system: systemEn, auth: authEn, volunteerAccount: volunteerAccountEn, orgOnboarding: orgOnboardingEn, opportunityDetails: opportunityDetailsEn, submitContribution: submitContributionEn, volunteerHome: volunteerHomeEn, volunteerTasks: volunteerTasksEn },
-  ar: { common: commonAr, system: systemAr, auth: authAr, volunteerAccount: volunteerAccountAr, orgOnboarding: orgOnboardingAr, opportunityDetails: opportunityDetailsAr, submitContribution: submitContributionAr, volunteerHome: volunteerHomeAr, volunteerTasks: volunteerTasksAr },
+  en: { common: commonEn, system: systemEn, auth: authEn, volunteerAccount: volunteerAccountEn, orgOnboarding: orgOnboardingEn, opportunityDetails: opportunityDetailsEn, submitContribution: submitContributionEn, volunteerHome: volunteerHomeEn, volunteerTasks: volunteerTasksEn, volunteerCredentials: volunteerCredentialsEn },
+  ar: { common: commonAr, system: systemAr, auth: authAr, volunteerAccount: volunteerAccountAr, orgOnboarding: orgOnboardingAr, opportunityDetails: opportunityDetailsAr, submitContribution: submitContributionAr, volunteerHome: volunteerHomeAr, volunteerTasks: volunteerTasksAr, volunteerCredentials: volunteerCredentialsAr },
 } as const;
 
 export type MessageArea = keyof (typeof catalogs)['en'];
