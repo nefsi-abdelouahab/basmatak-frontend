@@ -1,0 +1,73 @@
+{
+  "shared": {
+    "loading": "Loading…",
+    "loadError": "Could not load your submission.",
+    "genericError": "Something went wrong. Please try again.",
+    "retry": "Retry",
+    "save": "Save draft",
+    "saving": "Saving…",
+    "cancel": "Cancel"
+  },
+  "page": {
+    "title": "Submit contribution",
+    "subtitle": "Describe your work, add evidence, then submit for review.",
+    "backToTasks": "Back to my tasks"
+  },
+  "draft": {
+    "titleLabel": "Contribution title",
+    "titleHint": "Optional, up to 200 characters.",
+    "titleTooLong": "Title must be 200 characters or less.",
+    "descriptionLabel": "Work description",
+    "descriptionHint": "Describe what you completed. Required before submit.",
+    "descriptionRequired": "A description of the work completed is required.",
+    "draftSaved": "Draft saved.",
+    "saveError": "Could not save your draft.",
+    "createError": "Could not create your draft."
+  },
+  "evidence": {
+    "title": "Evidence",
+    "hint": "Images (JPEG, PNG, WebP) or PDF, up to 5 MB each. Videos: paste a link instead of uploading a file.",
+    "pickFile": "Add file",
+    "uploading": "Uploading evidence…",
+    "progress": "Uploading… {percent}%",
+    "typeError": "Only JPEG, PNG, WebP, or PDF files are allowed.",
+    "sizeError": "Each file must be 5 MB or less.",
+    "uploadError": "Could not upload this file.",
+    "linkLabel": "Video link",
+    "linkHint": "YouTube or Google Drive links only.",
+    "allowlistHint": "Accepted: youtube.com, youtu.be, drive.google.com.",
+    "linkAdd": "Add link",
+    "addingLink": "Adding…",
+    "linkUrlError": "Enter a valid https link.",
+    "linkHostError": "Only YouTube or Google Drive links are accepted.",
+    "linkError": "Could not add this link.",
+    "remove": "Remove",
+    "removing": "Removing…",
+    "removeError": "Could not remove this item.",
+    "empty": "No evidence added yet.",
+    "required": "At least one evidence item is required."
+  },
+  "consent": {
+    "label": "I confirm I have permission from the people visible in these photos/videos to share them.",
+    "helper": "Required when your evidence shows people.",
+    "requiredError": "Consent confirmation is required when evidence includes images or videos."
+  },
+  "submit": {
+    "cta": "Submit for review",
+    "submitting": "Submitting…",
+    "submitted": "Submitted for review.",
+    "submitError": "Could not submit your contribution.",
+    "resubmitCta": "Save changes and resubmit"
+  },
+  "status": {
+    "label": "Status",
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "under_review": "Under review",
+    "approved": "Approved",
+    "rejected": "Needs changes",
+    "rejectionReasonLabel": "Reviewer feedback",
+    "resubmitHint": "Update your draft below, then resubmit.",
+    "conflict": "A submission already exists for this task. Showing the existing one."
+  }
+}

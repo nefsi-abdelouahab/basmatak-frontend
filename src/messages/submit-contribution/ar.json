@@ -1,0 +1,73 @@
+{
+  "shared": {
+    "loading": "جارٍ التحميل…",
+    "loadError": "تعذّر تحميل مساهمتك.",
+    "genericError": "حدث خطأ ما. حاول مرة أخرى.",
+    "retry": "إعادة المحاولة",
+    "save": "حفظ المسودة",
+    "saving": "جارٍ الحفظ…",
+    "cancel": "إلغاء"
+  },
+  "page": {
+    "title": "تقديم مساهمة",
+    "subtitle": "صِف عملك، وأضف الأدلة، ثم أرسل للمراجعة.",
+    "backToTasks": "العودة إلى مهامي"
+  },
+  "draft": {
+    "titleLabel": "عنوان المساهمة",
+    "titleHint": "اختياري، حتى 200 حرف.",
+    "titleTooLong": "يجب ألا يتجاوز العنوان 200 حرف.",
+    "descriptionLabel": "وصف العمل",
+    "descriptionHint": "صِف ما أنجزته. مطلوب قبل الإرسال.",
+    "descriptionRequired": "وصف العمل المنجز مطلوب.",
+    "draftSaved": "تم حفظ المسودة.",
+    "saveError": "تعذّر حفظ مسودتك.",
+    "createError": "تعذّر إنشاء مسودتك."
+  },
+  "evidence": {
+    "title": "الأدلة",
+    "hint": "صور (JPEG أو PNG أو WebP) أو PDF، حتى 5 ميغابايت لكل ملف. مقاطع الفيديو: الصق رابطًا بدل رفع ملف.",
+    "pickFile": "إضافة ملف",
+    "uploading": "جارٍ رفع الدليل…",
+    "progress": "جارٍ الرفع… {percent}٪",
+    "typeError": "يُسمح فقط بملفات JPEG أو PNG أو WebP أو PDF.",
+    "sizeError": "يجب ألا يتجاوز كل ملف 5 ميغابايت.",
+    "uploadError": "تعذّر رفع هذا الملف.",
+    "linkLabel": "رابط الفيديو",
+    "linkHint": "روابط YouTube أو Google Drive فقط.",
+    "allowlistHint": "المقبول: youtube.com وyoutu.be وdrive.google.com.",
+    "linkAdd": "إضافة الرابط",
+    "addingLink": "جارٍ الإضافة…",
+    "linkUrlError": "أدخل رابط https صالحًا.",
+    "linkHostError": "تُقبل فقط روابط YouTube أو Google Drive.",
+    "linkError": "تعذّر إضافة هذا الرابط.",
+    "remove": "إزالة",
+    "removing": "جارٍ الإزالة…",
+    "removeError": "تعذّر إزالة هذا العنصر.",
+    "empty": "لم تُضف أي أدلة بعد.",
+    "required": "مطلوب عنصر دليل واحد على الأقل."
+  },
+  "consent": {
+    "label": "أؤكد أن لدي إذن من الأشخاص الظاهرين في هذه الصور/مقاطع الفيديو لمشاركتها.",
+    "helper": "مطلوب عندما تُظهر أدلتك أشخاصًا.",
+    "requiredError": "تأكيد الموافقة مطلوب عندما تتضمن الأدلة صورًا أو مقاطع فيديو."
+  },
+  "submit": {
+    "cta": "إرسال للمراجعة",
+    "submitting": "جارٍ الإرسال…",
+    "submitted": "تم الإرسال للمراجعة.",
+    "submitError": "تعذّر إرسال مساهمتك.",
+    "resubmitCta": "احفظ التغييرات وأعد الإرسال"
+  },
+  "status": {
+    "label": "الحالة",
+    "draft": "مسودة",
+    "submitted": "مُرسلة",
+    "under_review": "قيد المراجعة",
+    "approved": "مقبولة",
+    "rejected": "تحتاج تعديلات",
+    "rejectionReasonLabel": "ملاحظات المراجع",
+    "resubmitHint": "حدّث مسودتك أدناه، ثم أعد الإرسال.",
+    "conflict": "توجد مساهمة لهذه المهمة مسبقًا. يتم عرض الموجودة."
+  }
+}
