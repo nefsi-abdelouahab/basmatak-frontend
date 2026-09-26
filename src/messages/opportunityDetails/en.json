@@ -1,0 +1,91 @@
+{
+  "shared": {
+    "loading": "Loading opportunity…",
+    "loadError": "Could not load this opportunity.",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "genericError": "Something went wrong. Please try again."
+  },
+  "detail": {
+    "backToOpportunities": "Opportunities",
+    "verifiedOrg": "Verified",
+    "modeOnsite": "On-site",
+    "modeRemote": "Remote",
+    "modeHybrid": "Hybrid",
+    "locationTitle": "Location",
+    "datesTitle": "Date & duration",
+    "durationHours": "{hours}h on-site",
+    "deadlineTitle": "Application cutoff",
+    "deadlineRemaining": "{days} days remaining",
+    "deadlineToday": "Closes today",
+    "prerequisitesTitle": "Prerequisites",
+    "aboutTitle": "About this opportunity",
+    "skillsTitle": "Required skills",
+    "notFoundTitle": "Opportunity not found",
+    "notFoundBody": "This opportunity is unavailable or no longer published.",
+    "backAction": "Back to opportunities"
+  },
+  "certificate": {
+    "title": "Certificate",
+    "body": "Completing this opportunity issues a verifiable certificate on your record.",
+    "viewInExperiences": "View in My Experiences"
+  },
+  "positions": {
+    "title": "Volunteer positions",
+    "hint": "Select a position to submit your application:",
+    "seatsOpen": "{open} of {required} spots open",
+    "seatsFull": "Position full",
+    "applicationsCount": "{count} applications",
+    "assignedTitle": "Assigned volunteers",
+    "deliverablesTitle": "Deliverables",
+    "startsAtTitle": "Starts",
+    "fullNote": "This position is full.",
+    "deadlineNote": "The application deadline has passed.",
+    "closedNote": "This opportunity is no longer accepting applications.",
+    "selectPosition": "Select position {title}"
+  },
+  "apply": {
+    "cta": "Apply",
+    "dialogTitle": "Apply for {title}",
+    "messageLabel": "Message to the organization (optional)",
+    "messageHint": "Up to 2000 characters.",
+    "messageTooLong": "The message must be 2000 characters or fewer.",
+    "submit": "Submit application",
+    "submitting": "Submitting…",
+    "success": "Application submitted.",
+    "duplicate": "You already have a live application for this position.",
+    "unverifiedEmail": "Verify your email before applying.",
+    "verifyCta": "Verify email"
+  },
+  "withdraw": {
+    "cta": "Withdraw application",
+    "confirmTitle": "Withdraw your application?",
+    "confirmBody": "Withdrawing frees your request for this position. You can apply again later.",
+    "confirmAction": "Withdraw",
+    "withdrawing": "Withdrawing…",
+    "success": "Application withdrawn."
+  },
+  "report": {
+    "cta": "Report",
+    "dialogTitle": "Report this opportunity",
+    "reasonLabel": "Reason",
+    "reasonRequired": "A reason is required.",
+    "descriptionLabel": "Details (optional)",
+    "submit": "Send report",
+    "submitting": "Sending…",
+    "success": "Report sent. Thank you."
+  },
+  "related": {
+    "title": "Related opportunities"
+  },
+  "sidebar": {
+    "title": "Organization",
+    "verified": "Verified organization"
+  },
+  "cover": {
+    "emptyTitle": "No cover image",
+    "emptyBody": "The organization did not add a cover image for this opportunity."
+  }
+}

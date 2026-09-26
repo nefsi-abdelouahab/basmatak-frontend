@@ -1,0 +1,91 @@
+{
+  "shared": {
+    "loading": "جارٍ تحميل الفرصة…",
+    "loadError": "تعذّر تحميل هذه الفرصة.",
+    "retry": "إعادة المحاولة",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "genericError": "حدث خطأ ما. يرجى المحاولة مجددًا."
+  },
+  "detail": {
+    "backToOpportunities": "الفرص",
+    "verifiedOrg": "موثّقة",
+    "modeOnsite": "حضوري",
+    "modeRemote": "عن بُعد",
+    "modeHybrid": "مختلط",
+    "locationTitle": "الموقع",
+    "datesTitle": "التاريخ والمدة",
+    "durationHours": "{hours} ساعات في الموقع",
+    "deadlineTitle": "آخر أجل للتقديم",
+    "deadlineRemaining": "تبقى {days} أيام",
+    "deadlineToday": "يُغلق اليوم",
+    "prerequisitesTitle": "الشروط المسبقة",
+    "aboutTitle": "عن هذه الفرصة",
+    "skillsTitle": "المهارات المطلوبة",
+    "notFoundTitle": "الفرصة غير موجودة",
+    "notFoundBody": "هذه الفرصة غير متاحة أو لم تعد منشورة.",
+    "backAction": "عودة إلى الفرص"
+  },
+  "certificate": {
+    "title": "شهادة",
+    "body": "إتمام هذه الفرصة يمنحك شهادة قابلة للتحقق في سجلّك.",
+    "viewInExperiences": "عرض في تجاربي"
+  },
+  "positions": {
+    "title": "مناصب التطوع",
+    "hint": "اختر منصبًا لتقديم طلبك:",
+    "seatsOpen": "{open} من {required} أماكن متاحة",
+    "seatsFull": "المنصب ممتلئ",
+    "applicationsCount": "{count} طلبات",
+    "assignedTitle": "المتطوعون المعيّنون",
+    "deliverablesTitle": "المخرجات",
+    "startsAtTitle": "يبدأ في",
+    "fullNote": "هذا المنصب ممتلئ.",
+    "deadlineNote": "انتهى أجل التقديم.",
+    "closedNote": "هذه الفرصة لم تعد تقبل الطلبات.",
+    "selectPosition": "اختيار منصب {title}"
+  },
+  "apply": {
+    "cta": "قدِّم طلبًا",
+    "dialogTitle": "التقديم لمنصب {title}",
+    "messageLabel": "رسالة إلى المنظمة (اختياري)",
+    "messageHint": "حتى 2000 حرف.",
+    "messageTooLong": "يجب ألا تتجاوز الرسالة 2000 حرف.",
+    "submit": "إرسال الطلب",
+    "submitting": "جارٍ الإرسال…",
+    "success": "تم إرسال الطلب.",
+    "duplicate": "لديك طلب نشط لهذا المنصب.",
+    "unverifiedEmail": "تحقق من بريدك الإلكتروني قبل التقديم.",
+    "verifyCta": "تحقق من البريد"
+  },
+  "withdraw": {
+    "cta": "سحب الطلب",
+    "confirmTitle": "سحب طلبك؟",
+    "confirmBody": "سحب الطلب يحرّر طلبك لهذا المنصب. يمكنك التقديم مجددًا لاحقًا.",
+    "confirmAction": "سحب",
+    "withdrawing": "جارٍ السحب…",
+    "success": "تم سحب الطلب."
+  },
+  "report": {
+    "cta": "إبلاغ",
+    "dialogTitle": "الإبلاغ عن هذه الفرصة",
+    "reasonLabel": "السبب",
+    "reasonRequired": "السبب مطلوب.",
+    "descriptionLabel": "تفاصيل (اختياري)",
+    "submit": "إرسال البلاغ",
+    "submitting": "جارٍ الإرسال…",
+    "success": "تم إرسال البلاغ. شكرًا لك."
+  },
+  "related": {
+    "title": "فرص ذات صلة"
+  },
+  "sidebar": {
+    "title": "المنظمة",
+    "verified": "منظمة موثّقة"
+  },
+  "cover": {
+    "emptyTitle": "لا توجد صورة غلاف",
+    "emptyBody": "لم تضف المنظمة صورة غلاف لهذه الفرصة."
+  }
+}
