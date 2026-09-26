@@ -1,42 +1,85 @@
 import { getRequestConfig } from 'next-intl/server';
 import { routing, isLocale } from './routing';
-import authAr from '../messages/auth/ar.json';
-import authEn from '../messages/auth/en.json';
-import commonAr from '../messages/common/ar.json';
-import commonEn from '../messages/common/en.json';
-import opportunityDetailsAr from '../messages/opportunityDetails/ar.json';
-import opportunityDetailsEn from '../messages/opportunityDetails/en.json';
-import orgOnboardingAr from '../messages/orgOnboarding/ar.json';
-import orgOnboardingEn from '../messages/orgOnboarding/en.json';
-import systemAr from '../messages/system/ar.json';
-import systemEn from '../messages/system/en.json';
-import submitContributionAr from '../messages/submit-contribution/ar.json';
-import submitContributionEn from '../messages/submit-contribution/en.json';
-import volunteerAccountAr from '../messages/volunteer-account/ar.json';
-import volunteerAccountEn from '../messages/volunteer-account/en.json';
-import volunteerHomeAr from '../messages/volunteer-home/ar.json';
-import volunteerHomeEn from '../messages/volunteer-home/en.json';
-import volunteerTasksAr from '../messages/volunteer-tasks/ar.json';
-import volunteerCredentialsAr from '../messages/volunteer-credentials/ar.json';
-import volunteerTasksEn from '../messages/volunteer-tasks/en.json';
-import volunteerCredentialsEn from '../messages/volunteer-credentials/en.json';
 
-// Owner decision: per-area catalogs merged here — never a single global pair.
-// Each session owns its messages/<area>/ pair; this file only merges.
-// F1: added the auth area (approved additive edit; no existing area changed).
-// F2: added the volunteer-account area (approved additive edit).
-// F3: added the orgOnboarding area (same additive pattern; nothing changed).
-// F4: added the volunteer-home area (same additive pattern; nothing changed).
-// F5: added the opportunityDetails area (same additive pattern; nothing changed).
-// F6: added the volunteer-tasks area (same additive pattern; nothing changed).
-// F7: added the submit-contribution area (same additive pattern; nothing changed).
-// F8: added the volunteer-credentials area (same additive pattern; nothing changed).
-const catalogs = {
-  en: { common: commonEn, system: systemEn, auth: authEn, volunteerAccount: volunteerAccountEn, orgOnboarding: orgOnboardingEn, opportunityDetails: opportunityDetailsEn, submitContribution: submitContributionEn, volunteerHome: volunteerHomeEn, volunteerTasks: volunteerTasksEn, volunteerCredentials: volunteerCredentialsEn },
-  ar: { common: commonAr, system: systemAr, auth: authAr, volunteerAccount: volunteerAccountAr, orgOnboarding: orgOnboardingAr, opportunityDetails: opportunityDetailsAr, submitContribution: submitContributionAr, volunteerHome: volunteerHomeAr, volunteerTasks: volunteerTasksAr, volunteerCredentials: volunteerCredentialsAr },
-} as const;
+// Owner decision: per-area catalogs auto-discovered — never a single global
+// pair, and no per-session edits to this file. Each session owns its
+// messages/<area>/ pair; the loader below merges every
+// messages/*/{en,ar}.json found at build time (webpack require.context —
+// static analysis, identical in dev and build, server runtime only). The area
+// key derives from the directory name (kebab-to-camelCase, so
+// `volunteer-account` serves as `volunteerAccount`). Shipping the two locale
+// files is sufficient for both locales; an unpaired file throws at startup
+// instead of serving silently missing strings.
 
-export type MessageArea = keyof (typeof catalogs)['en'];
+type SupportedLocale = 'en' | 'ar';
+
+// JSON message files: nested string maps (mirrors use-intl AbstractIntlMessages).
+interface CatalogMessages {
+  [key: string]: string | CatalogMessages;
+}
+
+interface WebpackRequireContext {
+  (id: string): unknown;
+  keys(): string[];
+}
+
+interface WebpackRequire {
+  context: (
+    directory: string,
+    useSubdirectories: boolean,
+    filter: RegExp,
+  ) => WebpackRequireContext;
+}
+
+function toAreaKey(directory: string): string {
+  return directory.replace(/-([a-z0-9])/g, (_match, char: string) => char.toUpperCase());
+}
+
+const messagesContext = (require as unknown as WebpackRequire).context(
+  '../messages',
+  true,
+  /\.json$/,
+);
+
+function areaNames(locale: SupportedLocale): Set<string> {
+  const areas = new Set<string>();
+  for (const key of messagesContext.keys()) {
+    const match = /^\.\/([^/]+)\/(en|ar)\.json$/.exec(key);
+    if (match && match[2] === locale && match[1]) areas.add(match[1]);
+  }
+  return areas;
+}
+
+function loadCatalog(locale: SupportedLocale): CatalogMessages {
+  const catalog: CatalogMessages = {};
+  for (const key of messagesContext.keys().sort()) {
+    const match = /^\.\/([^/]+)\/(en|ar)\.json$/.exec(key);
+    if (!match || match[2] !== locale || !match[1]) continue;
+    catalog[toAreaKey(match[1])] = messagesContext(key) as CatalogMessages;
+  }
+  return catalog;
+}
+
+// Fail fast on unpaired locale files (build time + server startup).
+const enAreas = areaNames('en');
+const arAreas = areaNames('ar');
+for (const area of enAreas) {
+  if (!arAreas.has(area)) {
+    throw new Error(`[i18n] messages/${area}/ar.json is missing (en.json has no Arabic pair)`);
+  }
+}
+for (const area of arAreas) {
+  if (!enAreas.has(area)) {
+    throw new Error(`[i18n] messages/${area}/en.json is missing (ar.json has no English pair)`);
+  }
+}
+
+const catalogs: Record<SupportedLocale, CatalogMessages> = {
+  en: loadCatalog('en'),
+  ar: loadCatalog('ar'),
+};
+
+export type MessageArea = string;
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
