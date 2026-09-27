@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ApiError, errorStateFor, mapToApiError } from './errors';
+import { ApiError, backendMessageOf, errorStateFor, mapToApiError } from './errors';
 
 function axiosFailure(status: number | undefined, data?: unknown): unknown {
   const failure: Record<string, unknown> = {
@@ -74,4 +74,34 @@ describe('errorStateFor', () => {
       expect(errorStateFor(error)).toBe(expected);
     });
   }
+});
+
+describe('backendMessageOf', () => {
+  it('returns the verbatim backend message when the envelope carries one', () => {
+    expect(backendMessageOf(axiosFailure(400, { message: 'Already decided' }))).toBe(
+      'Already decided',
+    );
+  });
+
+  it('returns null when the envelope has no usable message', () => {
+    expect(backendMessageOf(axiosFailure(500, {}))).toBeNull();
+    expect(backendMessageOf(axiosFailure(500, { message: '   ' }))).toBeNull();
+    expect(backendMessageOf(axiosFailure(undefined))).toBeNull();
+    expect(backendMessageOf(new Error('boom'))).toBeNull();
+  });
+
+  it('returns null for already-mapped ApiErrors without backend provenance', () => {
+    expect(
+      backendMessageOf(new ApiError({ statusCode: 500, code: 'X', message: 'x' })),
+    ).toBeNull();
+  });
+
+  it('preserves backend provenance through mapToApiError', () => {
+    const backed = mapToApiError(axiosFailure(400, { message: 'Already decided' }));
+    expect(backed.hasBackendMessage).toBe(true);
+    expect(backendMessageOf(backed)).toBe('Already decided');
+    const silent = mapToApiError(axiosFailure(500, {}));
+    expect(silent.hasBackendMessage).toBe(false);
+    expect(backendMessageOf(silent)).toBeNull();
+  });
 });

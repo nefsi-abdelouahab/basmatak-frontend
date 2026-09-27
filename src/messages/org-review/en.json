@@ -2,6 +2,7 @@
   "shared": {
     "loading": "Loading…",
     "loadError": "Could not load this section.",
+    "actionError": "This action could not be completed. Please try again.",
     "retry": "Retry",
     "empty": "Nothing here yet.",
     "previous": "Previous",

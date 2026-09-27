@@ -22,7 +22,7 @@ import {
   type ModerationActionType,
   type ReportResolveStatus,
 } from '@/lib/api/adminModeration';
-import { ApiError } from '@/lib/api/errors';
+import { ApiError, backendMessageOf } from '@/lib/api/errors';
 import { useSessionQuery } from '@/hooks/useSession';
 import {
   confirmReportResolution,
@@ -45,9 +45,12 @@ function SectionError({ message, testId }: { message: string; testId: string }) 
   );
 }
 
-function errorMessageOf(error: unknown): string | null {
-  if (error instanceof ApiError) return `${error.code}: ${error.message}`;
-  return null;
+function errorMessageOf(error: unknown, fallback: string): string {
+  if (error instanceof ApiError) {
+    const backend = backendMessageOf(error);
+    return backend === null ? fallback : `${error.code}: ${backend}`;
+  }
+  return fallback;
 }
 
 function ReportHistory({ reportId }: { reportId: string }) {
@@ -154,7 +157,7 @@ function ReportDetail({ report }: { report: AdminReport }) {
           if (error instanceof ApiError && (error.statusCode === 409 || error.statusCode === 400)) {
             setResolveConflict(true);
           } else {
-            setResolveError(errorMessageOf(error) ?? t('reports.resolveError'));
+            setResolveError(errorMessageOf(error, t('reports.resolveError')));
           }
         },
         onSuccess: async () => {

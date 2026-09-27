@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
 import { Pill } from '@/components/ui/Pill';
 import { Select } from '@/components/ui/Select';
-import { mapToApiError } from '@/lib/api/errors';
+import { backendMessageOf } from '@/lib/api/errors';
 import { useSessionQuery, getLoginHref } from '@/hooks/useSession';
 import {
   useToggleOpportunityFavoriteMutation,
@@ -306,7 +306,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
           {orgsQuery.isPending ? <Loader label={t('shared.loading')} /> : null}
           {orgsQuery.isError ? (
             <SectionError
-              message={mapToApiError(orgsQuery.error).message || t('shared.loadError')}
+              message={backendMessageOf(orgsQuery.error) ?? t('shared.loadError')}
               retryLabel={t('shared.retry')}
               onRetry={() => orgsQuery.refetch()}
             />
@@ -363,7 +363,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
           {oppsQuery.isPending ? <Loader label={t('shared.loading')} /> : null}
           {oppsQuery.isError ? (
             <SectionError
-              message={mapToApiError(oppsQuery.error).message || t('shared.loadError')}
+              message={backendMessageOf(oppsQuery.error) ?? t('shared.loadError')}
               retryLabel={t('shared.retry')}
               onRetry={() => oppsQuery.refetch()}
             />

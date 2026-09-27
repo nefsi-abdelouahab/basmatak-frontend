@@ -8,12 +8,15 @@ export interface ApiErrorShape {
   code: string;
   message: string;
   details?: unknown;
+  /** Set by mapToApiError when `message` came verbatim from the backend envelope. */
+  hasBackendMessage?: boolean;
 }
 
 export class ApiError extends Error {
   readonly statusCode: number;
   readonly code: string;
   readonly details?: unknown;
+  readonly hasBackendMessage: boolean;
 
   constructor(shape: ApiErrorShape) {
     super(shape.message);
@@ -21,6 +24,7 @@ export class ApiError extends Error {
     this.statusCode = shape.statusCode;
     this.code = shape.code;
     this.details = shape.details;
+    this.hasBackendMessage = shape.hasBackendMessage ?? false;
   }
 }
 
@@ -54,11 +58,14 @@ export function mapToApiError(err: unknown): ApiError {
         code: 'UNKNOWN_ERROR',
         message: 'An unexpected error occurred.',
       };
+      const hasBackendMessage =
+        typeof data?.message === 'string' && data.message.trim().length > 0;
       return new ApiError({
         statusCode: typeof data?.statusCode === 'number' ? data.statusCode : status,
         code: typeof data?.code === 'string' ? data.code : fallback.code,
-        message: typeof data?.message === 'string' ? data.message : fallback.message,
+        message: hasBackendMessage ? (data?.message as string) : fallback.message,
         details: data?.details,
+        hasBackendMessage,
       });
     }
     return new ApiError({
@@ -91,4 +98,22 @@ export function errorStateFor(error: ApiError): ApiErrorState {
     default:
       return 'server-error';
   }
+}
+
+// Backend-owned message for user-facing renders: returns the envelope message
+// when the backend actually sent one (verbatim, both locales), else null so
+// callers fall back to catalog copy instead of the hardcoded English
+// FALLBACK_BY_STATUS strings. Accepts raw axios rejections and already-mapped
+// ApiErrors (provenance rides on hasBackendMessage).
+export function backendMessageOf(err: unknown): string | null {
+  if (err instanceof ApiError) {
+    return err.hasBackendMessage ? err.message : null;
+  }
+  if (isAxiosError(err)) {
+    const data = err.response?.data as Partial<ApiErrorShape> | undefined;
+    if (typeof data?.message === 'string' && data.message.trim().length > 0) {
+      return data.message;
+    }
+  }
+  return null;
 }

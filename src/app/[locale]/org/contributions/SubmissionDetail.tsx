@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
-import { mapToApiError } from '@/lib/api/errors';
+import { backendMessageOf } from '@/lib/api/errors';
 import {
   SUBMISSION_INBOX_STATUSES,
   canDecideSubmission,
@@ -151,7 +151,7 @@ export function SubmissionDetail({
       {startReview.isError || verify.isError ? (
         <SectionError
           testId={`${testIdPrefix}-action-error`}
-          message={mapToApiError(startReview.error ?? verify.error).message}
+          message={backendMessageOf(startReview.error ?? verify.error) ?? t('shared.actionError')}
         />
       ) : null}
       {rejectOpen ? (
@@ -178,7 +178,7 @@ export function SubmissionDetail({
       {reject.isError ? (
         <SectionError
           testId={`${testIdPrefix}-reject-error`}
-          message={mapToApiError(reject.error).message}
+          message={backendMessageOf(reject.error) ?? t('shared.actionError')}
         />
       ) : null}
     </div>

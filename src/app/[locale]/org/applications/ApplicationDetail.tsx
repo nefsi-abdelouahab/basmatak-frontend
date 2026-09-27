@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Loader } from '@/components/ui/Loader';
-import { mapToApiError } from '@/lib/api/errors';
+import { backendMessageOf } from '@/lib/api/errors';
 import {
   APPLICATION_STATUSES,
   canAcceptApplication,
@@ -116,7 +116,7 @@ export function ApplicationDetail({
       {startReview.isError || accept.isError ? (
         <SectionError
           testId={`${testIdPrefix}-action-error`}
-          message={mapToApiError(startReview.error ?? accept.error).message}
+          message={backendMessageOf(startReview.error ?? accept.error) ?? t('shared.actionError')}
         />
       ) : null}
       {rejectOpen ? (
@@ -143,7 +143,7 @@ export function ApplicationDetail({
       {reject.isError ? (
         <SectionError
           testId={`${testIdPrefix}-reject-error`}
-          message={mapToApiError(reject.error).message}
+          message={backendMessageOf(reject.error) ?? t('shared.actionError')}
         />
       ) : null}
     </div>

@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/Card';
 import { Empty } from '@/components/ui/Empty';
 import { Input } from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
-import { mapToApiError } from '@/lib/api/errors';
+import { backendMessageOf, mapToApiError } from '@/lib/api/errors';
 import {
   PARTICIPANT_STATUSES,
   canRemoveParticipation,
@@ -305,7 +305,7 @@ export function ParticipantPanel({
       {remove.isError ? (
         <SectionError
           testId={`${testIdPrefix}-remove-error`}
-          message={mapToApiError(remove.error).message}
+          message={backendMessageOf(remove.error) ?? t('shared.actionError')}
         />
       ) : null}
     </div>
