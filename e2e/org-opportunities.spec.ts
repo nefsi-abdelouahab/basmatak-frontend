@@ -293,6 +293,10 @@ async function mockApi(
 for (const width of [1440, 1100, 390]) {
   test.describe(`viewport ${width}`, () => {
     test.use({ viewport: { width, height: 800 } });
+    // The create-publish flow is the longest in this file (12 fields +
+    // cover 2-step upload + position + create + navigate + publish); loaded
+    // shared dev servers need a ceiling above the 30s default.
+    test.setTimeout(120000);
 
     for (const locale of ['en', 'ar'] as const satisfies Locale[]) {
       test(`list renders rows, refs, counts, RTL (${locale})`, async ({ page }) => {
@@ -378,7 +382,9 @@ for (const width of [1440, 1100, 390]) {
         await page.getByTestId('position-save').click();
         await expect(page.getByTestId('position-row')).toHaveCount(1);
         await page.getByTestId('editor-submit').click();
-        await expect(page).toHaveURL(new RegExp(`/${locale}/org/opportunities/64f0000000000000000000c9`));
+        await expect(page).toHaveURL(new RegExp(`/${locale}/org/opportunities/64f0000000000000000000c9`), {
+          timeout: 20000,
+        });
         const createCall = captured.find(
           (c) => c.url.endsWith('/organizations/me/opportunities') && c.method === 'POST',
         );
@@ -388,6 +394,7 @@ for (const width of [1440, 1100, 390]) {
         await page.getByTestId('lifecycle-confirm-confirm').click();
         await expect(page.getByTestId('lifecycle-success')).toContainText(
           catalogs[locale].editor.published,
+          { timeout: 20000 },
         );
       });
 
