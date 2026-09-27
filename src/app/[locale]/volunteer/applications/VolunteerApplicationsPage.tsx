@@ -71,7 +71,7 @@ export function VolunteerApplicationsPage({ locale }: { locale: string }) {
   );
 
   return (
-    <RequireTasks locale={locale} next={`/${locale}/volunteer/applications`}>
+    <RequireTasks locale={locale} next={`/volunteer/applications`}>
       <div data-testid="volunteer-applications" className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('applications.title')}</h1>

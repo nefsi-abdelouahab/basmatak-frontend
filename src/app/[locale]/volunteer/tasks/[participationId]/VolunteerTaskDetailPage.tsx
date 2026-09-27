@@ -15,7 +15,7 @@ export function VolunteerTaskDetailPage({
 }) {
   const t = useTranslations('volunteerTasks');
   return (
-    <RequireTasks locale={locale} next={`/${locale}/volunteer/tasks/${participationId}`}>
+    <RequireTasks locale={locale} next={`/volunteer/tasks/${participationId}`}>
       <div
         data-testid="volunteer-task-detail"
         className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4"

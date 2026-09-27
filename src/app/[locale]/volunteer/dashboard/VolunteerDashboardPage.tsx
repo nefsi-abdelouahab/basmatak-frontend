@@ -93,7 +93,7 @@ export function VolunteerDashboardPage({ locale }: { locale: string }) {
   const t = useTranslations('volunteerHome');
   const dashboardQuery = useVolunteerHomeDashboardQuery();
   return (
-    <RequireVolunteer locale={locale} next={`/${locale}/volunteer/dashboard`}>
+    <RequireVolunteer locale={locale} next={`/volunteer/dashboard`}>
       <div data-testid="volunteer-dashboard" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('dashboard.title')}</h1>

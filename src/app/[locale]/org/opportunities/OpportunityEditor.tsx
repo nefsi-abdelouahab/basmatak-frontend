@@ -933,7 +933,7 @@ export function OpportunityEditor({
 
 export function NewOpportunityScreen({ locale }: { locale: string }) {
   return (
-    <RequireOrgOpps locale={locale} next={`/${locale}/org/opportunities/new`}>
+    <RequireOrgOpps locale={locale} next={`/org/opportunities/new`}>
       <OpportunityEditor locale={locale} />
     </RequireOrgOpps>
   );
@@ -941,7 +941,7 @@ export function NewOpportunityScreen({ locale }: { locale: string }) {
 
 export function EditOpportunityScreen({ locale, opportunityId }: { locale: string; opportunityId: string }) {
   return (
-    <RequireOrgOpps locale={locale} next={`/${locale}/org/opportunities/${opportunityId}`}>
+    <RequireOrgOpps locale={locale} next={`/org/opportunities/${opportunityId}`}>
       <OpportunityEditor locale={locale} opportunityId={opportunityId} />
     </RequireOrgOpps>
   );

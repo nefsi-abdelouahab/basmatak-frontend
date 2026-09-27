@@ -274,7 +274,7 @@ export function OrgOpportunitiesPage({ locale }: { locale: string }) {
     errorStateFor(mapToApiError(error)) === 'forbidden';
 
   return (
-    <RequireOrgOpps locale={locale} next={`/${locale}/org/opportunities`}>
+    <RequireOrgOpps locale={locale} next={`/org/opportunities`}>
       <div data-testid="org-opportunities" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-xl font-semibold text-ink">{t('list.title')}</h1>

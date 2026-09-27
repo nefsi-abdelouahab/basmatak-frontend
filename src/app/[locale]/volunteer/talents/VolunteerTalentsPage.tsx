@@ -125,7 +125,7 @@ export function VolunteerTalentsPage({
   const t = useTranslations('volunteerHome');
   const router = useRouter();
   const pathname = usePathname();
-  const next = `/${locale}/volunteer/talents`;
+  const next = `/volunteer/talents`;
 
   const [draft, setDraft] = useState<TalentFilters>(() => parseTalentSearch(initialSearch));
   const [applied, setApplied] = useState<TalentFilters>(() => parseTalentSearch(initialSearch));

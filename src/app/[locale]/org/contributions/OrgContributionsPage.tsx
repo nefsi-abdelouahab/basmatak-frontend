@@ -79,7 +79,7 @@ export function OrgContributionsPage({ locale }: { locale: string }) {
     expanded !== null && !items.some((row) => rowId(row) === expanded);
 
   return (
-    <RequireOrg locale={locale} next={`/${locale}/org/contributions`}>
+    <RequireOrg locale={locale} next={`/org/contributions`}>
       <div data-testid="org-contributions" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('contributions.title')}</h1>

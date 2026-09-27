@@ -155,7 +155,7 @@ export function OrgExperiencesPage({ locale }: { locale: string }) {
   };
 
   return (
-    <RequireOrgRecords locale={locale} next={`/${locale}/org/experiences`}>
+    <RequireOrgRecords locale={locale} next={`/org/experiences`}>
       <div data-testid="org-records" className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('archive.title')}</h1>

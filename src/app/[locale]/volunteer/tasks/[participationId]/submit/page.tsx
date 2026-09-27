@@ -9,5 +9,5 @@ export default function SubmitContributionRoute({
   params: { locale, participationId },
 }: SubmitPageProps) {
   setRequestLocale(locale);
-  return <SubmitContributionPage locale={locale} participationId={participationId} />;
+  return <SubmitContributionPage participationId={participationId} />;
 }

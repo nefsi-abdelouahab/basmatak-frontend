@@ -9,7 +9,7 @@ interface AdminOrganizationsRouteProps {
 export default function AdminOrganizationsRoute({ params: { locale } }: AdminOrganizationsRouteProps) {
   setRequestLocale(locale);
   return (
-    <RequireAdminManage locale={locale} next={`/${locale}/admin/organizations`}>
+    <RequireAdminManage locale={locale} next={`/admin/organizations`}>
       <AdminOrganizationsPage />
     </RequireAdminManage>
   );

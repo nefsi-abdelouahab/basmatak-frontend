@@ -9,7 +9,7 @@ interface AdminVolunteersRouteProps {
 export default function AdminVolunteersRoute({ params: { locale } }: AdminVolunteersRouteProps) {
   setRequestLocale(locale);
   return (
-    <RequireAdminManage locale={locale} next={`/${locale}/admin/volunteers`}>
+    <RequireAdminManage locale={locale} next={`/admin/volunteers`}>
       <AdminVolunteersPage />
     </RequireAdminManage>
   );

@@ -225,7 +225,7 @@ export function PortfolioPage({ locale }: { locale: string }) {
   };
 
   return (
-    <RequireVolunteer locale={locale} next={`/${locale}/volunteer/portfolio`}>
+    <RequireVolunteer locale={locale} next={`/volunteer/portfolio`}>
       <div data-testid="volunteer-portfolio" className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>

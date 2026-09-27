@@ -9,7 +9,7 @@ interface AdminVerificationsRouteProps {
 export default function AdminVerificationsRoute({ params: { locale } }: AdminVerificationsRouteProps) {
   setRequestLocale(locale);
   return (
-    <RequireAdminManage locale={locale} next={`/${locale}/admin/verifications`}>
+    <RequireAdminManage locale={locale} next={`/admin/verifications`}>
       <AdminVerificationsPage />
     </RequireAdminManage>
   );

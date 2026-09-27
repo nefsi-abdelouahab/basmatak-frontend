@@ -9,7 +9,7 @@ interface AdminOpportunitiesRouteProps {
 export default function AdminOpportunitiesRoute({ params: { locale } }: AdminOpportunitiesRouteProps) {
   setRequestLocale(locale);
   return (
-    <RequireAdminManage locale={locale} next={`/${locale}/admin/opportunities`}>
+    <RequireAdminManage locale={locale} next={`/admin/opportunities`}>
       <AdminOpportunitiesPage />
     </RequireAdminManage>
   );

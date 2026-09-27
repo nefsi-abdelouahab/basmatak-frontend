@@ -162,7 +162,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
 
   if (!detail) return <Loader label={t('shared.loading')} />;
 
-  const next = `/${locale}/volunteer/opportunities/${idOrSlug}`;
+  const next = `/volunteer/opportunities/${idOrSlug}`;
 
   function requireAuth(): boolean {
     if (isGuest) {

@@ -324,7 +324,7 @@ export function AdminSettingsPage({ locale }: { locale: string }) {
   }, [settingsQuery.data]);
 
   return (
-    <RequireAdminModeration locale={locale} next={`/${locale}/admin/settings`}>
+    <RequireAdminModeration locale={locale} next={`/admin/settings`}>
       <div data-testid="admin-settings" className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('settings.title')}</h1>

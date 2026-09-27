@@ -15,7 +15,7 @@ export function OrgSubmissionDetailPage({
 }) {
   const t = useTranslations('orgReview');
   return (
-    <RequireOrg locale={locale} next={`/${locale}/org/contributions/${submissionId}`}>
+    <RequireOrg locale={locale} next={`/org/contributions/${submissionId}`}>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('contributions.detailTitle')}</h1>

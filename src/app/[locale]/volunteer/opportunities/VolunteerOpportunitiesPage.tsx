@@ -147,7 +147,7 @@ export function VolunteerOpportunitiesPage({
   const t = useTranslations('volunteerHome');
   const router = useRouter();
   const pathname = usePathname();
-  const next = `/${locale}/volunteer/opportunities`;
+  const next = `/volunteer/opportunities`;
 
   const [draft, setDraft] = useState<OpportunityFilters>(() => parseOpportunitySearch(initialSearch));
   const [applied, setApplied] = useState<OpportunityFilters>(() => parseOpportunitySearch(initialSearch));

@@ -340,7 +340,7 @@ export function OrgDashboardPage({ locale }: { locale: string }) {
   const t = useTranslations('orgWorkspace');
   const router = useRouter();
   const session = useSessionQuery();
-  const next = `/${locale}/org/dashboard`;
+  const next = `/org/dashboard`;
 
   useEffect(() => {
     if (session.isError) router.replace(getLoginHref(next));

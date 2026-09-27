@@ -78,10 +78,8 @@ function statusTone(status: string): PillTone {
 }
 
 export function SubmitContributionPage({
-  locale,
   participationId,
 }: {
-  locale: string;
   participationId: string;
 }) {
   const t = useTranslations('submitContribution');
@@ -117,7 +115,7 @@ export function SubmitContributionPage({
   const fileRef = useRef<HTMLInputElement>(null);
   const hydratedFor = useRef<string | null>(null);
 
-  const next = `/${locale}/volunteer/tasks/${participationId}/submit`;
+  const next = `/volunteer/tasks/${participationId}/submit`;
   useEffect(() => {
     if (sessionQuery.isError) router.replace(getLoginHref(next));
     // eslint-disable-next-line react-hooks/exhaustive-deps

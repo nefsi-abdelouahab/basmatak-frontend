@@ -88,7 +88,7 @@ export function ExperiencesPage({ locale }: { locale: string }) {
   };
 
   return (
-    <RequireVolunteer locale={locale} next={`/${locale}/volunteer/experiences`}>
+    <RequireVolunteer locale={locale} next={`/volunteer/experiences`}>
       <div data-testid="volunteer-experiences" className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('experiences.title')}</h1>

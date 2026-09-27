@@ -487,7 +487,7 @@ export function AdminDashboardPage({ locale }: { locale: string }) {
   const t = useTranslations('adminOverview');
   const router = useRouter();
   const session = useSessionQuery();
-  const next = `/${locale}/admin/dashboard`;
+  const next = `/admin/dashboard`;
   const isAdmin = !session.isPending && !session.isError && session.data?.role === 'admin';
 
   // These five subscriptions exist only to watch for a 403 from ANY admin read.

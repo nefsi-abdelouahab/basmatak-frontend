@@ -11,7 +11,7 @@ import { DangerSection } from './DangerSection';
 export function VolunteerSettingsPage({ locale }: { locale: string }) {
   const t = useTranslations('volunteerAccount');
   return (
-    <RequireVolunteer locale={locale} next={`/${locale}/volunteer/settings`}>
+    <RequireVolunteer locale={locale} next={`/volunteer/settings`}>
       <div data-testid="volunteer-settings" className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('settings.title')}</h1>

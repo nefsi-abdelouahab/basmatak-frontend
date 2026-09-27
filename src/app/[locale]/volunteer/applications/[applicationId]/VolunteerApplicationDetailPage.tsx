@@ -18,7 +18,7 @@ export function VolunteerApplicationDetailPage({
     return <SectionError testId="application-detail-error" message={t('applications.detailError')} />;
   }
   return (
-    <RequireTasks locale={locale} next={`/${locale}/volunteer/applications/${applicationId}`}>
+    <RequireTasks locale={locale} next={`/volunteer/applications/${applicationId}`}>
       <div
         data-testid="volunteer-application-detail"
         className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4"

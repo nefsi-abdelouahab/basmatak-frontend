@@ -47,7 +47,7 @@ function PublicLink() {
 export function VolunteerProfilePage({ locale }: { locale: string }) {
   const t = useTranslations('volunteerAccount');
   return (
-    <RequireVolunteer locale={locale} next={`/${locale}/volunteer/profile`}>
+    <RequireVolunteer locale={locale} next={`/volunteer/profile`}>
       <div data-testid="volunteer-profile" className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
