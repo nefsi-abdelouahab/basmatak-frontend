@@ -1,0 +1,49 @@
+{
+  "shared": {
+    "loading": "Loading…",
+    "loadError": "Could not load this section.",
+    "retry": "Retry",
+    "download": "Download",
+    "downloading": "Preparing download…",
+    "genericError": "Something went wrong. Please try again."
+  },
+  "archive": {
+    "title": "Verified experiences",
+    "subtitle": "Every experience your organization has verified, with attestations.",
+    "filtersTitle": "Filters",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Title, code, or EXP id…",
+    "opportunityLabel": "Opportunity",
+    "opportunityPlaceholder": "Opportunity ID…",
+    "visibilityLabel": "Visibility",
+    "allVisibilities": "All",
+    "visibilityPublic": "Public",
+    "visibilityPrivate": "Private",
+    "sortLabel": "Sort",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "clearFilters": "Clear filters",
+    "count": "{total} experiences",
+    "empty": "No verified experiences yet.",
+    "verifiedOn": "Verified on {date}",
+    "codeLabel": "Verification code",
+    "copyLink": "Copy verification link",
+    "copied": "Verification link copied.",
+    "copyFallback": "Copy this code manually:",
+    "visibilityDisplayLabel": "Visibility",
+    "attestationCta": "Download attestation",
+    "attestationError": "Could not download the attestation.",
+    "csvCta": "Export CSV",
+    "csvError": "Could not export the CSV.",
+    "durationLabel": "{minutes} min",
+    "reviewLabel": "Your review",
+    "nextPage": "Next page",
+    "prevPage": "Previous page"
+  },
+  "reviews": {
+    "title": "Reviews given",
+    "subtitle": "What your organization said about volunteers.",
+    "empty": "No reviews given yet.",
+    "ratingLabel": "Rating: {rating}"
+  }
+}

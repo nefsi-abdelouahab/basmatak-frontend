@@ -1,0 +1,49 @@
+{
+  "shared": {
+    "loading": "جارٍ التحميل…",
+    "loadError": "تعذّر تحميل هذا القسم.",
+    "retry": "إعادة المحاولة",
+    "download": "تنزيل",
+    "downloading": "جارٍ تجهيز التنزيل…",
+    "genericError": "حدث خطأ ما. حاول مجددًا."
+  },
+  "archive": {
+    "title": "الخبرات الموثّقة",
+    "subtitle": "كل خبرة وثّقتها جهتكم، مع الشهادات.",
+    "filtersTitle": "عوامل التصفية",
+    "searchLabel": "بحث",
+    "searchPlaceholder": "العنوان أو الرمز أو رقم EXP…",
+    "opportunityLabel": "الفرصة",
+    "opportunityPlaceholder": "رقم الفرصة…",
+    "visibilityLabel": "الظهور",
+    "allVisibilities": "الكل",
+    "visibilityPublic": "عام",
+    "visibilityPrivate": "خاص",
+    "sortLabel": "الترتيب",
+    "sortNewest": "الأحدث أولًا",
+    "sortOldest": "الأقدم أولًا",
+    "clearFilters": "مسح عوامل التصفية",
+    "count": "{total} من الخبرات",
+    "empty": "لا توجد خبرات موثّقة بعد.",
+    "verifiedOn": "تم التوثيق بتاريخ {date}",
+    "codeLabel": "رمز التحقق",
+    "copyLink": "نسخ رابط التحقق",
+    "copied": "تم نسخ رابط التحقق.",
+    "copyFallback": "انسخ هذا الرمز يدويًا:",
+    "visibilityDisplayLabel": "الظهور",
+    "attestationCta": "تنزيل الشهادة",
+    "attestationError": "تعذّر تنزيل الشهادة.",
+    "csvCta": "تصدير CSV",
+    "csvError": "تعذّر تصدير ملف CSV.",
+    "durationLabel": "{minutes} دقيقة",
+    "reviewLabel": "تقييمكم",
+    "nextPage": "الصفحة التالية",
+    "prevPage": "الصفحة السابقة"
+  },
+  "reviews": {
+    "title": "التقييمات الممنوحة",
+    "subtitle": "ما قالته جهتكم عن المتطوعين.",
+    "empty": "لا توجد تقييمات ممنوحة بعد.",
+    "ratingLabel": "التقييم: {rating}"
+  }
+}
