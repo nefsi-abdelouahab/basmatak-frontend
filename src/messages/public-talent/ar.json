@@ -1,0 +1,94 @@
+{
+  "shared": {
+    "loading": "جارٍ التحميل…",
+    "loadError": "تعذّر تحميل هذا المحتوى.",
+    "retry": "إعادة المحاولة",
+    "clearFilters": "مسح عوامل التصفية"
+  },
+  "profile": {
+    "registryCode": "المرجع",
+    "locationTitle": "الموقع",
+    "notFoundTitle": "الملف غير موجود",
+    "notFoundBody": "هذا الملف غير متاح.",
+    "backToTalents": "العودة إلى المواهب",
+    "saveLabel": "حفظ",
+    "unsaveLabel": "محفوظ"
+  },
+  "stats": {
+    "title": "ملف المساهمات",
+    "completedTasks": "مهام منجزة",
+    "verifiedExperiences": "خبرات موثّقة",
+    "volunteerHours": "ساعات تطوعية"
+  },
+  "areas": {
+    "title": "مجالات المساهمة",
+    "percent": "{percent}٪"
+  },
+  "skills": {
+    "title": "المهارات",
+    "emptyBody": "لم ينشر هذا المتطوع أي مهارة."
+  },
+  "availability": {
+    "title": "الأوقات المتاحة",
+    "monday": "الإثنين",
+    "tuesday": "الثلاثاء",
+    "wednesday": "الأربعاء",
+    "thursday": "الخميس",
+    "friday": "الجمعة",
+    "saturday": "السبت",
+    "sunday": "الأحد",
+    "emptyTitle": "لا توجد أوقات منشورة",
+    "emptyBody": "لم ينشر هذا المتطوع أوقاتًا أسبوعية."
+  },
+  "experiences": {
+    "title": "الخبرات الموثّقة",
+    "hours": "{hours} س",
+    "verifiedByOn": "موثّقة من طرف {organization} بتاريخ {date}",
+    "verifiedBy": "موثّقة من طرف {organization}",
+    "emptyTitle": "لا توجد خبرات موثّقة منشورة",
+    "emptyBody": "لم ينشر هذا المتطوع أي خبرة موثّقة.",
+    "previous": "السابق",
+    "next": "التالي",
+    "pageStatus": "الصفحة {page} من {pages}"
+  },
+  "portfolio": {
+    "title": "معرض الأعمال",
+    "emptyTitle": "لا توجد عناصر منشورة",
+    "emptyBody": "لم ينشر هذا المتطوع أي عنصر في معرض الأعمال.",
+    "openLink": "فتح الرابط"
+  },
+  "reviews": {
+    "title": "موصى بهم من طرف الجمعيات",
+    "rating": "التقييم {rating} من 5",
+    "emptyTitle": "لا توجد توصيات بعد",
+    "emptyBody": "لم تُنشر أي توصية من طرف جمعية لهذا المتطوع.",
+    "previous": "السابق",
+    "next": "التالي",
+    "pageStatus": "الصفحة {page} من {pages}"
+  },
+  "directory": {
+    "title": "المواهب",
+    "subtitle": "تصفّح المتطوعين الذين اختاروا مشاركة ملفهم علنًا.",
+    "searchLabel": "بحث",
+    "searchPlaceholder": "اسم أو كلمة مفتاحية",
+    "skillLabel": "المهارات",
+    "wilayaLabel": "الولاية",
+    "minExperiencesLabel": "أدنى عدد خبرات موثّقة",
+    "hasAvailability": "المتوفرون فقط",
+    "portfolioOnly": "الذين يملكون معرض أعمال فقط",
+    "sortLabel": "الترتيب",
+    "sortNewest": "الأحدث أولاً",
+    "sortOldest": "الأقدم أولاً",
+    "sortExperienced": "الأكثر خبرة موثّقة",
+    "applyFilters": "تطبيق عوامل التصفية",
+    "allOption": "الكل",
+    "countBanner": "{total} متطوع",
+    "emptyTitle": "لا يوجد متطوعون مطابقون",
+    "emptyBody": "جرّب إزالة أحد عوامل التصفية أو البحث بكلمة أخرى.",
+    "invalidSortTitle": "ترتيب غير مدعوم",
+    "invalidSortBody": "اختر أحد ترتيبات الفرز المتاحة.",
+    "previous": "السابق",
+    "next": "التالي",
+    "pageStatus": "الصفحة {page} من {pages}"
+  }
+}

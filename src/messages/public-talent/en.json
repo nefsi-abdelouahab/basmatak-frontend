@@ -1,0 +1,94 @@
+{
+  "shared": {
+    "loading": "Loading…",
+    "loadError": "This content could not be loaded.",
+    "retry": "Retry",
+    "clearFilters": "Clear filters"
+  },
+  "profile": {
+    "registryCode": "Reference",
+    "locationTitle": "Location",
+    "notFoundTitle": "Profile not found",
+    "notFoundBody": "This profile is unavailable.",
+    "backToTalents": "Back to talents",
+    "saveLabel": "Save",
+    "unsaveLabel": "Saved"
+  },
+  "stats": {
+    "title": "Contribution summary",
+    "completedTasks": "Tasks completed",
+    "verifiedExperiences": "Verified experiences",
+    "volunteerHours": "Volunteer hours"
+  },
+  "areas": {
+    "title": "Areas of contribution",
+    "percent": "{percent}%"
+  },
+  "skills": {
+    "title": "Skills",
+    "emptyBody": "This volunteer has not published any skill."
+  },
+  "availability": {
+    "title": "Availability",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "emptyTitle": "No availability published",
+    "emptyBody": "This volunteer has not published weekly availability."
+  },
+  "experiences": {
+    "title": "Verified experiences",
+    "hours": "{hours} h",
+    "verifiedByOn": "Verified by {organization} on {date}",
+    "verifiedBy": "Verified by {organization}",
+    "emptyTitle": "No verified experiences published",
+    "emptyBody": "This volunteer has not published any verified experience.",
+    "previous": "Previous",
+    "next": "Next",
+    "pageStatus": "Page {page} of {pages}"
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "emptyTitle": "No portfolio items published",
+    "emptyBody": "This volunteer has not published any portfolio item.",
+    "openLink": "Open link"
+  },
+  "reviews": {
+    "title": "Recommended by organizations",
+    "rating": "Rating {rating} out of 5",
+    "emptyTitle": "No recommendations yet",
+    "emptyBody": "No organization has published a recommendation for this volunteer.",
+    "previous": "Previous",
+    "next": "Next",
+    "pageStatus": "Page {page} of {pages}"
+  },
+  "directory": {
+    "title": "Talents",
+    "subtitle": "Browse volunteers who have chosen to share their profile publicly.",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Name or keyword",
+    "skillLabel": "Skills",
+    "wilayaLabel": "Wilaya",
+    "minExperiencesLabel": "Minimum verified experiences",
+    "hasAvailability": "Only with availability",
+    "portfolioOnly": "Only with a portfolio",
+    "sortLabel": "Sort",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortExperienced": "Most verified experiences",
+    "applyFilters": "Apply filters",
+    "allOption": "All",
+    "countBanner": "{total} volunteers",
+    "emptyTitle": "No volunteers match these filters",
+    "emptyBody": "Try removing a filter or searching for something else.",
+    "invalidSortTitle": "Unsupported sort order",
+    "invalidSortBody": "Choose one of the available sort orders.",
+    "previous": "Previous",
+    "next": "Next",
+    "pageStatus": "Page {page} of {pages}"
+  }
+}
