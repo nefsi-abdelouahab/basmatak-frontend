@@ -11,6 +11,9 @@
     "goHome": "Back to home",
     "signIn": "Sign in"
   },
+  "a11y": {
+    "breadcrumb": "breadcrumb"
+  },
   "pagination": {
     "previous": "Previous",
     "next": "Next",

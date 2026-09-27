@@ -14,6 +14,7 @@
     "modeOnsite": "حضوري",
     "modeRemote": "عن بُعد",
     "modeHybrid": "مختلط",
+    "modeTitle": "طريقة المشاركة",
     "locationTitle": "الموقع",
     "datesTitle": "التاريخ والمدة",
     "durationHours": "{hours} ساعات في الموقع",

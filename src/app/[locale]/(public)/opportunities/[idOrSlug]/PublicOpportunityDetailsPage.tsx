@@ -163,6 +163,7 @@ export function PublicOpportunityDetailsPage({
   idOrSlug: string;
 }) {
   const t = useTranslations('publicOrgs');
+  const c = useTranslations('common');
   const router = useRouter();
   const pathname = usePathname();
   const session = useSessionQuery();
@@ -249,7 +250,7 @@ export function PublicOpportunityDetailsPage({
       data-testid="public-opp-details"
       className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4"
     >
-      <nav aria-label="breadcrumb" className="flex flex-wrap items-center gap-2 text-sm">
+      <nav aria-label={c('a11y.breadcrumb')} className="flex flex-wrap items-center gap-2 text-sm">
         {orgSlug ? (
           <Link href={`/orgs/${orgSlug}`} className="font-medium text-ink-muted">
             {t('oppDetails.backToOrg')}

@@ -86,6 +86,7 @@ function MetaItem({ title, children }: { title: string; children: ReactNode }) {
 
 export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; idOrSlug: string }) {
   const t = useTranslations('opportunityDetails');
+  const c = useTranslations('common');
   const router = useRouter();
   const session = useSessionQuery();
   const isGuest = session.isError;
@@ -223,7 +224,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
 
   return (
     <div data-testid="opportunity-details" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
-      <nav aria-label="breadcrumb" className="flex flex-wrap items-center gap-2 text-sm">
+      <nav aria-label={c('a11y.breadcrumb')} className="flex flex-wrap items-center gap-2 text-sm">
         <Link href="/volunteer/opportunities" className="font-medium text-ink-muted">
           {t('detail.backToOpportunities')}
         </Link>
@@ -287,7 +288,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
               </MetaItem>
               <MetaItem title={t('certificate.title')}>{t('certificate.body')}</MetaItem>
               {detail.mode ? (
-                <MetaItem title="Mode">
+                <MetaItem title={t('detail.modeTitle')}>
                   {modeLabel(detail.mode, {
                     onsite: t('detail.modeOnsite'),
                     remote: t('detail.modeRemote'),
