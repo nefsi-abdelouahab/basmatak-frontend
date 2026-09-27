@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ApiError } from '../lib/api/errors';
 import { favoritesKeys, isAuthError, loginHrefForSave } from './useFavorites';
+import { getLoginHref } from './useSession';
 
 describe('favoritesKeys', () => {
   it('namespaces saves under the favorites domain', () => {
@@ -24,12 +25,27 @@ describe('isAuthError', () => {
 });
 
 describe('loginHrefForSave', () => {
-  it('targets login with a next return', () => {
-    expect(loginHrefForSave('en', '/en/volunteer/opportunities')).toBe(
-      '/en/login?next=%2Fen%2Fvolunteer%2Fopportunities',
+  it('returns a locale-less login path with a next return', () => {
+    expect(loginHrefForSave('/volunteer/opportunities')).toBe(
+      '/login?next=%2Fvolunteer%2Fopportunities',
     );
-    expect(loginHrefForSave('ar', '/ar/volunteer/talents')).toBe(
-      '/ar/login?next=%2Far%2Fvolunteer%2Ftalents',
-    );
+    expect(loginHrefForSave('/volunteer/talents')).toBe('/login?next=%2Fvolunteer%2Ftalents');
+  });
+
+  it('never embeds a locale segment, so the locale-aware router cannot double it', () => {
+    const href = loginHrefForSave('/talents?sort=newest&portfolio=true');
+    expect(href.startsWith('/login')).toBe(true);
+    expect(href).not.toMatch(/\/[a-z]{2}\//);
+    // The `next` query survives the round trip with both filters intact.
+    const next = new URL(href, 'http://127.0.0.1').searchParams.get('next');
+    expect(next).toBe('/talents?sort=newest&portfolio=true');
+    const parsed = new URL(next ?? '', 'http://127.0.0.1');
+    expect(parsed.pathname).toBe('/talents');
+    expect(parsed.searchParams.get('sort')).toBe('newest');
+    expect(parsed.searchParams.get('portfolio')).toBe('true');
+  });
+
+  it('omits the next parameter when there is no return path', () => {
+    expect(getLoginHref()).toBe('/login');
   });
 });

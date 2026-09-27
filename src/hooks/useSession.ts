@@ -18,7 +18,16 @@ export function useSessionQuery() {
 
 // Guest authed-action redirect target (decision 10: backend only ever 401s;
 // the frontend redirects to sign-in). The (auth)/login route itself ships in F1.
-export function getLoginHref(locale: string, next?: string): string {
-  const base = `/${locale}/login`;
-  return next ? `${base}?next=${encodeURIComponent(next)}` : base;
+//
+// LOCALE-LESS CONTRACT: every navigation API in `@/i18n/navigation`
+// (next-intl `createNavigation` with `localePrefix: 'always'`) takes a
+// locale-less path and adds the prefix itself, and `usePathname()` returns a
+// locale-less path. So this returns `/login`, NOT `/{locale}/login`: callers
+// pass the result to that router, and a pre-prefixed value produced
+// `/en/en/login` (a route that does not exist). `next` is likewise the
+// locale-less path the router will be given after login, so it must not carry a
+// locale either. Deliberately takes no `locale` argument so the double-prefixed
+// string cannot be built here at all.
+export function getLoginHref(next?: string): string {
+  return next ? `/login?next=${encodeURIComponent(next)}` : '/login';
 }

@@ -34,7 +34,7 @@ export function RequireOrgRecords({
   const router = useRouter();
 
   useEffect(() => {
-    if (session.isError) router.replace(getLoginHref(locale, next));
+    if (session.isError) router.replace(getLoginHref(next));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.isError, router, locale]);
 

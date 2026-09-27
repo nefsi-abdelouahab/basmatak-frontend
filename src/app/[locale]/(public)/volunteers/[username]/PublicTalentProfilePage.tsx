@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Empty } from '@/components/ui/Empty';
@@ -74,23 +74,21 @@ function SaveProfileButton({
   username,
   favorited,
   count,
-  locale,
   next,
 }: {
   username: string;
   favorited: boolean;
   count: number;
-  locale: string;
   next: string;
 }) {
   const t = useTranslations('publicTalent');
   const session = useSessionQuery();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const toggle = useToggleTalentFavoriteMutation();
-  // `getLoginHref` already carries the locale. Navigating with a full document
-  // load keeps the path exactly `/{locale}/login`; a locale-aware router would
-  // prefix the locale a second time.
-  const goLogin = () => window.location.assign(getLoginHref(locale, next));
+  // `getLoginHref` returns a locale-less `/login` because the locale-aware
+  // router adds the prefix; handing it a pre-prefixed path double-prefixed it.
+  const goLogin = () => router.replace(getLoginHref(next));
   return (
     <Button
       type="button"
@@ -347,7 +345,9 @@ export function PublicTalentProfilePage({
 
   if (!profile || !sections) return <Loader label={t('shared.loading')} />;
 
-  const next = `/${locale}/volunteers/${username}`;
+  // Locale-less: the locale-aware router adds the prefix, and the post-login
+  // `router.push(next)` would double-prefix a pre-prefixed value.
+  const next = `/volunteers/${username}`;
   const displayName = publicDisplayName(sections.bio.data.firstName, profile.username);
   const code = registryCode(profile.registryId, 'VOL');
   const areas = sortAreasByPercentDesc(sections.areas.data);
@@ -396,7 +396,6 @@ export function PublicTalentProfilePage({
             username={profile.username}
             favorited={Boolean(profile.isFavorited)}
             count={profile.favoriteCount ?? 0}
-            locale={locale}
             next={next}
           />
         </div>

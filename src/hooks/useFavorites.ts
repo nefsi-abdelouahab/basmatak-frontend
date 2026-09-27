@@ -29,8 +29,12 @@ export function isAuthError(err: unknown): boolean {
   return mapped instanceof ApiError && mapped.statusCode === 401;
 }
 
-export function loginHrefForSave(locale: string, next: string): string {
-  return getLoginHref(locale, next);
+/**
+ * Locale-less `/login?next=…` for the locale-aware router; see `getLoginHref`
+ * for why the locale is not part of the path.
+ */
+export function loginHrefForSave(next: string): string {
+  return getLoginHref(next);
 }
 
 export function useFavoritesCountsQuery(enabled = true) {

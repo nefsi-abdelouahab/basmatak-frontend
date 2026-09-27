@@ -1,6 +1,7 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import en from '../src/messages/admin-manage/en.json';
 import ar from '../src/messages/admin-manage/ar.json';
+import { expectLoginRedirect } from './login-redirect';
 
 type Locale = 'en' | 'ar';
 const catalogs = { en, ar } as const;
@@ -472,7 +473,7 @@ for (const width of [1440, 1100, 390]) {
       handlers['/auth/me'] = { status: 401, body: { statusCode: 401, code: 'UNAUTHORIZED', message: 'x' } };
       await mockApi(page, handlers, captured);
       await page.goto('/en/admin/volunteers');
-      await expect.poll(() => page.url()).toContain('/en/login');
+      await expectLoginRedirect(page, 'en', '/admin/volunteers');
     });
   });
 }

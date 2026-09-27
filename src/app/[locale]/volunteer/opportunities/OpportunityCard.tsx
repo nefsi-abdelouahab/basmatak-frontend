@@ -14,14 +14,12 @@ function SaveOpportunityButton({
   id,
   favorited,
   count,
-  locale,
   next,
   testId,
 }: {
   id: string;
   favorited: boolean;
   count: number | null;
-  locale: string;
   next: string;
   testId: string;
 }) {
@@ -29,7 +27,7 @@ function SaveOpportunityButton({
   const session = useSessionQuery();
   const router = useRouter();
   const toggle = useToggleOpportunityFavoriteMutation();
-  const goLogin = () => router.replace(getLoginHref(locale, next));
+  const goLogin = () => router.replace(getLoginHref(next));
   return (
     <Button
       type="button"
@@ -101,7 +99,7 @@ export function OpportunityCard({
         </div>
         {id ? (
           <div>
-            <SaveOpportunityButton id={id} favorited={favorited} count={favoriteCount} locale={locale} next={next} testId={`${saveTestIdPrefix}-${id}`} />
+            <SaveOpportunityButton id={id} favorited={favorited} count={favoriteCount} next={next} testId={`${saveTestIdPrefix}-${id}`} />
           </div>
         ) : null}
       </div>

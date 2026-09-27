@@ -1,6 +1,7 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import en from '../src/messages/volunteer-home/en.json';
 import ar from '../src/messages/volunteer-home/ar.json';
+import { expectLoginRedirect } from './login-redirect';
 
 type Locale = 'en' | 'ar';
 const catalogs = { en, ar } as const;
@@ -285,8 +286,7 @@ for (const width of [1440, 1100, 390]) {
       await page.goto('/en/volunteer/opportunities');
       await expect(page.getByTestId('volunteer-opportunities')).toBeVisible();
       await page.getByTestId(`save-opp-${oppA.id}`).click();
-      await expect.poll(() => page.url()).toContain('/en/login');
-      expect(page.url()).toContain('next=');
+      await expectLoginRedirect(page, 'en', '/volunteer/opportunities');
     });
 
     test('talents filters serialize multi-value params', async ({ page }) => {

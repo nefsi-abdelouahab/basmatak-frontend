@@ -129,9 +129,11 @@ export function PublicTalentsPage({
   const [pageIdx, setPageIdx] = useState(0);
 
   const filters = useMemo(() => toTalentFilters(applied, cursors[pageIdx]), [applied, cursors, pageIdx]);
-  // Guest save returns the visitor to the exact filtered view they came from,
-  // so the redirect target carries the active query string, not just the route.
-  const next = `/${locale}/talents${toTalentSearchString(applied)}`;
+  // Guest save returns the visitor to the exact filtered view they came from, so
+  // the redirect target carries the active query string. Locale-less: the
+  // locale-aware router adds the prefix, and the post-login `router.push(next)`
+  // would double-prefix a pre-prefixed value.
+  const next = `/talents${toTalentSearchString(applied)}`;
   const talentsQuery = usePublicTalentsQuery(filters);
   const skillsQuery = usePublicTalentSkillsQuery();
   const wilayasQuery = usePublicTalentWilayasQuery();

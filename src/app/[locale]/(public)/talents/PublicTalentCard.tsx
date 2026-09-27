@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { Card } from '@/components/ui/Card';
 import { Pill } from '@/components/ui/Pill';
 import { Button } from '@/components/ui/Button';
@@ -28,22 +28,21 @@ function SaveCardButton({
   username,
   favorited,
   count,
-  locale,
   next,
 }: {
   username: string;
   favorited: boolean;
   count: number;
-  locale: string;
   next: string;
 }) {
   const t = useTranslations('publicTalent');
   const session = useSessionQuery();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const toggle = useToggleTalentFavoriteMutation();
-  // `getLoginHref` already carries the locale; a full document load keeps the
-  // path exactly `/{locale}/login` (a locale-aware router would double it).
-  const goLogin = () => window.location.assign(getLoginHref(locale, next));
+  // `getLoginHref` returns a locale-less `/login` because the locale-aware
+  // router adds the prefix; handing it a pre-prefixed path double-prefixed it.
+  const goLogin = () => router.replace(getLoginHref(next));
   return (
     <Button
       type="button"
@@ -150,7 +149,6 @@ export function PublicTalentCard({
             username={item.username}
             favorited={favorited}
             count={favoriteCount}
-            locale={locale}
             next={next}
           />
         </div>

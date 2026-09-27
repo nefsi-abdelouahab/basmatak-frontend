@@ -30,7 +30,7 @@ export function RequireTasks({
   const router = useRouter();
 
   useEffect(() => {
-    if (session.isError) router.replace(getLoginHref(locale, next));
+    if (session.isError) router.replace(getLoginHref(next));
   }, [session.isError, router, locale, next]);
 
   if (session.isPending) return <Loader label={t('shared.loading')} />;

@@ -1,6 +1,7 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import en from '../src/messages/public-talent/en.json';
 import ar from '../src/messages/public-talent/ar.json';
+import { expectLoginRedirect } from './login-redirect';
 
 type Locale = 'en' | 'ar';
 const catalogs = { en, ar } as const;
@@ -572,14 +573,24 @@ test.describe('profile behavior', () => {
     await expect(page.getByTestId('public-talent-card')).toHaveCount(2);
 
     await page.getByTestId('save-talent-amina').click();
-    // The guest lands on Login, once, at the real localized path.
-    await expect.poll(() => new URL(page.url()).pathname).toBe(`/${locale}/login`);
-    // The redirect target keeps the active filters (order is URL-built).
-    const next = new URL(page.url()).searchParams.get('next') ?? '';
-    const nextUrl = new URL(next, 'http://127.0.0.1');
-    expect(nextUrl.pathname).toBe(`/${locale}/talents`);
-    expect(nextUrl.searchParams.get('sort')).toBe('newest');
-    expect(nextUrl.searchParams.get('portfolio')).toBe('true');
+    // The guest lands on Login, once, at the real localized path, with the
+    // active filters preserved on a locale-less `next` (the post-login
+    // `router.push(next)` would double-prefix a pre-prefixed value).
+    await expectLoginRedirect(page, locale, '/talents?sort=newest&portfolio=true');
+    expect(captured.filter((c) => c.path.includes('/favorites/'))).toHaveLength(0);
+  });
+
+  test('a guest save on the profile redirects to login and sends no mutation', async ({ page }) => {
+    const locale: Locale = 'en';
+    const captured: Captured[] = [];
+    await mockApi(page, profileHandlers(PROFILE), captured);
+    await page.goto('/en/volunteers/amina');
+    await expect(page.getByTestId('profile-save')).toBeVisible();
+
+    await page.getByTestId('profile-save').click();
+    // Soft navigation through the locale-aware router: the login pathname must
+    // carry the locale exactly once, and `next` must be locale-less.
+    await expectLoginRedirect(page, locale, '/volunteers/amina');
     expect(captured.filter((c) => c.path.includes('/favorites/'))).toHaveLength(0);
   });
 

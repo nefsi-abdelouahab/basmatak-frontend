@@ -13,20 +13,18 @@ function SaveTalentButton({
   username,
   favorited,
   count,
-  locale,
   next,
 }: {
   username: string;
   favorited: boolean;
   count: number | null;
-  locale: string;
   next: string;
 }) {
   const t = useTranslations('volunteerHome');
   const session = useSessionQuery();
   const router = useRouter();
   const toggle = useToggleTalentFavoriteMutation();
-  const goLogin = () => router.replace(getLoginHref(locale, next));
+  const goLogin = () => router.replace(getLoginHref(next));
   return (
     <Button
       type="button"
@@ -61,13 +59,11 @@ function displayName(item: TalentCardData): string {
 // talents payload plus lookup save state. No contact/invite UI exists.
 export function TalentCard({
   item,
-  locale,
   favorited,
   favoriteCount,
   next,
 }: {
   item: TalentCardData;
-  locale: string;
   favorited: boolean;
   favoriteCount: number | null;
   next: string;
@@ -99,7 +95,6 @@ export function TalentCard({
             username={item.username}
             favorited={favorited}
             count={favoriteCount}
-            locale={locale}
             next={next}
           />
         </div>

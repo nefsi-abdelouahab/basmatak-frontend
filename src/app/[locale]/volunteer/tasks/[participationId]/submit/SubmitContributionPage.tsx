@@ -119,7 +119,7 @@ export function SubmitContributionPage({
 
   const next = `/${locale}/volunteer/tasks/${participationId}/submit`;
   useEffect(() => {
-    if (sessionQuery.isError) router.replace(getLoginHref(locale, next));
+    if (sessionQuery.isError) router.replace(getLoginHref(next));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionQuery.isError]);
 

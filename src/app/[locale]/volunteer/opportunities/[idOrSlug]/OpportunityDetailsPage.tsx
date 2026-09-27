@@ -166,7 +166,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
 
   function requireAuth(): boolean {
     if (isGuest) {
-      router.push(getLoginHref(locale, next));
+      router.push(getLoginHref(next));
       return false;
     }
     return true;

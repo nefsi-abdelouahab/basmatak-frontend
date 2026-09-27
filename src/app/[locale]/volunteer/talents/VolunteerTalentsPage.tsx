@@ -307,7 +307,7 @@ export function VolunteerTalentsPage({
                   const favorited = lookupQuery.data?.[item.username]?.favorited ?? item.isFavorited ?? false;
                   const count = lookupQuery.data?.[item.username]?.favoriteCount ?? null;
                   return (
-                    <TalentCard key={item.username} item={item} locale={locale} favorited={favorited} favoriteCount={count} next={next} />
+                    <TalentCard key={item.username} item={item} favorited={favorited} favoriteCount={count} next={next} />
                   );
                 })}
               </div>
