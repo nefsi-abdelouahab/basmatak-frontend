@@ -13,7 +13,7 @@ export function OrgProfilePage({ locale }: { locale: string }) {
           <h1 className="text-2xl font-bold text-ink">{t('profile.title')}</h1>
           <p className="text-sm text-ink-muted">{t('profile.subtitle')}</p>
         </div>
-        <FactsheetSection locale={locale} />
+        <FactsheetSection />
       </div>
     </RequireOrg>
   );

@@ -84,7 +84,7 @@ const SLOT_META: Record<
   report: { purpose: REPORT_PURPOSE, allowed: ACCOUNT_DOC_MIMES, accept: 'image/jpeg,image/png,image/webp,application/pdf' },
 };
 
-export function FactsheetSection({ locale }: { locale: string }) {
+export function FactsheetSection() {
   const t = useTranslations('orgAccount');
   const orgQuery = useOrgAccountQuery();
   const completionQuery = useOrgAccountCompletionQuery();
@@ -296,7 +296,7 @@ export function FactsheetSection({ locale }: { locale: string }) {
         {org.slug ? (
           <Link
             data-testid="public-profile-link"
-            href={`/${locale}/orgs/${org.slug}`}
+            href={`/orgs/${org.slug}`}
             className="text-sm font-medium text-primary"
           >
             {t('profile.publicLinkLabel')}
