@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
-import commonAr from '../src/messages/common/ar.json';
-import commonEn from '../src/messages/common/en.json';
+// F18 landing owns the locale home route (replaces the F0 placeholder Card):
+// shell chrome assertions stay, demo-heading assertions pin the landing title.
+import publicOrgsAr from '../src/messages/public-orgs/ar.json';
+import publicOrgsEn from '../src/messages/public-orgs/en.json';
 
 for (const width of [1440, 1100, 390]) {
   test.describe(`viewport ${width}`, () => {
@@ -11,7 +13,7 @@ for (const width of [1440, 1100, 390]) {
       await expect(page.getByTestId('shell-navbar')).toBeVisible();
       await expect(page.getByTestId('shell-main')).toBeVisible();
       await expect(page.getByTestId('home').getByRole('heading', { level: 1 })).toHaveText(
-        commonEn.home.title,
+        publicOrgsEn.landing.title,
       );
       await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     });
@@ -19,7 +21,7 @@ for (const width of [1440, 1100, 390]) {
     test('ar home renders mirrored shell and content', async ({ page }) => {
       await page.goto('/ar');
       await expect(page.getByTestId('home').getByRole('heading', { level: 1 })).toHaveText(
-        commonAr.home.title,
+        publicOrgsAr.landing.title,
       );
       await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
       await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
@@ -45,7 +47,7 @@ for (const width of [1440, 1100, 390]) {
       await expect(page).toHaveURL(/\/ar(\/|$)/);
       await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
       await expect(page.getByTestId('home').getByRole('heading', { level: 1 })).toHaveText(
-        commonAr.home.title,
+        publicOrgsAr.landing.title,
       );
     });
   });

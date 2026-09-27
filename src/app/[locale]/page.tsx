@@ -1,16 +1,17 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { Card } from '@/components/ui/Card';
+import { setRequestLocale } from 'next-intl/server';
+import { PublicLandingPage } from './(public)/PublicLandingPage';
 
-export default async function HomePage({ params: { locale } }: { params: { locale: string } }) {
+// F18 landing owns the locale home route. This path previously rendered the
+// F0 foundation placeholder (16-line demo Card, no logic or fetches); the only
+// consumers of its demo heading are the shell.spec.ts home assertions, which
+// need a companion heading update (reported, owner-confirmed separately).
+export default function HomePage({ params: { locale } }: { params: { locale: string } }) {
   setRequestLocale(locale);
-  const t = await getTranslations('common');
-
+  // `home` testid preserves the F0 shell-spec anchors (navbar/sidebar/
+  // bottom-nav + home heading); the heading copy is now the landing title.
   return (
-    <Card>
-      <div data-testid="home">
-        <h1 className="mb-2 text-2xl font-bold text-ink">{t('home.title')}</h1>
-        <p className="text-ink-muted">{t('home.description')}</p>
-      </div>
-    </Card>
+    <div data-testid="home">
+      <PublicLandingPage locale={locale} />
+    </div>
   );
 }
