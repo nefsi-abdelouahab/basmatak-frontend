@@ -162,6 +162,12 @@ describe('org account reads', () => {
     expect(OrgAccountSchema.safeParse(org).success).toBe(true);
   });
 
+  it('accepts explicit null media ids (backend unset shape)', () => {
+    expect(
+      OrgAccountSchema.safeParse({ logoMediaId: null, coverMediaId: null, annualReportMediaId: null }).success,
+    ).toBe(true);
+  });
+
   it('patches facts and parses the response', async () => {
     const client = stubClient({ 'PATCH /organizations/me': { ...org, website: 'https://x.org' } });
     const updated = await patchOrgAccount(client, { website: 'https://x.org' });
