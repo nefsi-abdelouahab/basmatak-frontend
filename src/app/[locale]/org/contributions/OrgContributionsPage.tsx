@@ -72,6 +72,11 @@ export function OrgContributionsPage({ locale }: { locale: string }) {
   }));
   const forbidden =
     listQuery.isError && mapToApiError(listQuery.error).statusCode === 403;
+  // A decided row leaves the current filter (server-side), which would
+  // unmount its own detail panel mid-flow. The panel below persists outside
+  // the list (fresh data via the detail endpoint) so the new status renders.
+  const detached =
+    expanded !== null && !items.some((row) => rowId(row) === expanded);
 
   return (
     <RequireOrg locale={locale} next={`/${locale}/org/contributions`}>
@@ -146,54 +151,69 @@ export function OrgContributionsPage({ locale }: { locale: string }) {
           <SectionError testId="contributions-forbidden" message={t('shared.loadError')} />
         ) : listQuery.isError ? (
           <SectionError testId="contributions-error" message={t('shared.loadError')} />
-        ) : items.length === 0 ? (
-          <Empty title={t('shared.empty')} />
         ) : (
           <Card>
             <p data-testid="contributions-count" className="mb-3 text-sm font-medium text-ink">
               {t('contributions.count', { total: listQuery.data?.total ?? items.length })}
             </p>
-            <ul className="flex flex-col gap-3">
-              {items.map((row) => {
-                const id = rowId(row);
-                const isOpen = expanded === id;
-                return (
-                  <li
-                    key={id}
-                    data-testid="submission-row"
-                    className="rounded-md border border-border-muted bg-surface-muted p-3"
-                  >
-                    <button
-                      type="button"
-                      data-testid={`submission-expand-${id}`}
-                      aria-expanded={isOpen}
-                      onClick={() => setExpanded(isOpen ? null : id)}
-                      className="flex w-full flex-wrap items-center justify-between gap-2 text-start"
-                    >
-                      <span className="font-medium text-ink">
-                        {row.title ?? joinName(row.volunteer, locale)}
-                      </span>
-                      <StatusPill
-                        status={row.status}
-                        label={row.status === 'submitted' || row.status === 'verified' || row.status === 'rejected' ? t(`tabs.${row.status}`) : row.status}
-                      />
-                    </button>
-                    <span className="mt-1 block text-sm text-ink-muted">
-                      {joinName(row.volunteer, locale)} · {joinName(row.opportunity, locale)}
-                    </span>
-                    {isOpen ? (
-                      <div className="mt-3">
-                        <SubmissionDetailCard
-                          locale={locale}
-                          submissionId={id}
-                          testIdPrefix="submission-detail"
-                        />
-                      </div>
-                    ) : null}
-                  </li>
-                );
-              })}
-            </ul>
+            {items.length === 0 && !detached ? (
+              <Empty title={t('shared.empty')} />
+            ) : (
+              <>
+                {items.length > 0 ? (
+                  <ul className="flex flex-col gap-3">
+                    {items.map((row) => {
+                      const id = rowId(row);
+                      const isOpen = expanded === id;
+                      return (
+                        <li
+                          key={id}
+                          data-testid="submission-row"
+                          className="rounded-md border border-border-muted bg-surface-muted p-3"
+                        >
+                          <button
+                            type="button"
+                            data-testid={`submission-expand-${id}`}
+                            aria-expanded={isOpen}
+                            onClick={() => setExpanded(isOpen ? null : id)}
+                            className="flex w-full flex-wrap items-center justify-between gap-2 text-start"
+                          >
+                            <span className="font-medium text-ink">
+                              {row.title ?? joinName(row.volunteer, locale)}
+                            </span>
+                            <StatusPill
+                              status={row.status}
+                              label={row.status === 'submitted' || row.status === 'verified' || row.status === 'rejected' ? t(`tabs.${row.status}`) : row.status}
+                            />
+                          </button>
+                          <span className="mt-1 block text-sm text-ink-muted">
+                            {joinName(row.volunteer, locale)} · {joinName(row.opportunity, locale)}
+                          </span>
+                          {isOpen ? (
+                            <div className="mt-3">
+                              <SubmissionDetailCard
+                                locale={locale}
+                                submissionId={id}
+                                testIdPrefix="submission-detail"
+                              />
+                            </div>
+                          ) : null}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : null}
+                {detached && expanded ? (
+                  <div className="mt-3">
+                    <SubmissionDetailCard
+                      locale={locale}
+                      submissionId={expanded}
+                      testIdPrefix="submission-detail"
+                    />
+                  </div>
+                ) : null}
+              </>
+            )}
             {listQuery.data?.nextCursor ? (
               <div className="mt-3">
                 <Button

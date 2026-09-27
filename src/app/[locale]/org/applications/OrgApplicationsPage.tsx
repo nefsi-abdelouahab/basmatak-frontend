@@ -61,6 +61,11 @@ export function OrgApplicationsPage({ locale }: { locale: string }) {
   );
   const forbidden =
     listQuery.isError && mapToApiError(listQuery.error).statusCode === 403;
+  // A decided row leaves the current tab (server-side filter), which would
+  // unmount its own detail panel mid-flow. The panel below persists outside
+  // the list (fresh data via the detail endpoint) so the new status renders.
+  const detached =
+    expanded !== null && !items.some((row) => rowId(row) === expanded);
 
   return (
     <RequireOrg locale={locale} next={`/${locale}/org/applications`}>
@@ -119,15 +124,18 @@ export function OrgApplicationsPage({ locale }: { locale: string }) {
           <SectionError testId="applications-forbidden" message={t('shared.loadError')} />
         ) : listQuery.isError ? (
           <SectionError testId="applications-error" message={t('shared.loadError')} />
-        ) : items.length === 0 ? (
-          <Empty title={t('shared.empty')} />
         ) : (
           <Card>
             <p data-testid="applications-count" className="mb-3 text-sm font-medium text-ink">
               {t('applications.count', { total: listQuery.data?.total ?? items.length })}
             </p>
-            <ul className="flex flex-col gap-3">
-              {items.map((row) => {
+            {items.length === 0 && !detached ? (
+              <Empty title={t('shared.empty')} />
+            ) : (
+              <>
+                {items.length > 0 ? (
+                  <ul className="flex flex-col gap-3">
+                    {items.map((row) => {
                 const id = rowId(row);
                 const name = joinName(row.applicant ?? row.volunteer, locale);
                 const isOpen = expanded === id;
@@ -162,7 +170,19 @@ export function OrgApplicationsPage({ locale }: { locale: string }) {
                   </li>
                 );
               })}
-            </ul>
+                  </ul>
+                ) : null}
+                {detached && expanded ? (
+                  <div className="mt-3">
+                    <ApplicationDetailCard
+                      locale={locale}
+                      applicationId={expanded}
+                      testIdPrefix="application-detail"
+                    />
+                  </div>
+                ) : null}
+              </>
+            )}
             {listQuery.data?.nextCursor ? (
               <div className="mt-3">
                 <Button

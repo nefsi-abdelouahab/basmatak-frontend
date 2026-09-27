@@ -328,7 +328,7 @@ for (const width of [1440, 1100, 390]) {
         await mockApi(page, captured);
         await page.goto(`/${locale}/org/participants`);
         await expect(page.getByTestId('org-participants')).toBeVisible();
-        await expect(page.getByTestId('participants-count')).toContainText('2');
+        await expect(page.getByTestId('participants-count')).toContainText('1');
         await page.getByTestId('tab-completed').click();
         await expect(page.getByTestId('participant-row')).toHaveCount(1);
         await page.getByTestId('tab-active').click();

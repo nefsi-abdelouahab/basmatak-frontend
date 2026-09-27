@@ -18,6 +18,11 @@ import type {
 
 const DOMAIN = 'org-review';
 
+// Detail keys share DOMAIN exactly (never `${DOMAIN}-suffix`): mutations
+// invalidate via queryKeys.domain(DOMAIN) prefix matching, so a suffixed
+// domain would silently skip detail refetch after decide actions. Ids are
+// namespaced per entity to avoid cross-entity collisions.
+
 export function useOrgApplicationsQuery(params: InboxListParams) {
   return useQuery({
     queryKey: queryKeys.list(DOMAIN, { scope: 'applications', ...params }),
@@ -48,7 +53,7 @@ export function useOpportunityApplicationsQuery(
 export function useOrgApplicationQuery(applicationId: string | undefined) {
   return useQuery({
     queryKey: applicationId
-      ? queryKeys.detail(DOMAIN, applicationId)
+      ? queryKeys.detail(DOMAIN, `application:${applicationId}`)
       : queryKeys.detail(DOMAIN, 'none'),
     queryFn: () => orgInboxApi.getOrgApplication(api, applicationId as string),
     enabled: typeof applicationId === 'string' && applicationId.length > 0,
@@ -60,8 +65,8 @@ export function useOrgApplicationQuery(applicationId: string | undefined) {
 export function useApplicantProfileQuery(username: string | undefined) {
   return useQuery({
     queryKey: username
-      ? queryKeys.detail(`${DOMAIN}-applicant`, username)
-      : queryKeys.detail(`${DOMAIN}-applicant`, 'none'),
+      ? queryKeys.detail(DOMAIN, `applicant:${username}`)
+      : queryKeys.detail(DOMAIN, 'none'),
     queryFn: () => orgInboxApi.getApplicantProfile(api, username as string),
     enabled: typeof username === 'string' && username.length > 0,
     staleTime: 300_000,
@@ -160,8 +165,8 @@ export function useOrgSubmissionsQuery(params: SubmissionInboxParams) {
 export function useOrgSubmissionQuery(submissionId: string | undefined) {
   return useQuery({
     queryKey: submissionId
-      ? queryKeys.detail(`${DOMAIN}-submission`, submissionId)
-      : queryKeys.detail(`${DOMAIN}-submission`, 'none'),
+      ? queryKeys.detail(DOMAIN, `submission:${submissionId}`)
+      : queryKeys.detail(DOMAIN, 'none'),
     queryFn: () => orgInboxApi.getOrgSubmission(api, submissionId as string),
     enabled: typeof submissionId === 'string' && submissionId.length > 0,
     staleTime: 30_000,
@@ -172,8 +177,8 @@ export function useOrgSubmissionQuery(submissionId: string | undefined) {
 export function useVerificationQuery(verificationId: string | undefined) {
   return useQuery({
     queryKey: verificationId
-      ? queryKeys.detail(`${DOMAIN}-verification`, verificationId)
-      : queryKeys.detail(`${DOMAIN}-verification`, 'none'),
+      ? queryKeys.detail(DOMAIN, `verification:${verificationId}`)
+      : queryKeys.detail(DOMAIN, 'none'),
     queryFn: () => orgInboxApi.getVerification(api, verificationId as string),
     enabled: typeof verificationId === 'string' && verificationId.length > 0,
     staleTime: 300_000,
@@ -183,7 +188,7 @@ export function useVerificationQuery(verificationId: string | undefined) {
 
 export function useEvidenceMediaQuery(mediaId: string | null | undefined) {
   return useQuery({
-    queryKey: queryKeys.detail(`${DOMAIN}-evidence`, mediaId ?? 'none'),
+    queryKey: queryKeys.detail(DOMAIN, `evidence:${mediaId ?? 'none'}`),
     queryFn: () => orgInboxApi.getEvidenceMedia(api, mediaId as string),
     enabled: typeof mediaId === 'string' && mediaId.length > 0,
     staleTime: 300_000,
