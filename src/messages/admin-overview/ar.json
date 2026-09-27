@@ -1,0 +1,93 @@
+{
+  "shared": {
+    "loading": "جارٍ التحميل…",
+    "loadError": "تعذّر تحميل هذا القسم.",
+    "empty": "لا يوجد شيء بعد."
+  },
+  "header": {
+    "title": "لوحة تحكم المشرف",
+    "subtitle": "نشاط المنصة والعناصر التي تحتاج إلى مراجعة."
+  },
+  "overview": {
+    "title": "نظرة عامة على النشاط",
+    "subtitle": "أعداد آخر 30 يومًا مقارنةً بالـ 30 يومًا السابقة.",
+    "currentLabel": "آخر 30 يومًا",
+    "previousLabel": "الـ 30 يومًا السابقة",
+    "noComparison": "لا تتوفر مقارنة",
+    "daysAgo": "آخر 30 يومًا"
+  },
+  "totals": {
+    "users": "المستخدمون",
+    "organizations": "المنظمات",
+    "opportunities": "الفرص",
+    "applications": "الطلبات",
+    "submissions": "المساهمات"
+  },
+  "metrics": {
+    "title": "أرقام أساسية",
+    "activeParticipants": "مشاركون نشطون (30 يومًا)",
+    "verificationReady": "مساهمات بانتظار التحقق",
+    "gateFreezes": "منظمة متوقفة النشر",
+    "turnaround": "متوسط زمن القرار",
+    "turnaroundUnavailable": "بيانات غير كافية",
+    "turnaroundUnit": "ساعة",
+    "fromAnalytics": "من تحليلات النشاط",
+    "fromStats": "من إحصاءات المنصة"
+  },
+  "perStatus": {
+    "title": "الأعداد حسب الحالة",
+    "users": "المستخدمون",
+    "organizations": "المنظمات",
+    "organizationsVerification": "التحقق من المنظمة",
+    "opportunities": "الفرص",
+    "applications": "الطلبات",
+    "submissions": "المساهمات"
+  },
+  "series": {
+    "title": "النشاط اليومي",
+    "subtitle": "التسجيلات والطلبات وقرارات التحقق في كل يوم.",
+    "signups": "التسجيلات",
+    "applications": "الطلبات",
+    "verifications": "قرارات التحقق",
+    "windowLabel": "المدى",
+    "daysUnit": "أيام",
+    "empty": "لا يوجد نشاط مسجّل في هذا المدى.",
+    "pointLabel": "{date}: {signups} تسجيلات، {applications} طلبات، {verifications} قرار تحقق"
+  },
+  "queue": {
+    "title": "بحاجة إلى مراجعة",
+    "subtitle": "عناصر في انتظار الانتباه. الأعداد مصدرها قائمة تحليلات الانتباه.",
+    "pendingVerifications": "تحققات المنظمات",
+    "openReports": "بلاغات مفتوحة",
+    "underReviewSubmissions": "مساهمات قيد المراجعة",
+    "suspendedUsers": "حسابات مستخدمين موقوفة",
+    "suspendedOrganizations": "منظمات موقوفة",
+    "viewManage": "فتح شاشة الإدارة",
+    "maintenanceOn": "وضع الصيانة مُفعّل",
+    "maintenanceOff": "وضع الصيانة مُعطّل"
+  },
+  "audit": {
+    "title": "آخر نشاطات الإدارة",
+    "subtitle": "أحدث الإدخالات من سجل التدقيق.",
+    "actorLabel": "المنفّذ",
+    "targetLabel": "الهدف",
+    "actionLabel": "الإجراء",
+    "methodLabel": "الطريقة",
+    "pathLabel": "المسار",
+    "timeLabel": "الوقت",
+    "nameUnavailable": "غير متوفر",
+    "valueUnavailable": "غير مسجل",
+    "empty": "لا توجد إدخالات تدقيق بعد."
+  },
+  "system": {
+    "title": "حالة النظام",
+    "statusLabel": "الحالة",
+    "versionLabel": "الإصدار",
+    "uptimeLabel": "مدة التشغيل",
+    "maintenanceLabel": "الصيانة",
+    "daysUnit": "ي",
+    "hoursUnit": "س",
+    "minutesUnit": "د",
+    "unavailable": "غير متوفر"
+  }
+}

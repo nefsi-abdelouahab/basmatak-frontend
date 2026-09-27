@@ -1,0 +1,93 @@
+{
+  "shared": {
+    "loading": "Loading…",
+    "loadError": "Could not load this section.",
+    "empty": "Nothing here yet."
+  },
+  "header": {
+    "title": "Admin dashboard",
+    "subtitle": "Platform activity and items that need review."
+  },
+  "overview": {
+    "title": "Activity overview",
+    "subtitle": "Counts from the last 30 days, compared with the previous 30 days.",
+    "currentLabel": "Last 30 days",
+    "previousLabel": "Previous 30 days",
+    "noComparison": "No comparison available",
+    "daysAgo": "Last 30 days"
+  },
+  "totals": {
+    "users": "Users",
+    "organizations": "Organizations",
+    "opportunities": "Opportunities",
+    "applications": "Applications",
+    "submissions": "Submissions"
+  },
+  "metrics": {
+    "title": "Key figures",
+    "activeParticipants": "Active participants (30 days)",
+    "verificationReady": "Contributions awaiting verification",
+    "gateFreezes": "Organizations with publishing paused",
+    "turnaround": "Median decision time",
+    "turnaroundUnavailable": "Not enough data",
+    "turnaroundUnit": "h",
+    "fromAnalytics": "From activity analytics",
+    "fromStats": "From platform statistics"
+  },
+  "perStatus": {
+    "title": "Counts by status",
+    "users": "Users",
+    "organizations": "Organizations",
+    "organizationsVerification": "Organization verification",
+    "opportunities": "Opportunities",
+    "applications": "Applications",
+    "submissions": "Contributions"
+  },
+  "series": {
+    "title": "Daily activity",
+    "subtitle": "Signups, applications, and verification decisions per day.",
+    "signups": "Signups",
+    "applications": "Applications",
+    "verifications": "Verification decisions",
+    "windowLabel": "Range",
+    "daysUnit": "days",
+    "empty": "No activity recorded in this range.",
+    "pointLabel": "{date}: {signups} signups, {applications} applications, {verifications} verification decisions"
+  },
+  "queue": {
+    "title": "Needs review",
+    "subtitle": "Items waiting for attention. Counts come from the analytics queue.",
+    "pendingVerifications": "Organization verifications",
+    "openReports": "Open reports",
+    "underReviewSubmissions": "Contributions under review",
+    "suspendedUsers": "Suspended user accounts",
+    "suspendedOrganizations": "Suspended organizations",
+    "viewManage": "Open manage screen",
+    "maintenanceOn": "Maintenance mode is on",
+    "maintenanceOff": "Maintenance mode is off"
+  },
+  "audit": {
+    "title": "Recent admin activity",
+    "subtitle": "Newest entries from the audit trail.",
+    "actorLabel": "Actor",
+    "targetLabel": "Target",
+    "actionLabel": "Action",
+    "methodLabel": "Method",
+    "pathLabel": "Path",
+    "timeLabel": "Time",
+    "nameUnavailable": "Not available",
+    "valueUnavailable": "Not recorded",
+    "empty": "No audit entries yet."
+  },
+  "system": {
+    "title": "System status",
+    "statusLabel": "Status",
+    "versionLabel": "Version",
+    "uptimeLabel": "Uptime",
+    "maintenanceLabel": "Maintenance",
+    "daysUnit": "d",
+    "hoursUnit": "h",
+    "minutesUnit": "min",
+    "unavailable": "Not available"
+  }
+}
