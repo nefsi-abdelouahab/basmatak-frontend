@@ -1,0 +1,67 @@
+{
+  "shared": {
+    "loading": "جارٍ التحميل…",
+    "loadError": "تعذّر تحميل هذا القسم.",
+    "retry": "إعادة المحاولة",
+    "empty": "لا يوجد شيء بعد."
+  },
+  "header": {
+    "title": "لوحة تحكم المنظمة",
+    "subtitle": "نظرة عامة على صحة منظمتك.",
+    "locationLabel": "الموقع",
+    "foundedLabel": "سنة التأسيس",
+    "statusLabel": "التحقق",
+    "coverEmptyTitle": "لا يوجد غلاف بعد",
+    "coverEmptyBody": "أضف غلافًا من ملف منظمتك."
+  },
+  "stats": {
+    "title": "أرقام أساسية",
+    "opportunitiesActive": "فرص نشطة",
+    "opportunitiesCompleted": "فرص مكتملة",
+    "applicationsPending": "طلبات قيد الانتظار",
+    "applicationsUnderReview": "طلبات قيد المراجعة",
+    "participantsActive": "مشاركون نشطون",
+    "participantsCompleted": "مشاركات مكتملة",
+    "verifiedHours": "ساعات موثقة",
+    "decisionsLast30d": "قرارات (30 يومًا)",
+    "decidedRatio": "معدل القرارات",
+    "medianDecisionHours": "متوسط زمن القرار (ساعة)"
+  },
+  "gate": {
+    "lockedTitle": "النشر مقفل",
+    "lockedBody": "{count} عناصر بانتظار التحقق. أكمل التحقق لفتح النشر.",
+    "unlockedNote": "النشر متاح."
+  },
+  "submissions": {
+    "title": "مساهمات للمراجعة",
+    "subtitle": "أحدث المساهمات بانتظار مراجعتك.",
+    "count": "{total} مساهمات",
+    "empty": "لا توجد مساهمات بانتظار المراجعة.",
+    "viewAll": "فتح قائمة المساهمات"
+  },
+  "applications": {
+    "title": "أحدث الطلبات",
+    "subtitle": "أحدث الطلبات عبر فرصك.",
+    "count": "{total} طلبات",
+    "empty": "لا توجد طلبات بعد.",
+    "viewAll": "فتح صندوق الطلبات"
+  },
+  "participants": {
+    "title": "لمحة عن المشاركين",
+    "subtitle": "المشاركات النشطة والمكتملة.",
+    "count": "{total} مشاركين",
+    "empty": "لا يوجد مشاركون بعد.",
+    "viewAll": "فتح قائمة المشاركين"
+  },
+  "activity": {
+    "title": "النشاط الأخير",
+    "empty": "لا يوجد نشاط أخير.",
+    "error": "تعذّر تحميل النشاط الأخير."
+  },
+  "notifications": {
+    "title": "التنبيهات",
+    "empty": "لا توجد تنبيهات.",
+    "unread": "غير مقروء",
+    "read": "مقروء"
+  }
+}

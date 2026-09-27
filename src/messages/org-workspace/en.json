@@ -1,0 +1,67 @@
+{
+  "shared": {
+    "loading": "Loading…",
+    "loadError": "Could not load this section.",
+    "retry": "Retry",
+    "empty": "Nothing here yet."
+  },
+  "header": {
+    "title": "Organization dashboard",
+    "subtitle": "Health of your organization at a glance.",
+    "locationLabel": "Location",
+    "foundedLabel": "Founded",
+    "statusLabel": "Verification",
+    "coverEmptyTitle": "No cover yet",
+    "coverEmptyBody": "Add a cover from your organization profile."
+  },
+  "stats": {
+    "title": "Key figures",
+    "opportunitiesActive": "Active opportunities",
+    "opportunitiesCompleted": "Completed opportunities",
+    "applicationsPending": "Pending applications",
+    "applicationsUnderReview": "Applications under review",
+    "participantsActive": "Active participants",
+    "participantsCompleted": "Completed participations",
+    "verifiedHours": "Verified hours",
+    "decisionsLast30d": "Decisions (30 days)",
+    "decidedRatio": "Decision rate",
+    "medianDecisionHours": "Median decision time (h)"
+  },
+  "gate": {
+    "lockedTitle": "Publishing is locked",
+    "lockedBody": "{count} items are waiting for verification. Complete verification to unlock publishing.",
+    "unlockedNote": "Publishing is available."
+  },
+  "submissions": {
+    "title": "Submissions to review",
+    "subtitle": "Latest contributions waiting for your review.",
+    "count": "{total} submissions",
+    "empty": "No submissions waiting for review.",
+    "viewAll": "Open contributions queue"
+  },
+  "applications": {
+    "title": "Recent applications",
+    "subtitle": "Newest applications across your opportunities.",
+    "count": "{total} applications",
+    "empty": "No applications yet.",
+    "viewAll": "Open applications inbox"
+  },
+  "participants": {
+    "title": "Participants snapshot",
+    "subtitle": "Active and completed participations.",
+    "count": "{total} participants",
+    "empty": "No participants yet.",
+    "viewAll": "Open participants roster"
+  },
+  "activity": {
+    "title": "Recent activity",
+    "empty": "No recent activity.",
+    "error": "Could not load recent activity."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications.",
+    "unread": "Unread",
+    "read": "Read"
+  }
+}
