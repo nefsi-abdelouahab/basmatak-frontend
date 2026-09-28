@@ -4,15 +4,17 @@ import type { Metadata } from 'next';
 import { IBM_Plex_Sans_Arabic, Inter } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { Shell } from '@/components/shell/Shell';
 import { isLocale, routing } from '@/i18n/routing';
 import { QueryProvider } from '@/lib/query/provider';
 import '../globals.css';
 
+// Font variables back the Tailwind sans stack. Weight governance per DESIGN.md:
+// 400 body, 500 triggers/labels, 600 headlines. Literal face names ride
+// along in globals.css so the computed stack always names the face.
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const plexArabic = IBM_Plex_Sans_Arabic({
   subsets: ['arabic', 'latin'],
-  weight: ['400', '500', '700'],
+  weight: ['400', '500', '600'],
   variable: '--font-plex-arabic',
 });
 
@@ -47,11 +49,9 @@ export default async function LocaleLayout({
       dir={locale === 'ar' ? 'rtl' : 'ltr'}
       className={`${inter.variable} ${plexArabic.variable}`}
     >
-      <body>
+      <body className="font-sans">
         <NextIntlClientProvider messages={messages}>
-          <QueryProvider>
-            <Shell>{children}</Shell>
-          </QueryProvider>
+          <QueryProvider>{children}</QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>

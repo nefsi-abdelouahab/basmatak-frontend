@@ -32,7 +32,9 @@ export function publicOrgsKeys() {
     oppDetail: (idOrSlug: string) => queryKeys.detail(`${DOMAIN}-opp`, idOrSlug),
     related: (orgSlug: string, excludeId?: string) =>
       queryKeys.list(`${DOMAIN}-related-${orgSlug}`, { excludeId: excludeId ?? 'none' }),
-    talentSamples: queryKeys.list(`${DOMAIN}-talent-samples`),
+    talentSamples: (limit: number) =>
+      queryKeys.list(`${DOMAIN}-talent-samples`, { limit }),
+    talentExperiences: (username: string) => queryKeys.list(`${DOMAIN}-talent-experiences`, { username }),
     skillCategories: queryKeys.list(DOMAIN, { scope: 'skill-categories' }),
     wilayas: queryKeys.list(DOMAIN, { scope: 'wilayas' }),
     media: (mediaId: string) => queryKeys.detail(`${DOMAIN}-media`, mediaId),
@@ -109,12 +111,22 @@ export function useRelatedPublicOppsQuery(orgSlug: string | null, excludeId?: st
   });
 }
 
-export function useTalentSamplesQuery() {
+export function useTalentSamplesQuery(limit = 6) {
   return useQuery({
-    queryKey: publicOrgsKeys().talentSamples,
-    queryFn: () => publicOrgsApi.listTalentSamples(api, 6),
+    queryKey: publicOrgsKeys().talentSamples(limit),
+    queryFn: () => publicOrgsApi.listTalentSamples(api, limit),
     staleTime: 60_000,
     retry: false,
+  });
+}
+
+export function useTalentExperiencesQuery(username: string | null | undefined) {
+  return useQuery({
+    queryKey: publicOrgsKeys().talentExperiences(username ?? 'none'),
+    queryFn: () => publicOrgsApi.listTalentExperiences(api, username ?? '', 1),
+    staleTime: 60_000,
+    retry: false,
+    enabled: Boolean(username),
   });
 }
 

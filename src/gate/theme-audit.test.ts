@@ -60,7 +60,8 @@ describe('F19 gate (1): theme audit', () => {
     expect(tokens.colors.success).toBe('#16A34A');
     expect(tokens.colors.pending).toBe('#F59E0B');
     expect(tokens.colors.error).toBe('#DC2626');
-    expect(tokens.colors.ink).toBe('#0F172A');
+    // DESIGN.md Text Primary (#111827) wins over the previous slate value.
+    expect(tokens.colors.ink).toBe('#111827');
     expect(tokens.colors.inkMuted).toBe('#64748B');
     expect(tokens.radii.sm).toBe('0.375rem');
     expect(tokens.radii.md).toBe('0.5rem');

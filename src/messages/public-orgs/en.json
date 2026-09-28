@@ -13,37 +13,353 @@
     "notFoundBody": "This page does not exist or is no longer published.",
     "backHome": "Back to home"
   },
+  "nav": {
+    "brandSub": "بصمتك تطوع",
+    "home": "Home",
+    "opportunities": "Opportunities",
+    "talents": "Discover Talents",
+    "signIn": "Sign in",
+    "createProfile": "Create profile",
+    "searchLabel": "Search talents",
+    "searchPlaceholder": "Search talents…"
+  },
+  "footer": {
+    "tagline": "A platform for meaningful volunteer opportunities and verified experience in Algeria.",
+    "platformTitle": "Platform",
+    "opportunities": "Opportunities",
+    "talents": "Discover Talents",
+    "orgsTitle": "For Organizations",
+    "registerOrg": "Organization Registration",
+    "accountTitle": "Account",
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "rights": "© {year} Basmatak Tatatoua. All rights reserved.",
+    "note": "Volunteer opportunities and verified experience in Algeria."
+  },
   "landing": {
-    "title": "Find where to contribute",
-    "subtitle": "Browse open opportunities and organizations.",
-    "orgSearchLabel": "Search organizations",
-    "orgSearchPlaceholder": "Name or keyword…",
-    "orgSearchButton": "Search",
-    "orgCount": "{total} organizations",
-    "orgEmptyTitle": "No organizations found",
-    "orgEmptyBody": "Try a different keyword.",
-    "feedTitle": "Open opportunities",
-    "oppSearchLabel": "Search opportunities",
-    "oppSearchPlaceholder": "Keyword…",
-    "categoryLabel": "Category",
-    "wilayaLabel": "Wilaya",
-    "allOption": "All",
-    "filterButton": "Apply filters",
+    "title": "Your skills can make a difference.",
+    "subtitle": "Discover volunteer opportunities, contribute what you do best, and turn your real-world contributions into verified experience.",
     "feedCount": "{total} opportunities",
     "feedEmptyTitle": "No open opportunities right now",
     "feedEmptyBody": "Check back later for new openings.",
     "samplesTitle": "New people",
     "samplesEmpty": "No profiles to show yet.",
-    "sampleTitle": "Example record",
-    "sampleBody": "Verified records show the title, the organization, the date, and the record code.",
     "verified": "Verified",
     "code": "Code {code}",
     "hours": "{hours} hours",
     "ref": "Ref {ref}",
     "verifiedBadge": "Verified",
-    "apply": "Apply",
-    "viewOrg": "View organization",
-    "viewOpp": "View details"
+    "apply": "Apply"
+  },
+  "hero": {
+    "eyebrow": "Volunteer network · 58 wilayas",
+    "ctaPrimary": "Explore opportunities",
+    "ctaSecondary": "Create your profile",
+    "note": "Open to volunteers and non-profit associations across 58 wilayas.",
+    "imageAlt": "Volunteers working together in a historic courtyard",
+    "captionTitle": "Field documentation campaign",
+    "captionMeta": "Timimoun, Adrar",
+    "captionNote": "Volunteers organizing and photographing archival material on site."
+  },
+  "philosophy": {
+    "eyebrow": "Platform Philosophy",
+    "title": "More than volunteering.",
+    "lede": "Your contribution should not disappear when the task is finished.",
+    "c1Title": "Discover opportunities",
+    "c1Body": "Find real volunteer tasks that match your skills, interests, and availability.",
+    "c1Meta": "Across 58 wilayas",
+    "c2Title": "Make your contribution visible",
+    "c2Body": "Document what you actually did with real deliverables and completed milestones.",
+    "c2Meta": "Evidence attached to every task",
+    "c3Title": "Build verified experience",
+    "c3Body": "Organizations confirm your contribution, creating a credible record of your involvement.",
+    "c3Meta": "Confirmed by the receiving organization"
+  },
+  "how": {
+    "eyebrow": "The process",
+    "title": "How it works",
+    "lede": "Five clear steps from discovery to a verified record.",
+    "s1Title": "Discover",
+    "s1Body": "Find an opportunity that fits your skills and location.",
+    "s2Title": "Apply",
+    "s2Body": "Tell the organization what you can deliver and when.",
+    "s3Title": "Contribute",
+    "s3Body": "Do the task and submit evidence of your work.",
+    "s4Title": "Verify",
+    "s4Body": "The organization reviews your work and confirms completion.",
+    "s5Title": "Build experience",
+    "s5Body": "Your verified contribution is saved to your profile.",
+    "stepOf": "Step {n} of 5",
+    "keptTag": "Kept on your profile"
+  },
+  "opps": {
+    "eyebrow": "Open tasks",
+    "title": "Opportunities that need people like you",
+    "lede": "Real tasks published by registered organizations.",
+    "viewAll": "View all opportunities",
+    "deadline": "Deadline: {date}",
+    "seats": "{open} of {total} seats open"
+  },
+  "showcase": {
+    "eyebrow": "Verification",
+    "title": "Turn contribution into experience.",
+    "lede": "Every completed contribution can become a verified experience, confirmed by the organization you helped.",
+    "b1": "Reviewed and confirmed by the receiving organization.",
+    "b2": "Exportable proof for CVs and university applications.",
+    "b3": "Based on submitted work, not self-reported claims.",
+    "roleLabel": "Role",
+    "orgLabel": "Organization",
+    "dateLabel": "Date",
+    "recordTitle": "Verified experience record",
+    "emptyTitle": "No verified records to show yet.",
+    "emptyBody": "Verified records from public profiles will appear here."
+  },
+  "talents": {
+    "eyebrow": "Directory",
+    "title": "Skills worth discovering",
+    "lede": "Organizations can discover volunteers based on real skills and verified experience.",
+    "discover": "Discover talents",
+    "viewRecord": "View record",
+    "browseNote": "Public visitors can browse profiles. Contact requires an organization account.",
+    "expCount": "{count} verified experiences"
+  },
+  "orgCta": {
+    "eyebrow": "For organizations",
+    "title": "Have a mission that needs people?",
+    "lede": "Publish real volunteer tasks, find people with the skills you need, and confirm the work they deliver.",
+    "m1Title": "Publish real tasks",
+    "m1Body": "Describe the work, the skills needed, and the time required.",
+    "m2Title": "Review submitted work",
+    "m2Body": "Check the evidence and confirm when the task is done.",
+    "m3Title": "Confirm contributions",
+    "m3Body": "Contributors receive proof of work they can share.",
+    "registerCta": "Register your organization",
+    "exploreCta": "Explore opportunities",
+    "imageAlt": "Volunteers walking together during a community activity"
+  },
+  "trust": {
+    "eyebrow": "How quality is protected",
+    "title": "Built around real contributions.",
+    "lede": "No vanity metrics. Only completed, confirmed work counts.",
+    "t1Title": "Registered publishers",
+    "t1Body": "Opportunities are published by registered organizations.",
+    "t2Title": "Concrete deliverables",
+    "t2Body": "Every listing describes the work and what must be delivered.",
+    "t3Title": "Reviewed submissions",
+    "t3Body": "Contributions need work evidence or on-site confirmation.",
+    "t4Title": "Formal confirmation",
+    "t4Body": "The organization confirms the completed work.",
+    "t5Title": "Profile record",
+    "t5Body": "Confirmed tasks build the volunteer's verifiable history."
+  },
+  "cta": {
+    "title": "Ready to put your skills to work?",
+    "lede": "Find an opportunity, make a contribution, and build experience you can prove.",
+    "exploreCta": "Explore opportunities",
+    "accountCta": "Create an account"
+  },
+  "legal": {
+    "terms": {
+      "label": "Terms of Service",
+      "title": "Terms of Service",
+      "updated": "Last updated: September 2026",
+      "intro": "Welcome to Basmatak Tatatoua. By using the platform, you agree to comply with these Terms of Service.",
+      "sections": [
+        {
+          "h": "1. About the Platform",
+          "ps": [
+            "Basmatak Tatatoua is a digital platform designed to facilitate access to volunteering opportunities, document volunteer contributions, and showcase completed and verified experiences."
+          ]
+        },
+        {
+          "h": "2. User Accounts",
+          "bullets": [
+            "You must provide accurate information when creating an account.",
+            "You are responsible for keeping your login credentials secure.",
+            "You may not use another person's account or create accounts using false identities.",
+            "You must use the platform for lawful and legitimate purposes."
+          ]
+        },
+        {
+          "h": "3. Volunteering Opportunities",
+          "ps": [
+            "Registered organizations are responsible for the accuracy of the information they publish about volunteering opportunities. The platform reserves the right to review or remove any opportunity that violates these Terms or applicable laws."
+          ]
+        },
+        {
+          "h": "4. Contributions and Volunteer Experiences",
+          "ps": [
+            "Volunteers may provide a description of what they accomplished and attach supporting media when available. An experience is considered a Verified Experience only after confirmation by the relevant organization or beneficiary.",
+            "Submitting false information, images, or documents, or claiming another person's work as your own, is prohibited."
+          ]
+        },
+        {
+          "h": "5. Content",
+          "ps": [
+            "You are responsible for the content you publish on the platform. Content must not include:"
+          ],
+          "bullets": [
+            "Illegal or abusive content.",
+            "Personal information belonging to others without permission.",
+            "Impersonating or misleading content.",
+            "Material that infringes intellectual property rights."
+          ]
+        },
+        {
+          "h": "6. Public Content",
+          "ps": [
+            "Some information and contributions may appear on users' public profiles according to the platform's settings. Do not publish personal information that you do not want to make publicly available."
+          ]
+        },
+        {
+          "h": "7. Account Suspension",
+          "ps": [
+            "The platform may suspend or terminate accounts that violate these Terms or applicable laws."
+          ]
+        },
+        {
+          "h": "8. Service Availability",
+          "ps": [
+            "We aim to keep the platform available and reliable, but interruptions, maintenance, or service changes may occur."
+          ]
+        },
+        {
+          "h": "9. Changes to These Terms",
+          "ps": [
+            "These Terms may be updated when necessary. The updated version will be published with its update date."
+          ]
+        },
+        {
+          "h": "10. Contact",
+          "ps": [
+            "For questions regarding these Terms of Service, you can contact the Basmatak Tatatoua team through the platform's official contact channels."
+          ]
+        }
+      ]
+    },
+    "privacy": {
+      "label": "Privacy Policy",
+      "title": "Privacy Policy",
+      "updated": "Last updated: September 2026",
+      "intro": "At Basmatak Tatatoua, we respect your privacy and strive to protect the information you provide when using the platform.",
+      "sections": [
+        {
+          "h": "1. Information We Collect",
+          "ps": [
+            "We may collect information you provide when using the platform, such as:"
+          ],
+          "bullets": [
+            "Your name and account information.",
+            "Profile picture and public profile information.",
+            "Contact information you choose to provide.",
+            "Volunteering opportunities, applications, and contributions you create.",
+            "Photos, videos, or files attached to your contributions.",
+            "Technical information required to operate and improve the platform."
+          ]
+        },
+        {
+          "h": "2. How We Use Your Information",
+          "ps": ["We use information to:"],
+          "bullets": [
+            "Create and manage your account.",
+            "Allow you to apply for volunteering opportunities.",
+            "Manage opportunities and volunteer contributions.",
+            "Verify experiences after confirmation by the relevant organization or beneficiary.",
+            "Display information that you choose to make public.",
+            "Protect the platform and prevent misuse.",
+            "Improve the platform and its services."
+          ]
+        },
+        {
+          "h": "3. Public Information",
+          "ps": [
+            "Some information may be publicly available, particularly information displayed on public talent profiles and verified volunteer experiences.",
+            "Do not make sensitive or personal information public unless you are comfortable sharing it."
+          ]
+        },
+        {
+          "h": "4. Sharing Information",
+          "ps": [
+            "We do not sell users' personal information.",
+            "Information may be shared when necessary to operate the service, when required by law, or when necessary to protect the rights and security of the platform and its users."
+          ]
+        },
+        {
+          "h": "5. Content and Media",
+          "ps": [
+            "When you upload photos, videos, or files, you are responsible for having the necessary rights to use and share them on the platform."
+          ]
+        },
+        {
+          "h": "6. Data Protection",
+          "ps": [
+            "We implement appropriate technical and organizational measures to help protect user data. However, no method of electronic transmission or storage can be guaranteed to be completely secure."
+          ]
+        },
+        {
+          "h": "7. Data Retention",
+          "ps": [
+            "We retain information for as long as necessary to provide the service or meet legal obligations."
+          ]
+        },
+        {
+          "h": "8. User Rights",
+          "ps": [
+            "You may request access to, correction of, or deletion of your personal information or account, subject to the capabilities of the platform and applicable laws."
+          ]
+        },
+        {
+          "h": "9. Privacy Policy Updates",
+          "ps": [
+            "This Privacy Policy may be updated from time to time. Any new version will be published with its update date."
+          ]
+        },
+        {
+          "h": "10. Contact",
+          "ps": [
+            "If you have questions about your privacy or how your information is processed, you can contact the Basmatak Tatatoua team through the official contact channels."
+          ]
+        }
+      ]
+    },
+    "about": {
+      "label": "About",
+      "title": "About Basmatak Tatatoua",
+      "sections": [
+        {
+          "h": "What is Basmatak Tatatoua?",
+          "ps": [
+            "Basmatak Tatatoua is a digital platform designed to connect volunteers with volunteering opportunities and help associations and organizations find suitable people to participate in their initiatives.",
+            "The platform focuses on documenting what volunteers actually accomplish and turning confirmed contributions into verified volunteer experiences that can help volunteers build their personal and professional journey."
+          ]
+        },
+        {
+          "h": "How does it work?",
+          "bullets": [
+            "For Volunteers: discover volunteering opportunities that match your skills, apply for them, participate, and document your contribution.",
+            "For Associations and Organizations: create volunteering opportunities, receive volunteer applications, and verify completed contributions.",
+            "For the Community: discover documented talents and volunteer work, and learn about people who contribute to their communities."
+          ]
+        },
+        {
+          "h": "Our Vision",
+          "ps": [
+            "We believe that everyone has skills that can create an impact, and that volunteering can be a real experience for building skills and demonstrating capabilities."
+          ]
+        }
+      ],
+      "tagline": "Basmatak Tatatoua — Every contribution leaves a mark.",
+      "owner": {
+        "title": "Platform Owner",
+        "name": "Roeya Association for Media and Audiovisual Production – Timimoun",
+        "addressLabel": "Address",
+        "address": "Commune of Timimoun – Timimoun District – Timimoun Province, Algeria",
+        "phoneLabel": "Phone",
+        "phone": "+213 663 847 105",
+        "emailLabel": "Email",
+        "email": "roeyatimimoun@gmail.com"
+      }
+    }
   },
   "orgProfile": {
     "overview": "Overview",

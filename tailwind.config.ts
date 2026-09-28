@@ -9,6 +9,7 @@ const config: Config = {
         primary: {
           DEFAULT: tokens.colors.primary,
           hover: tokens.colors.primaryHover,
+          tint: tokens.colors.tint,
         },
         surface: {
           DEFAULT: tokens.colors.surface,
@@ -35,6 +36,12 @@ const config: Config = {
         sm: tokens.radii.sm,
         md: tokens.radii.md,
         lg: tokens.radii.lg,
+      },
+      fontSize: tokens.fontSize,
+      boxShadow: {
+        sm: tokens.shadows.sm,
+        raised: tokens.shadows.raised,
+        modal: tokens.shadows.modal,
       },
     },
   },

@@ -189,9 +189,19 @@ export const PublicOppCardSchema = z
     mode: z.string().nullable().optional(),
     startAt: z.string().nullable().optional(),
     endDate: z.string().nullable().optional(),
+    applicationDeadline: z.string().nullable().optional(),
     durationMinutes: z.number().nullable().optional(),
     coverMediaId: z.string().nullable().optional(),
     categoryName: CategoryNameSchema.nullable().optional(),
+    locationLabels: z
+      .object({
+        wilaya: LocationLabelSchema.nullable().optional(),
+        municipality: LocationLabelSchema.nullable().optional(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+    positions: z.array(PublicPositionSchema).nullable().optional(),
     organization: OrganizationEmbedSchema.nullable().optional(),
     isFavorited: z.boolean().nullable().optional(),
     favoriteCount: z.number().nullable().optional(),
@@ -199,6 +209,48 @@ export const PublicOppCardSchema = z
   .passthrough();
 
 export type PublicOppCard = z.infer<typeof PublicOppCardSchema>;
+
+// Open seats across positions. Missing counts read as 0; no positions data
+// means null (the caller omits the indicator instead of inventing seats).
+export function openSeatsOf(card: PublicOppCard): { open: number; total: number } | null {
+  if (!Array.isArray(card.positions) || card.positions.length === 0) return null;
+  let open = 0;
+  let total = 0;
+  for (const position of card.positions) {
+    const required =
+      typeof position.requiredCount === 'number' && Number.isFinite(position.requiredCount)
+        ? position.requiredCount
+        : 0;
+    const filled =
+      typeof position.filledCount === 'number' && Number.isFinite(position.filledCount)
+        ? position.filledCount
+        : 0;
+    total += required;
+    open += Math.max(0, required - filled);
+  }
+  return { open, total };
+}
+
+// Union of position skill labels across the card (locale-aware, deduped).
+export function oppSkillLabels(card: PublicOppCard, locale: string): string[] {
+  const labels: string[] = [];
+  for (const position of card.positions ?? []) {
+    for (const skill of position.skillNames ?? []) {
+      const label = labelFor(skill, locale);
+      if (label !== '' && !labels.includes(label)) labels.push(label);
+    }
+  }
+  return labels;
+}
+
+// Display location from embedded labels ("Wilaya · Municipality"), or null
+// when the backend sent no labels (the caller omits the element).
+export function oppLocationOf(card: PublicOppCard, locale: string): string | null {
+  const parts = [labelFor(card.locationLabels?.wilaya, locale), labelFor(card.locationLabels?.municipality, locale)].filter(
+    (part) => part !== '',
+  );
+  return parts.length > 0 ? parts.join(' · ') : null;
+}
 
 export const PublicOppDetailSchema = z
   .object({
@@ -255,11 +307,24 @@ export const OrgReliabilitySchema = z
 
 export type OrgReliability = z.infer<typeof OrgReliabilitySchema>;
 
+export const TalentStatsSchema = z
+  .object({
+    completedTasks: z.number().nullable().optional(),
+    verifiedExperiences: z.number().nullable().optional(),
+    volunteerHours: z.number().nullable().optional(),
+  })
+  .passthrough()
+  .nullable()
+  .optional();
+
+export type TalentStats = z.infer<typeof TalentStatsSchema>;
+
 export const TalentSampleSchema = z
   .object({
     username: z.string(),
     firstName: z.string().nullable().optional(),
     bio: z.string().nullable().optional(),
+    headline: z.string().nullable().optional(),
     avatar: z.string().nullable().optional(),
     location: z.unknown().nullable().optional(),
     skills: z.array(z.unknown()).nullable().optional(),
@@ -270,6 +335,57 @@ export const TalentSampleSchema = z
   .passthrough();
 
 export type TalentSample = z.infer<typeof TalentSampleSchema>;
+
+// Verified-experience count for a talent card. Missing/non-numeric reads as 0
+// (the card always shows the count line, never a placeholder).
+export function verifiedExperiencesOf(sample: TalentSample): number {
+  const parsed = TalentStatsSchema.nullable()
+    .optional()
+    .safeParse(sample.stats);
+  const count = parsed.success ? parsed.data?.verifiedExperiences : undefined;
+  return typeof count === 'number' && Number.isFinite(count) ? count : 0;
+}
+
+// Wilaya code from the thin card projection ({ wilayaId } or a plain code).
+export function talentWilayaCodeOf(sample: TalentSample): string | null {
+  const location = sample.location;
+  if (typeof location === 'string') return location !== '' ? location : null;
+  if (location !== null && typeof location === 'object') {
+    const code = (location as { wilayaId?: unknown }).wilayaId;
+    return typeof code === 'string' && code !== '' ? code : null;
+  }
+  return null;
+}
+
+// Latest public experience records for the verification showcase
+// (GET /volunteers/:username/experiences, public rows only).
+export const PublicExperienceSummarySchema = z
+  .object({
+    id: z.string().optional(),
+    _id: z.string().optional(),
+    registryId: z.string().nullable().optional(),
+    title: z.string(),
+    description: z.string().nullable().optional(),
+    duration: z.number().nullable().optional(),
+    skills: z.array(z.string()).nullable().optional(),
+    organization: OrganizationEmbedSchema.nullable().optional(),
+    verifiedAt: z.string().nullable().optional(),
+    verificationCode: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+export type PublicExperienceSummary = z.infer<typeof PublicExperienceSummarySchema>;
+
+export async function listTalentExperiences(
+  client: HttpClient,
+  username: string,
+  limit = 1,
+): Promise<z.infer<ReturnType<typeof CursorPageSchema>>> {
+  const { data } = await client.get(`/volunteers/${encodeURIComponent(username)}/experiences`, {
+    params: { limit },
+  });
+  return CursorPageSchema(PublicExperienceSummarySchema).parse(data);
+}
 
 export const SkillCategorySchema = z
   .object({
