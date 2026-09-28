@@ -1,16 +1,28 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { usePathname, useRouter } from '@/i18n/navigation';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Empty } from '@/components/ui/Empty';
-import { Input } from '@/components/ui/Input';
-import { Loader } from '@/components/ui/Loader';
-import { Pagination } from '@/components/ui/Pagination';
-import { Select } from '@/components/ui/Select';
 import {
+  ArrowUpDown,
+  BadgeCheck,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsUpDown,
+  Landmark,
+  Layers,
+  MapPin,
+  RotateCcw,
+  Search,
+  SearchX,
+  Users,
+  Wrench,
+} from 'lucide-react';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { Button } from '@/components/ui/Button';
+import { Empty } from '@/components/ui/Empty';
+import { Loader } from '@/components/ui/Loader';
+import {
+  usePublicTalentCategoriesQuery,
   usePublicTalentSkillsQuery,
   usePublicTalentWilayasQuery,
   usePublicTalentsQuery,
@@ -21,28 +33,22 @@ import {
 } from '@/lib/api/publicTalent';
 import { PublicTalentCard } from './PublicTalentCard';
 
-// F17 public talent directory over `GET /talents`. Guests may browse; saving a
-// card redirects a guest to Login with `next` carrying the current directory URL
-// (query string included), and no mutation is sent.
-//
-// The `sort` select only ever offers the server whitelist, but the URL is
-// user-controllable, so an unknown `sort` is refused in `buildTalentsQuery`
-// before any request: the query stays disabled and the neutral message renders.
+// Public Discover Talents directory over `GET /talents` (single-value filters:
+// q, skillId, categoryId, wilayaId, server-whitelisted sort). Selects apply
+// immediately; the search box debounces. An out-of-whitelist `sort` is refused
+// in `buildTalentsQuery` before any request: the query stays disabled and the
+// neutral message renders. Cursor pagination drives a numbered control over
+// visited pages (cursor pages cannot be addressed arbitrarily).
+
+const PAGE_LIMIT = 6;
+const SEARCH_DEBOUNCE_MS = 400;
 
 export interface PublicTalentSearch {
   q: string;
-  skillIds: string[];
-  wilayaIds: string[];
-  minExperiences: string;
-  hasAvailability: boolean;
-  portfolio: boolean;
+  skillId: string;
+  categoryId: string;
+  wilayaId: string;
   sort: string;
-}
-
-function asArray(value: string | string[] | undefined): string[] {
-  if (Array.isArray(value)) return value.flatMap((v) => v.split(',')).map((v) => v.trim()).filter(Boolean);
-  if (typeof value === 'string' && value !== '') return value.split(',').map((v) => v.trim()).filter(Boolean);
-  return [];
 }
 
 function asSingle(value: string | string[] | undefined): string {
@@ -55,12 +61,10 @@ export function parseTalentSearch(
 ): PublicTalentSearch {
   return {
     q: asSingle(search.q),
-    skillIds: asArray(search.skillIds ?? search.skillId),
-    wilayaIds: asArray(search.wilayaIds ?? search.wilayaId),
-    minExperiences: asSingle(search.minExperiences),
-    hasAvailability: asSingle(search.hasAvailability) === 'true',
-    portfolio: asSingle(search.portfolio) === 'true',
-    sort: asSingle(search.sort),
+    skillId: asSingle(search.skillId),
+    categoryId: asSingle(search.categoryId),
+    wilayaId: asSingle(search.wilayaId),
+    sort: asSingle(search.sort) || 'newest',
   };
 }
 
@@ -70,47 +74,76 @@ export function toTalentSearchString(filters: PublicTalentSearch): string {
     if (value !== '') params.set(key, value);
   };
   set('q', filters.q.trim());
-  set('skillIds', filters.skillIds.join(','));
-  set('wilayaIds', filters.wilayaIds.join(','));
-  set('minExperiences', filters.minExperiences);
-  if (filters.hasAvailability) params.set('hasAvailability', 'true');
-  if (filters.portfolio) params.set('portfolio', 'true');
+  set('skillId', filters.skillId);
+  set('categoryId', filters.categoryId);
+  set('wilayaId', filters.wilayaId);
   set('sort', filters.sort);
   const text = params.toString();
   return text === '' ? '' : `?${text}`;
 }
 
-function toTalentFilters(
-  filters: PublicTalentSearch,
-  cursor?: string,
-): PublicTalentFilters {
-  const min = Number.parseInt(filters.minExperiences, 10);
+function toTalentFilters(filters: PublicTalentSearch, cursor?: string): PublicTalentFilters {
   return {
     q: filters.q.trim() || undefined,
-    skillIds: filters.skillIds.length > 0 ? filters.skillIds : undefined,
-    wilayaIds: filters.wilayaIds.length > 0 ? filters.wilayaIds : undefined,
-    minExperiences: Number.isFinite(min) && min > 0 ? min : undefined,
-    hasAvailability: filters.hasAvailability ? true : undefined,
-    portfolio: filters.portfolio ? true : undefined,
+    skillId: filters.skillId || undefined,
+    categoryId: filters.categoryId || undefined,
+    wilayaId: filters.wilayaId || undefined,
     sort: filters.sort === '' ? undefined : filters.sort,
     cursor,
-    limit: 20,
+    limit: PAGE_LIMIT,
   };
-}
-
-function multiValues(event: React.ChangeEvent<HTMLSelectElement>): string[] {
-  return Array.from(event.target.selectedOptions, (o) => o.value).filter((v) => v !== '');
 }
 
 const EMPTY_SEARCH: PublicTalentSearch = {
   q: '',
-  skillIds: [],
-  wilayaIds: [],
-  minExperiences: '',
-  hasAvailability: false,
-  portfolio: false,
-  sort: '',
+  skillId: '',
+  categoryId: '',
+  wilayaId: '',
+  sort: 'newest',
 };
+
+function FilterSelect({
+  id,
+  label,
+  icon,
+  value,
+  onChange,
+  children,
+}: {
+  id: string;
+  label: string;
+  icon: ReactNode;
+  value: string;
+  onChange: (value: string) => void;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label
+        htmlFor={id}
+        className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-ink-muted"
+      >
+        {icon}
+        {label}
+      </label>
+      <div className="relative">
+        <select
+          id={id}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-9 w-full cursor-pointer appearance-none rounded-md border border-border bg-surface pe-8 ps-3 text-sm text-ink focus:border-primary focus:outline-none"
+        >
+          {children}
+        </select>
+        <ChevronsUpDown
+          aria-hidden="true"
+          size={18}
+          className="pointer-events-none absolute end-2 top-1/2 -translate-y-1/2 text-ink-muted"
+        />
+      </div>
+    </div>
+  );
+}
 
 export function PublicTalentsPage({
   locale,
@@ -120,6 +153,7 @@ export function PublicTalentsPage({
   initialSearch: Record<string, string | string[] | undefined>;
 }) {
   const t = useTranslations('publicTalent');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const pathname = usePathname();
 
@@ -128,46 +162,6 @@ export function PublicTalentsPage({
   const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
   const [pageIdx, setPageIdx] = useState(0);
 
-  const filters = useMemo(() => toTalentFilters(applied, cursors[pageIdx]), [applied, cursors, pageIdx]);
-  // Guest save returns the visitor to the exact filtered view they came from, so
-  // the redirect target carries the active query string. Locale-less: the
-  // locale-aware router adds the prefix, and the post-login `router.push(next)`
-  // would double-prefix a pre-prefixed value.
-  const next = `/talents${toTalentSearchString(applied)}`;
-  const talentsQuery = usePublicTalentsQuery(filters);
-  const skillsQuery = usePublicTalentSkillsQuery();
-  const wilayasQuery = usePublicTalentWilayasQuery();
-  // An out-of-whitelist sort is refused before a request is sent.
-  const sortRejected = !buildTalentsQuery(filters).ok;
-
-  const skillNames = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const skill of skillsQuery.data ?? []) {
-      const id = skill.skillId ?? skill.id ?? skill._id;
-      if (!id) continue;
-      map.set(
-        id,
-        locale === 'ar' ? skill.nameAr ?? skill.nameFr ?? id : skill.nameFr ?? skill.nameAr ?? id,
-      );
-    }
-    return map;
-  }, [skillsQuery.data, locale]);
-
-  const wilayaNames = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const wilaya of wilayasQuery.data ?? []) {
-      const code = wilaya.code ?? wilaya.id ?? wilaya._id;
-      if (!code) continue;
-      map.set(
-        code,
-        locale === 'ar'
-          ? wilaya.nameAr ?? wilaya.nameFr ?? code
-          : wilaya.nameFr ?? wilaya.nameAr ?? code,
-      );
-    }
-    return map;
-  }, [wilayasQuery.data, locale]);
-
   const apply = (search: PublicTalentSearch) => {
     setApplied(search);
     setCursors([undefined]);
@@ -175,136 +169,237 @@ export function PublicTalentsPage({
     router.replace(`${pathname}${toTalentSearchString(search)}`);
   };
 
-  const facets = talentsQuery.data?.facets;
+  useEffect(() => {
+    if (draft.q === applied.q) return;
+    const timer = setTimeout(() => apply(draft), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft, applied]);
+
+  const update = (patch: Partial<PublicTalentSearch>) => {
+    const next = { ...draft, ...patch };
+    setDraft(next);
+    if (patch.q === undefined) apply(next);
+  };
+
+  const reset = () => {
+    setDraft(EMPTY_SEARCH);
+    apply(EMPTY_SEARCH);
+  };
+
+  const filters = useMemo(() => toTalentFilters(applied, cursors[pageIdx]), [applied, cursors, pageIdx]);
+  const talentsQuery = usePublicTalentsQuery(filters);
+  const skillsQuery = usePublicTalentSkillsQuery();
+  const wilayasQuery = usePublicTalentWilayasQuery();
+  const categoriesQuery = usePublicTalentCategoriesQuery();
+  // An out-of-whitelist sort is refused before a request is sent.
+  const sortRejected = !buildTalentsQuery(filters).ok;
+
+  const skillOptions = useMemo(() => {
+    const out: { id: string; label: string }[] = [];
+    for (const skill of skillsQuery.data ?? []) {
+      const id = skill.skillId ?? skill.id ?? skill._id;
+      if (!id) continue;
+      out.push({
+        id,
+        label:
+          locale === 'ar'
+            ? (skill.nameAr ?? skill.nameFr ?? skill.name ?? id)
+            : (skill.nameFr ?? skill.nameAr ?? skill.name ?? id),
+      });
+    }
+    return out;
+  }, [skillsQuery.data, locale]);
+
+  const wilayaOptions = useMemo(() => {
+    const out: { code: string; label: string }[] = [];
+    for (const wilaya of wilayasQuery.data ?? []) {
+      const code = wilaya.code ?? wilaya.id ?? wilaya._id;
+      if (!code) continue;
+      const name =
+        locale === 'ar'
+          ? (wilaya.nameAr ?? wilaya.nameFr ?? code)
+          : (wilaya.nameFr ?? wilaya.nameAr ?? code);
+      out.push({ code, label: `${name} (${code})` });
+    }
+    return out;
+  }, [wilayasQuery.data, locale]);
+
+  const categoryOptions = useMemo(() => {
+    const out: { id: string; label: string }[] = [];
+    for (const category of categoriesQuery.data ?? []) {
+      const id = category.id ?? category._id;
+      if (!id) continue;
+      out.push({
+        id,
+        label:
+          locale === 'ar'
+            ? (category.nameAr ?? category.nameFr ?? category.name ?? id)
+            : (category.nameFr ?? category.nameAr ?? category.name ?? id),
+      });
+    }
+    return out;
+  }, [categoriesQuery.data, locale]);
+
+  const wilayaNameOf = (wilayaId: string | undefined): string | null => {
+    if (!wilayaId) return null;
+    return wilayaOptions.find((w) => w.code === wilayaId)?.label ?? wilayaId;
+  };
+
+  const items = talentsQuery.data?.items ?? [];
+  const total = talentsQuery.data?.total ?? 0;
+  const pages = talentsQuery.data?.pages ?? pageIdx + 1;
+  const visitedPages = cursors.length;
+  const pageCount = Math.max(pages, visitedPages);
+  const from = total === 0 ? 0 : pageIdx * PAGE_LIMIT + 1;
+  const to = pageIdx * PAGE_LIMIT + items.length;
+  const wilayaCount =
+    (talentsQuery.data?.facets?.wilayas.length ?? 0) > 0
+      ? (talentsQuery.data?.facets?.wilayas.length ?? 0)
+      : new Set(items.map((item) => item.location?.wilayaId).filter(Boolean)).size;
+
+  const goToPage = (target: number) => {
+    const current = pageIdx + 1;
+    if (target === current) return;
+    if (target < current) {
+      setCursors((c) => c.slice(0, target));
+      setPageIdx(target - 1);
+    } else if (target === current + 1 && talentsQuery.data?.nextCursor) {
+      setCursors((c) => [...c, talentsQuery.data?.nextCursor ?? undefined]);
+      setPageIdx((i) => i + 1);
+    }
+  };
 
   return (
     <div data-testid="public-talents" className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4">
-      <div>
-        <h1 className="text-2xl font-bold text-ink">{t('directory.title')}</h1>
-        <p className="text-sm text-ink-muted">{t('directory.subtitle')}</p>
-      </div>
+      <header className="flex flex-col gap-3 pb-2">
+        <nav aria-label={t('discover.breadcrumb')} className="flex items-center gap-2 text-sm text-ink-muted">
+          <Link href="/" className="transition-colors hover:text-ink">
+            {tCommon('nav.home')}
+          </Link>
+          <span aria-hidden="true" className="text-border">
+            /
+          </span>
+          <span aria-current="page" className="font-medium text-ink">
+            {t('discover.title')}
+          </span>
+        </nav>
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h1 className="text-2xl font-bold tracking-tight text-ink">{t('discover.title')}</h1>
+          <span dir="rtl" className="text-base font-normal text-ink-muted">
+            {t('discover.subtitle')}
+          </span>
+        </div>
+        <p className="max-w-4xl text-sm leading-relaxed text-ink-muted">{t('discover.intro')}</p>
+        <p data-testid="public-talents-count" role="status" className="flex items-center gap-2 pt-1 text-sm text-ink-muted">
+          <Users aria-hidden="true" size={16} className="shrink-0" />
+          {t.rich('discover.statLine', {
+            sem: (chunks) => <span className="font-semibold text-ink">{chunks}</span>,
+            count: total,
+            wilayas: wilayaCount,
+          })}
+        </p>
+      </header>
 
-      <Card title={t('directory.applyFilters')}>
-        <form
-          data-testid="public-talents-filters"
-          className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            apply(draft);
-          }}
-        >
-          <Input
+      <section
+        aria-label={t('discover.title')}
+        className="flex flex-col gap-3.5 rounded-xl border border-border bg-surface p-4 shadow-sm"
+      >
+        <div className="relative w-full">
+          <Search
+            aria-hidden="true"
+            size={20}
+            className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-ink-muted"
+          />
+          <input
             id="public-talent-q"
-            label={t('directory.searchLabel')}
-            placeholder={t('directory.searchPlaceholder')}
+            type="text"
+            aria-label={t('discover.searchLabel')}
+            placeholder={t('discover.searchPlaceholder')}
             value={draft.q}
-            onChange={(e) => setDraft((d) => ({ ...d, q: e.target.value }))}
+            onChange={(event) => setDraft((d) => ({ ...d, q: event.target.value }))}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                apply(draft);
+              }
+            }}
+            className="h-11 w-full rounded-lg border border-border bg-surface pe-4 ps-11 text-sm text-ink transition-colors placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
-          <div>
-            <label htmlFor="public-talent-skill" className="mb-1 block text-sm font-medium text-ink">
-              {t('directory.skillLabel')}
-            </label>
-            <select
-              id="public-talent-skill"
-              multiple
-              size={4}
-              className="w-full rounded-md border border-border bg-surface px-3 py-2 text-ink"
-              value={draft.skillIds}
-              onChange={(e) => setDraft((d) => ({ ...d, skillIds: multiValues(e) }))}
-            >
-              {Array.from(skillNames.entries()).map(([id, label]) => {
-                const count = facets?.skills.find((f) => f.skillId === id)?.count;
-                return (
-                  <option key={id} value={id}>
-                    {typeof count === 'number' ? `${label} (${count})` : label}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="public-talent-wilaya" className="mb-1 block text-sm font-medium text-ink">
-              {t('directory.wilayaLabel')}
-            </label>
-            <select
-              id="public-talent-wilaya"
-              multiple
-              size={4}
-              className="w-full rounded-md border border-border bg-surface px-3 py-2 text-ink"
-              value={draft.wilayaIds}
-              onChange={(e) => setDraft((d) => ({ ...d, wilayaIds: multiValues(e) }))}
-            >
-              {Array.from(wilayaNames.entries()).map(([code, label]) => {
-                const count = facets?.wilayas.find((f) => f.wilayaId === code)?.count;
-                return (
-                  <option key={code} value={code}>
-                    {typeof count === 'number' ? `${label} (${count})` : label}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          <Input
-            id="public-talent-min-exp"
-            label={t('directory.minExperiencesLabel')}
-            type="number"
-            min={0}
-            value={draft.minExperiences}
-            onChange={(e) => setDraft((d) => ({ ...d, minExperiences: e.target.value }))}
-          />
-          <Select
+        </div>
+        <div className="grid grid-cols-1 items-center gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <FilterSelect
+            id="public-talent-skill"
+            label={t('discover.skillLabel')}
+            icon={<Wrench aria-hidden="true" size={14} />}
+            value={draft.skillId}
+            onChange={(skillId) => update({ skillId })}
+          >
+            <option value="">{t('discover.allSkills')}</option>
+            {skillOptions.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            ))}
+          </FilterSelect>
+          <FilterSelect
+            id="public-talent-wilaya"
+            label={t('discover.wilayaLabel')}
+            icon={<MapPin aria-hidden="true" size={14} />}
+            value={draft.wilayaId}
+            onChange={(wilayaId) => update({ wilayaId })}
+          >
+            <option value="">{t('discover.allWilayas')}</option>
+            {wilayaOptions.map((option) => (
+              <option key={option.code} value={option.code}>
+                {option.label}
+              </option>
+            ))}
+          </FilterSelect>
+          <FilterSelect
+            id="public-talent-domain"
+            label={t('discover.domainLabel')}
+            icon={<Layers aria-hidden="true" size={14} />}
+            value={draft.categoryId}
+            onChange={(categoryId) => update({ categoryId })}
+          >
+            <option value="">{t('discover.allDomains')}</option>
+            {categoryOptions.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            ))}
+          </FilterSelect>
+          <FilterSelect
             id="public-talent-sort"
-            label={t('directory.sortLabel')}
+            label={t('discover.sortLabel')}
+            icon={<ArrowUpDown aria-hidden="true" size={14} />}
             value={draft.sort}
-            onChange={(e) => setDraft((d) => ({ ...d, sort: e.target.value }))}
-            options={[
-              { value: '', label: t('directory.allOption') },
-              { value: 'newest', label: t('directory.sortNewest') },
-              { value: 'oldest', label: t('directory.sortOldest') },
-              { value: 'experiences_desc', label: t('directory.sortExperienced') },
-            ]}
-          />
-          <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 text-sm font-medium text-ink">{t('directory.title')}</legend>
-            <label className="inline-flex items-center gap-1.5 text-sm text-ink">
-              <input
-                type="checkbox"
-                checked={draft.hasAvailability}
-                onChange={(e) => setDraft((d) => ({ ...d, hasAvailability: e.target.checked }))}
-              />
-              {t('directory.hasAvailability')}
-            </label>
-            <label className="inline-flex items-center gap-1.5 text-sm text-ink">
-              <input
-                type="checkbox"
-                checked={draft.portfolio}
-                onChange={(e) => setDraft((d) => ({ ...d, portfolio: e.target.checked }))}
-              />
-              {t('directory.portfolioOnly')}
-            </label>
-          </fieldset>
-          <div className="flex items-end">
-            <Button type="submit" variant="primary" size="md">
-              {t('directory.applyFilters')}
-            </Button>
-          </div>
-        </form>
-      </Card>
+            onChange={(sort) => update({ sort })}
+          >
+            <option value="newest">{t('discover.sortRecent')}</option>
+            <option value="experiences_desc">{t('directory.sortExperienced')}</option>
+            <option value="oldest">{t('directory.sortOldest')}</option>
+          </FilterSelect>
+        </div>
+        <div className="flex items-center justify-end border-t border-border pt-1">
+          <button
+            type="button"
+            onClick={reset}
+            className="inline-flex items-center gap-1 text-sm text-ink-muted transition-colors hover:text-ink"
+          >
+            <RotateCcw aria-hidden="true" size={16} />
+            {t('discover.resetFilters')}
+          </button>
+        </div>
+      </section>
 
       {sortRejected ? (
         <Empty
           title={t('directory.invalidSortTitle')}
           description={t('directory.invalidSortBody')}
           action={
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => {
-                setDraft(EMPTY_SEARCH);
-                apply(EMPTY_SEARCH);
-              }}
-            >
+            <Button type="button" variant="secondary" size="sm" onClick={reset}>
               {t('shared.clearFilters')}
             </Button>
           }
@@ -320,72 +415,111 @@ export function PublicTalentsPage({
             {t('shared.retry')}
           </Button>
         </div>
+      ) : items.length === 0 ? (
+        <div
+          data-testid="public-talents-empty"
+          className="flex flex-col items-center justify-center rounded-xl border border-border bg-surface p-12 text-center"
+        >
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-surface-muted text-ink-muted">
+            <SearchX aria-hidden="true" size={24} />
+          </div>
+          <h3 className="mb-1 text-base font-semibold text-ink">{t('discover.emptyTitle')}</h3>
+          <p className="mb-5 max-w-md text-sm text-ink-muted">{t('discover.emptyBody')}</p>
+          <Button type="button" variant="primary" size="md" onClick={reset}>
+            <RotateCcw aria-hidden="true" size={18} />
+            {t('discover.resetAndShowAll')}
+          </Button>
+        </div>
       ) : (
         <>
-          <p data-testid="public-talents-count" role="status" className="text-sm text-ink-muted">
-            {t('directory.countBanner', { total: talentsQuery.data?.total ?? 0 })}
-          </p>
-          {(talentsQuery.data?.items.length ?? 0) === 0 ? (
-            <Empty
-              title={t('directory.emptyTitle')}
-              description={t('directory.emptyBody')}
-              action={
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    setDraft(EMPTY_SEARCH);
-                    apply(EMPTY_SEARCH);
-                  }}
-                >
-                  {t('shared.clearFilters')}
-                </Button>
-              }
-            />
-          ) : (
-            <>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {(talentsQuery.data?.items ?? []).map((item) => (
-                  <PublicTalentCard
-                    key={item.username}
-                    item={item}
-                    locale={locale}
-                    favorited={Boolean(item.isFavorited)}
-                    favoriteCount={item.favoriteCount ?? 0}
-                    wilayaName={
-                      item.location?.wilayaId
-                        ? wilayaNames.get(item.location.wilayaId) ?? item.location.wilayaId
-                        : null
-                    }
-                    next={next}
-                  />
-                ))}
-              </div>
-              <Pagination
-                page={talentsQuery.data?.page ?? pageIdx + 1}
-                pages={talentsQuery.data?.pages ?? pageIdx + 1}
-                statusText={t('directory.pageStatus', {
-                  page: talentsQuery.data?.page ?? pageIdx + 1,
-                  pages: talentsQuery.data?.pages ?? pageIdx + 1,
-                })}
-                previousLabel={t('directory.previous')}
-                nextLabel={t('directory.next')}
-                onPage={(target) => {
-                  const current = talentsQuery.data?.page ?? pageIdx + 1;
-                  if (target < current && pageIdx > 0) {
-                    setCursors((c) => c.slice(0, -1));
-                    setPageIdx((i) => i - 1);
-                  } else if (target > current && talentsQuery.data?.nextCursor) {
-                    setCursors((c) => [...c, talentsQuery.data?.nextCursor ?? undefined]);
-                    setPageIdx((i) => i + 1);
-                  }
-                }}
+          <div className="flex flex-col divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
+            {items.map((item) => (
+              <PublicTalentCard
+                key={item.username}
+                item={item}
+                locale={locale}
+                wilayaLabel={wilayaNameOf(item.location?.wilayaId)}
               />
-            </>
-          )}
+            ))}
+          </div>
+          <div className="flex flex-col items-center justify-between gap-4 border-t border-border py-2 sm:flex-row">
+            <p className="text-sm text-ink-muted">
+              {t('discover.pageStatus', { from, to, total })}
+            </p>
+            <nav aria-label={t('discover.pagination')} className="flex items-center gap-1.5">
+              <button
+                type="button"
+                disabled={pageIdx === 0}
+                onClick={() => goToPage(pageIdx)}
+                className="inline-flex h-9 items-center gap-1 rounded-md border border-border px-3 text-sm text-ink-muted transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <ChevronLeft aria-hidden="true" size={16} className="rtl:rotate-180" />
+                {t('directory.previous')}
+              </button>
+              {Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => {
+                const visited = page <= visitedPages;
+                const current = page === pageIdx + 1;
+                return (
+                  <button
+                    key={page}
+                    type="button"
+                    disabled={!visited}
+                    onClick={() => goToPage(page)}
+                    aria-current={current ? 'page' : undefined}
+                    className={`flex h-9 w-9 items-center justify-center rounded-md text-sm font-medium transition-colors disabled:cursor-not-allowed ${
+                      current
+                        ? 'bg-primary font-semibold text-white'
+                        : 'border border-border bg-surface text-ink hover:bg-surface-muted disabled:opacity-50'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                disabled={!talentsQuery.data?.nextCursor}
+                onClick={() => goToPage(pageIdx + 2)}
+                className="inline-flex h-9 items-center gap-1 rounded-md border border-border bg-surface px-3 text-sm font-medium text-ink transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {t('directory.next')}
+                <ChevronRight aria-hidden="true" size={16} className="rtl:rotate-180" />
+              </button>
+            </nav>
+          </div>
         </>
       )}
+
+      <aside className="mt-2 w-full rounded-xl border border-border bg-surface p-6 shadow-sm">
+        <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
+          <div className="flex items-start gap-4">
+            <div className="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-muted text-primary">
+              <Landmark aria-hidden="true" size={26} />
+            </div>
+            <div className="flex max-w-2xl flex-col gap-1">
+              <h2 className="text-base font-semibold tracking-tight text-ink">
+                {t('discover.orgCtaTitle')}
+              </h2>
+              <p className="text-sm leading-relaxed text-ink-muted">{t('discover.orgCtaBody')}</p>
+            </div>
+          </div>
+          <div className="flex w-full shrink-0 flex-wrap items-center gap-3 lg:w-auto">
+            <Link
+              href="/register-organization"
+              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover lg:flex-none"
+            >
+              <BadgeCheck aria-hidden="true" size={18} />
+              {t('discover.registerOrganization')}
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex h-10 flex-1 items-center justify-center gap-1 rounded-lg border border-border bg-surface px-4 text-sm font-medium text-ink transition-colors hover:bg-surface-muted lg:flex-none"
+            >
+              {t('discover.signInToAccount')}
+            </Link>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }

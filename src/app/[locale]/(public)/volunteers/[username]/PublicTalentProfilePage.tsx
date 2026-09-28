@@ -59,13 +59,18 @@ function formatDate(iso: string | null | undefined, locale: string): string {
   return new Date(iso).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-function Avatar({ mediaId }: { mediaId: string }) {
+function Avatar({ mediaId }: { mediaId: string | null }) {
   return (
     <div
       data-testid="profile-avatar"
       className="h-20 w-20 shrink-0 overflow-hidden rounded-full border border-border bg-surface-muted"
     >
-      <PublicMediaImage media={{ mediaId }} />
+      {mediaId ? (
+        <PublicMediaImage media={{ mediaId }} fallbackSrc="/user.jpg" />
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element -- local fallback portrait
+        <img src="/user.jpg" alt="" className="h-full w-full object-cover" />
+      )}
     </div>
   );
 }
@@ -372,9 +377,7 @@ export function PublicTalentProfilePage({
 
       <header data-testid="profile-header" className="flex flex-col gap-4">
         <div className="flex flex-wrap items-start gap-4">
-          {sections.avatar.open && sections.avatar.data ? (
-            <Avatar mediaId={sections.avatar.data} />
-          ) : null}
+          {sections.avatar.open ? <Avatar mediaId={sections.avatar.data ?? null} /> : null}
           <div className="flex flex-1 flex-col gap-1">
             <h1 className="text-2xl font-bold text-ink">{displayName}</h1>
             {sections.bio.open && sections.bio.data.headline ? (

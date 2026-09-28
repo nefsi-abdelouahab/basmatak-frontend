@@ -31,6 +31,6 @@ describe('Shell', () => {
     expect(container.querySelector('[data-testid="shell-main"]')).not.toBeNull();
     expect(screen.getByText('page content')).toBeDefined();
     expect(screen.getAllByText('Home').length).toBeGreaterThan(0);
-    expect(screen.getByText('Basmatak')).toBeDefined();
+    expect(screen.getByAltText('Basmatak')).toBeDefined();
   });
 });

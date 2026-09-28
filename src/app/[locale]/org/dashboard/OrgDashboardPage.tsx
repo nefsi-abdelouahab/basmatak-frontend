@@ -74,13 +74,23 @@ function FactHeader() {
             <Loader label={t('shared.loading')} />
           ) : coverUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img data-testid="org-cover" src={coverUrl} alt="" className="h-40 w-full rounded-md object-cover" />
+            <img
+              data-testid="org-cover"
+              src={coverUrl}
+              alt=""
+              onError={(event) => {
+                if (!event.currentTarget.src.endsWith('/org.png')) event.currentTarget.src = '/org.png';
+              }}
+              className="h-40 w-full rounded-md object-cover"
+            />
           ) : (
-            <Empty title={t('header.coverEmptyTitle')} description={t('header.coverEmptyBody')} />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img data-testid="org-cover" src="/org.png" alt="" className="h-40 w-full rounded-md object-cover" />
           )
         ) : (
           <div data-testid="org-cover-empty">
-            <Empty title={t('header.coverEmptyTitle')} description={t('header.coverEmptyBody')} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/org.png" alt="" className="h-40 w-full rounded-md object-cover" />
           </div>
         )}
         <div>

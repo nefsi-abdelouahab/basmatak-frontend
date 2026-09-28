@@ -3,16 +3,23 @@
 import { useState, type FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { Search } from 'lucide-react';
-import { Link, useRouter } from '@/i18n/navigation';
+import { LogIn, Search, UserPlus } from 'lucide-react';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { useSessionQuery } from '@/hooks/useSession';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { NavIconLink } from './NavIconLink';
 
 // Public top navbar: brand, talent search, links to real routes only. Routes
 // without a page (About, How Verification, Privacy, Terms) render no link.
+// Shared verbatim by landing and the public opportunities list through
+// `(public)/layout.tsx`: active-state via usePathname plus guest / volunteer /
+// org / admin auth-state in the same markup and shell.
 export function PublicNavbar() {
   const tCommon = useTranslations('common');
   const t = useTranslations('publicOrgs');
   const router = useRouter();
+  const pathname = usePathname();
+  const session = useSessionQuery();
   const [query, setQuery] = useState('');
 
   function submitSearch(event: FormEvent) {
@@ -20,6 +27,34 @@ export function PublicNavbar() {
     const q = query.trim();
     router.push(q ? `/talents?q=${encodeURIComponent(q)}` : '/talents');
   }
+
+  const role = session.data?.role ?? null;
+  const dashboardHref =
+    role === 'volunteer'
+      ? '/volunteer/dashboard'
+      : role === 'organization'
+        ? '/org/dashboard'
+        : role === 'admin'
+          ? '/admin'
+          : null;
+  const dashboardLabel =
+    role === 'volunteer'
+      ? t('nav.dashboard')
+      : role === 'organization'
+        ? t('nav.workspace')
+        : role === 'admin'
+          ? t('nav.adminArea')
+          : null;
+
+  const homeActive = pathname === '/';
+  const oppsActive =
+    pathname.startsWith('/volunteer/opportunities') || pathname.startsWith('/opportunities');
+  const talentsActive =
+    pathname.startsWith('/talents') || pathname.startsWith('/volunteers');
+  const activeClass = (active: boolean) =>
+    active
+      ? 'text-sm font-medium text-ink'
+      : 'text-sm text-ink-muted transition-colors hover:text-ink';
 
   return (
     <header data-testid="shell-navbar" className="sticky top-0 z-50 border-b border-border bg-surface">
@@ -52,29 +87,53 @@ export function PublicNavbar() {
           </form>
         </div>
         <nav aria-label={t('nav.home')} className="hidden items-center gap-6 lg:flex">
-          <Link href="/" className="text-sm text-ink-muted transition-colors hover:text-ink">
+          <Link
+            href="/"
+            aria-current={homeActive ? 'page' : undefined}
+            className={activeClass(homeActive)}
+          >
             {t('nav.home')}
           </Link>
           <Link
-            href="/volunteer/opportunities"
-            className="text-sm text-ink-muted transition-colors hover:text-ink"
+            href="/opportunities"
+            aria-current={oppsActive ? 'page' : undefined}
+            className={activeClass(oppsActive)}
           >
             {t('nav.opportunities')}
           </Link>
-          <Link href="/talents" className="text-sm text-ink-muted transition-colors hover:text-ink">
+          <Link
+            href="/talents"
+            aria-current={talentsActive ? 'page' : undefined}
+            className={activeClass(talentsActive)}
+          >
             {t('nav.talents')}
           </Link>
         </nav>
         <div className="flex shrink-0 items-center gap-3">
-          <Link href="/login" className="hidden text-sm font-medium text-ink-muted hover:text-ink sm:inline">
-            {t('nav.signIn')}
-          </Link>
-          <Link
-            href="/create-account"
-            className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
-          >
-            {t('nav.createProfile')}
-          </Link>
+          {dashboardHref && dashboardLabel ? (
+            <Link
+              href={dashboardHref}
+              className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+            >
+              {dashboardLabel}
+            </Link>
+          ) : (
+            <>
+              <NavIconLink
+                href="/login"
+                label={t('nav.signIn')}
+                icon={<LogIn size={18} aria-hidden="true" />}
+                className="hidden sm:inline-flex"
+              />
+              <NavIconLink
+                href="/create-account"
+                label={t('nav.createProfile')}
+                icon={<UserPlus size={18} aria-hidden="true" />}
+                tone="primary"
+                className="inline-flex"
+              />
+            </>
+          )}
           <LanguageSwitcher />
         </div>
       </div>

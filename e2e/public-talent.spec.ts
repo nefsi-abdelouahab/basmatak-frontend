@@ -41,6 +41,8 @@ const SKILLS = [
   { id: 's2', skillId: 's2', nameFr: 'Logistics', nameAr: 'لوجستيك' },
 ];
 
+const CATEGORIES = [{ id: 'c1', nameFr: 'Environnement', nameAr: 'البيئة' }];
+
 const WILAYAS = [
   { code: '16', nameFr: 'Alger', nameAr: 'الجزائر' },
   { code: '31', nameFr: 'Oran', nameAr: 'وهران' },
@@ -150,6 +152,7 @@ const TALENTS_PAGE = {
       location: { wilayaId: '16' },
       skills: [SKILLS[0]],
       avatar: 'm-avatar',
+      stats: { completedTasks: 12, verifiedExperiences: 5, volunteerHours: 112 },
       isFavorited: false,
       favoriteCount: 3,
     },
@@ -261,6 +264,7 @@ function profileHandlers(profile: unknown, extra: Record<string, Handler> = {}):
     },
     '/reviews': { status: 200, body: REVIEWS },
     '/skills': { status: 200, body: SKILLS },
+    '/skill-categories': { status: 200, body: CATEGORIES },
     '/locations/wilayas': { status: 200, body: WILAYAS },
     '/talents': { status: 200, body: TALENTS_PAGE },
     [profilePath(profile)]: { status: 200, body: profile },
@@ -393,27 +397,40 @@ for (const width of [1440, 1100, 390]) {
         expect(requestsTo(captured, '/volunteers/karim')).toHaveLength(1);
       });
 
-      test(`directory renders projection, facets and grid (${locale})`, async ({ page }) => {
+      test(`directory renders rows with real data and taxonomy filters (${locale})`, async ({ page }) => {
         const captured: Captured[] = [];
         await mockApi(page, profileHandlers(PROFILE), captured);
         await page.goto(`/${locale}/talents`);
 
         const dir = page.getByTestId('public-talents');
         await expect(dir).toBeVisible();
-        await expect(dir.getByRole('heading', { level: 1 })).toHaveText(catalogs[locale].directory.title);
+        await expect(dir.getByRole('heading', { level: 1 })).toHaveText(catalogs[locale].discover.title);
+        // Stat line carries the real totals.
         await expect(page.getByTestId('public-talents-count')).toContainText('2');
 
         const cards = page.getByTestId('public-talent-card');
         await expect(cards).toHaveCount(2);
         const first = cards.first();
         await expect(first).toContainText('Amina');
-        await expect(first).toContainText('VOL-000042');
+        await expect(first).toContainText('I organize neighborhood cleanups.');
         await expect(first).toContainText(locale === 'ar' ? 'الجزائر' : 'Alger');
         await expect(first).toContainText(locale === 'ar' ? 'إسعاف أولي' : 'First aid');
-        // Thin projection: no headline/counts/availability claims on a card.
-        await expect(first).not.toContainText('Community outreach volunteer');
-        await expect(first).not.toContainText('Beach cleanup');
-        await expect(first).not.toContainText('member');
+        await expect(first).toContainText(
+          catalogs[locale].discover.experiencesCount.replace('{count}', '5'),
+        );
+        await expect(first).toContainText(
+          catalogs[locale].discover.hoursLogged.replace('{hours}', '112'),
+        );
+        // Verified badge only when verifiedExperiences > 0.
+        await expect(first.getByTestId('talent-verified-badge')).toBeVisible();
+        await expect(cards.nth(1).getByTestId('talent-verified-badge')).toHaveCount(0);
+        // Latest experience comes from the profile embed; yasmin (no profile)
+        // omits the sub-block entirely.
+        await expect(first.getByTestId('talent-latest-exp')).toContainText('Beach cleanup');
+        await expect(first.getByTestId('talent-latest-exp')).toContainText(
+          locale === 'ar' ? 'جمعية الأمل' : 'Association El-Amel',
+        );
+        await expect(cards.nth(1).getByTestId('talent-latest-exp')).toHaveCount(0);
 
         // Raw-username profile link, not an `@` handle.
         await expect(first.getByRole('link', { name: 'Amina' })).toHaveAttribute(
@@ -421,57 +438,64 @@ for (const width of [1440, 1100, 390]) {
           `/${locale}/volunteers/amina`,
         );
 
-        // Facet counts are rendered in the filter options.
-        const skillOption = page.locator('#public-talent-skill option').first();
-        await expect(skillOption).toContainText('(7)');
-        const wilayaOption = page.locator('#public-talent-wilaya option').first();
-        await expect(wilayaOption).toContainText('(5)');
+        // Taxonomy filter options come from the real endpoints.
+        await expect(page.locator('#public-talent-skill option').nth(1)).toContainText(
+          locale === 'ar' ? 'إسعاف أولي' : 'First aid',
+        );
+        await expect(page.locator('#public-talent-domain option').nth(1)).toContainText(
+          locale === 'ar' ? 'البيئة' : 'Environnement',
+        );
+        // No forbidden civic-compliance narrative anywhere on the screen.
+        await expect(dir).not.toContainText(
+          /12-06|accredited|audited|statutory|civic integrity|institutional verification|law 12/i,
+        );
       });
     }
   });
 }
 
 test.describe('directory behavior', () => {
-  test('applying filters refetches with the whitelisted query params', async ({ page }) => {
+  test('selecting taxonomy filters refetches with single-value whitelisted params', async ({ page }) => {
     const captured: Captured[] = [];
     await mockApi(page, profileHandlers(PROFILE), captured);
     await page.goto('/en/talents');
     await expect(page.getByTestId('public-talent-card')).toHaveCount(2);
 
-    await page.locator('#public-talent-skill').selectOption(['s1']);
-    await page.locator('#public-talent-wilaya').selectOption(['16']);
-    await page.locator('#public-talent-min-exp').fill('2');
+    await page.locator('#public-talent-skill').selectOption('s1');
+    await page.locator('#public-talent-wilaya').selectOption('16');
+    await page.locator('#public-talent-domain').selectOption('c1');
     await page.locator('#public-talent-sort').selectOption('experiences_desc');
-    await page.getByRole('button', { name: catalogs.en.directory.applyFilters }).first().click();
 
     await expect
       .poll(() => {
         const call = requestsTo(captured, '/talents').at(-1);
         return call?.query ?? '';
       })
-      .toContain('skillIds=s1');
+      .toContain('skillId=s1');
     const query = requestsTo(captured, '/talents').at(-1)?.query ?? '';
-    expect(query).toContain('wilayaIds=16');
-    expect(query).toContain('minExperiences=2');
+    expect(query).toContain('wilayaId=16');
+    expect(query).toContain('categoryId=c1');
     expect(query).toContain('sort=experiences_desc');
     // Shareable URL keeps the applied filters.
     await expect.poll(() => page.url()).toContain('sort=experiences_desc');
   });
 
-  test('portfolio and availability toggles send their boolean params', async ({ page }) => {
+  test('reset clears every filter and restores the unfiltered view', async ({ page }) => {
     const captured: Captured[] = [];
     await mockApi(page, profileHandlers(PROFILE), captured);
     await page.goto('/en/talents');
     await expect(page.getByTestId('public-talent-card')).toHaveCount(2);
 
-    await page.getByRole('checkbox').first().check();
-    await page.getByRole('checkbox').nth(1).check();
-    await page.getByRole('button', { name: catalogs.en.directory.applyFilters }).first().click();
-
+    await page.locator('#public-talent-skill').selectOption('s1');
     await expect
       .poll(() => requestsTo(captured, '/talents').at(-1)?.query ?? '')
-      .toContain('hasAvailability=true');
-    expect(requestsTo(captured, '/talents').at(-1)?.query ?? '').toContain('portfolio=true');
+      .toContain('skillId=s1');
+
+    await page.getByRole('button', { name: catalogs.en.discover.resetFilters }).click();
+    // Same query key as the initial load resolves from cache; the URL proves
+    // the filters were dropped and both volunteers render again.
+    await expect.poll(() => page.url()).not.toContain('skillId');
+    await expect(page.getByTestId('public-talent-card')).toHaveCount(2);
   });
 
   test('an out-of-whitelist sort is refused before any request', async ({ page }) => {
@@ -487,25 +511,25 @@ test.describe('directory behavior', () => {
     await expect.poll(() => requestsTo(captured, '/talents').length).toBe(1);
   });
 
-  test('an empty result shows the neutral empty state', async ({ page }) => {
+  test('an empty result shows the no-results block', async ({ page }) => {
     const captured: Captured[] = [];
     await mockApi(
       page,
       profileHandlers(PROFILE, {
         '/talents': {
           status: 200,
-          body: { items: [], nextCursor: null, limit: 20, total: 0, page: 1, pages: 1, facets: { skills: [], wilayas: [] } },
+          body: { items: [], nextCursor: null, limit: 6, total: 0, page: 1, pages: 1, facets: { skills: [], wilayas: [] } },
         },
       }),
       captured,
     );
     await page.goto('/en/talents');
     await expect(page.getByTestId('public-talent-card')).toHaveCount(0);
-    await expect(page.getByText(catalogs.en.directory.emptyTitle)).toBeVisible();
+    await expect(page.getByText(catalogs.en.discover.emptyTitle)).toBeVisible();
     await expect(page.getByTestId('public-talents')).not.toContainText(FORBIDDEN.en);
   });
 
-  test('cursor paging advances and returns to the first page', async ({ page }) => {
+  test('cursor paging advances with numbered controls and status', async ({ page }) => {
     const captured: Captured[] = [];
     const firstPage = { ...TALENTS_PAGE, nextCursor: 'cursor-2', page: 1, pages: 2, total: 3 };
     const secondPage = {
@@ -529,9 +553,12 @@ test.describe('directory behavior', () => {
     await page.getByRole('button', { name: catalogs.en.directory.next }).click();
     await expect(page.getByTestId('public-talent-card')).toHaveCount(1);
     await expect(page.getByTestId('public-talent-card')).toContainText('Zineb');
+    // Numbered control exposes the visited second page as current.
+    await expect(page.getByRole('button', { name: '2' })).toHaveAttribute('aria-current', 'page');
     await expect.poll(() => requestsTo(captured, '/talents').at(-1)?.query ?? '').toContain('cursor=cursor-2');
     await page.getByRole('button', { name: catalogs.en.directory.previous }).click();
     await expect(page.getByTestId('public-talent-card')).toHaveCount(2);
+    await expect(page.getByRole('button', { name: '1' })).toHaveAttribute('aria-current', 'page');
   });
 });
 
@@ -561,23 +588,6 @@ test.describe('profile behavior', () => {
     await expect(page.getByText('Beach cleanup')).toHaveCount(1);
     // One aligned page request, not one per rendered row.
     expect(requestsTo(captured, '/volunteers/amina/experiences')).toHaveLength(1);
-  });
-
-  test('a guest save redirects to login with the current URL and sends no mutation', async ({
-    page,
-  }) => {
-    const locale: Locale = 'en';
-    const captured: Captured[] = [];
-    await mockApi(page, profileHandlers(PROFILE), captured);
-    await page.goto('/en/talents?sort=newest&portfolio=true');
-    await expect(page.getByTestId('public-talent-card')).toHaveCount(2);
-
-    await page.getByTestId('save-talent-amina').click();
-    // The guest lands on Login, once, at the real localized path, with the
-    // active filters preserved on a locale-less `next` (the post-login
-    // `router.push(next)` would double-prefix a pre-prefixed value).
-    await expectLoginRedirect(page, locale, '/talents?sort=newest&portfolio=true');
-    expect(captured.filter((c) => c.path.includes('/favorites/'))).toHaveLength(0);
   });
 
   test('a guest save on the profile redirects to login and sends no mutation', async ({ page }) => {

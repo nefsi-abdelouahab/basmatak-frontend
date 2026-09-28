@@ -484,6 +484,10 @@ export function FactsheetSection() {
                       data-testid={`${slot}-preview`}
                       src={previewUrl}
                       alt=""
+                      onError={(event) => {
+                        if (!event.currentTarget.src.endsWith('/org.png'))
+                          event.currentTarget.src = '/org.png';
+                      }}
                       className="h-24 w-full rounded-md border border-border object-cover"
                     />
                   ) : null}

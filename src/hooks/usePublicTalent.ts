@@ -42,6 +42,7 @@ export function publicTalentKeys() {
       queryKeys.list(DISCOVERY_DOMAIN, params),
     skills: queryKeys.list(LOOKUP_DOMAIN, { scope: 'skills' }),
     wilayas: queryKeys.list(LOOKUP_DOMAIN, { scope: 'wilayas' }),
+    categories: queryKeys.list(LOOKUP_DOMAIN, { scope: 'categories' }),
   };
 }
 
@@ -141,6 +142,15 @@ export function usePublicTalentWilayasQuery() {
   return useQuery({
     queryKey: publicTalentKeys().wilayas,
     queryFn: () => feedApi.listWilayas(api),
+    staleTime: 300_000,
+    retry: false,
+  });
+}
+
+export function usePublicTalentCategoriesQuery() {
+  return useQuery({
+    queryKey: publicTalentKeys().categories,
+    queryFn: () => volunteersApi.listSkillCategories(api),
     staleTime: 300_000,
     retry: false,
   });

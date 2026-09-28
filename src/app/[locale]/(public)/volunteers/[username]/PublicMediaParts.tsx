@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { usePublicMediaQuery } from '@/hooks/usePublicTalent';
 import { isImageMedia, isLinkMedia, mediaUrlOf, type PublicMedia } from '@/lib/api/publicTalent';
@@ -15,22 +16,29 @@ import { isImageMedia, isLinkMedia, mediaUrlOf, type PublicMedia } from '@/lib/a
 export function PublicMediaImage({
   media,
   className = '',
+  fallbackSrc,
 }: {
   media: PublicMedia;
   className?: string;
+  fallbackSrc?: string;
 }) {
+  const [failed, setFailed] = useState(false);
   const mediaId = media.mediaId ?? media.id ?? media._id ?? '';
   const query = usePublicMediaQuery(mediaId);
-  const resolved = mediaUrlOf(query.data);
+  const resolved = failed ? null : mediaUrlOf(query.data);
   if (query.isPending) return null;
-  if (!resolved) return null;
+  const src = resolved ?? fallbackSrc ?? null;
+  if (!src) return null;
   return (
     // eslint-disable-next-line @next/next/no-img-element -- guest-resolved signed URL on a public page
     <img
       data-testid="public-media-image"
-      src={resolved}
+      src={src}
       alt={media.filename ?? ''}
       loading="lazy"
+      onError={() => {
+        if (fallbackSrc && !failed) setFailed(true);
+      }}
       className={`h-full w-full object-cover ${className}`}
     />
   );

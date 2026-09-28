@@ -176,6 +176,16 @@ async function mockApi(page: Page, captured: Captured[], options?: MockOptions) 
     }
     return route.fulfill({ status: 404, body: '{}' });
   });
+  // Serve a real image file for mocked CDN URLs so <img> elements load instead
+  // of erroring (public-talent.spec.ts uses a similar stub). Required now that
+  // cover imgs fall back to /org.png on load failure.
+  await page.route('**/cdn.example/**', (route: Route) =>
+    route.fulfill({
+      status: 200,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      path: 'public/user.jpg',
+    }),
+  );
 }
 
 for (const width of [1440, 1100, 390]) {

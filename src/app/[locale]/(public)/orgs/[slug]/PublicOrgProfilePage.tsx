@@ -148,8 +148,18 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
         <div data-testid="org-facts" className="flex flex-col gap-3">
           {coverUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={coverUrl} alt="" className="h-40 w-full rounded-md object-cover" />
-          ) : null}
+            <img
+              src={coverUrl}
+              alt=""
+              onError={(event) => {
+                if (!event.currentTarget.src.endsWith('/org.png')) event.currentTarget.src = '/org.png';
+              }}
+              className="h-40 w-full rounded-md object-cover"
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src="/org.png" alt="" className="h-40 w-full rounded-md object-cover" />
+          )}
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold text-ink">{name}</h1>
             {verified ? <Pill tone="success">{t('orgProfile.verified')}</Pill> : null}

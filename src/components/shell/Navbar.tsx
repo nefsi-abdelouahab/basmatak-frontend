@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -11,7 +12,14 @@ export function Navbar() {
     <header data-testid="shell-navbar" className="border-b border-border bg-surface">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
         <Link href="/" className="text-lg font-bold text-primary">
-          {t('appName')}
+          <Image
+            src="/logo.png"
+            alt={t('appName')}
+            width={419}
+            height={596}
+            className="h-14 w-auto object-contain"
+            priority
+          />
         </Link>
         <div className="flex items-center gap-4">
           <Link href="/" className="text-sm text-ink hover:text-primary">
