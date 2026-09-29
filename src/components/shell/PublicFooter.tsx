@@ -21,7 +21,7 @@ export async function PublicFooter({ locale }: { locale: string }) {
               alt={tCommon('appName')}
               width={419}
               height={596}
-              className="h-48 w-auto object-contain"
+              className="h-14 w-auto object-contain sm:h-16"
             />
             <p className="text-sm leading-relaxed text-ink-muted">{t('footer.tagline')}</p>
           </div>
@@ -51,7 +51,7 @@ export async function PublicFooter({ locale }: { locale: string }) {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/register-organization"
+                  href="/create-account?type=organization"
                   className="text-sm text-ink-muted transition-colors hover:text-ink"
                 >
                   {t('footer.registerOrg')}

@@ -11,7 +11,9 @@
     "invalidEmail": "Enter a valid email address",
     "passwordLength": "Password must be 8–72 characters",
     "phoneInvalid": "Enter digits only, 8–15 characters, optional leading +",
-    "genericError": "Something went wrong. Please try again."
+    "genericError": "Something went wrong. Please try again.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "login": {
     "title": "Sign in",
@@ -34,7 +36,9 @@
     "suspendedDescription": "This account has been suspended. Contact support for help.",
     "viewDetails": "View details",
     "rateLimited": "Too many sign-in attempts. Wait a moment and try again.",
-    "viewStatus": "Why am I seeing this?"
+    "viewStatus": "Why am I seeing this?",
+    "tagline": "Welcome back — your community is waiting.",
+    "passwordResetOk": "Password updated. Sign in with your new password."
   },
   "createAccount": {
     "title": "Create account",
@@ -46,7 +50,9 @@
     "orgDescription": "Publish opportunities and verify volunteer contributions.",
     "orgCta": "Register organization",
     "haveAccount": "Already have an account?",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "taglineVolunteer": "Offer your time and skills where they matter most.",
+    "taglineOrg": "Publish opportunities and grow your volunteer network."
   },
   "registerVolunteer": {
     "title": "Volunteer registration",
@@ -86,7 +92,8 @@
     "submitting": "Sending…",
     "successTitle": "Check your inbox",
     "successDescription": "If an account exists for this email, a reset link is on its way. It expires within one hour.",
-    "rateLimited": "Too many reset requests. Wait a while and try again."
+    "rateLimited": "Too many reset requests. Wait a while and try again.",
+    "tagline": "Locked out? We will get you back in."
   },
   "resetPassword": {
     "title": "Reset password",
@@ -102,7 +109,10 @@
     "expiredDescription": "The reset link is invalid, expired, or already used. Request a new one.",
     "requestNew": "Request a new reset link",
     "missingTokenTitle": "Missing reset token",
-    "missingTokenDescription": "Open the reset link from your email to continue."
+    "missingTokenDescription": "Open the reset link from your email to continue.",
+    "tagline": "Choose a new password to secure your account.",
+    "confirmPasswordLabel": "Confirm new password",
+    "mismatch": "Passwords do not match."
   },
   "verifyEmail": {
     "title": "Email verification",
@@ -120,6 +130,8 @@
     "unverifiedDescription": "Sign-in worked, but your email is still unverified. Confirm it to unlock everything.",
     "continueCta": "Continue",
     "missingTokenTitle": "No verification token",
-    "missingTokenDescription": "Open the verification link from your email, or request a new one below."
+    "missingTokenDescription": "Open the verification link from your email, or request a new one below.",
+    "pendingTitle": "Check your inbox",
+    "pendingDescription": "We sent a verification link to your email address. It expires in 24 hours."
   }
 }

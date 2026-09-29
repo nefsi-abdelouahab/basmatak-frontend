@@ -10,5 +10,7 @@ export default function LoginPage({ params: { locale }, searchParams }: LoginPag
   setRequestLocale(locale);
   const raw = searchParams.next;
   const next = typeof raw === 'string' ? raw : undefined;
-  return <LoginForm next={next} />;
+  const statusRaw = searchParams.status;
+  const status = typeof statusRaw === 'string' ? statusRaw : undefined;
+  return <LoginForm next={next} status={status} />;
 }

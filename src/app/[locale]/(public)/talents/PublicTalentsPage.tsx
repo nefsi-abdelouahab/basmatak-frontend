@@ -505,7 +505,7 @@ export function PublicTalentsPage({
           </div>
           <div className="flex w-full shrink-0 flex-wrap items-center gap-3 lg:w-auto">
             <Link
-              href="/register-organization"
+              href="/create-account?type=organization"
               className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover lg:flex-none"
             >
               <BadgeCheck aria-hidden="true" size={18} />

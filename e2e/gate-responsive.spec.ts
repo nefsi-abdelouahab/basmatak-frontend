@@ -13,8 +13,7 @@ const ROUTES = [
   '/',
   '/login',
   '/create-account',
-  '/register-volunteer',
-  '/register-organization',
+  '/create-account?type=organization',
   '/forgot-password',
   '/reset-password?token=probe',
   '/verify-email?token=probe',
@@ -63,6 +62,19 @@ const ROUTES = [
 
 const AR_SPOT = ['/', '/login', '/volunteer/dashboard', '/org/dashboard', '/admin/dashboard', '/volunteers/testuser'];
 
+// Auth screens are full-screen standalone (no navbar/footer): only the main
+// landmark is asserted, plus zero page-level scroll in either axis.
+function isAuthRoute(route: string): boolean {
+  const path = route.split('?')[0];
+  return (
+    path === '/login' ||
+    path === '/create-account' ||
+    path === '/forgot-password' ||
+    path === '/reset-password' ||
+    path === '/verify-email'
+  );
+}
+
 for (const width of [1440, 1100, 390]) {
   test.describe(`viewport ${width}`, () => {
     test.use({ viewport: { width, height: 800 } });
@@ -74,12 +86,22 @@ for (const width of [1440, 1100, 390]) {
           routeHandler.fulfill({ status: 404, contentType: 'application/json', body: '{}' }),
         );
         await page.goto(`/en${route}`, { waitUntil: 'domcontentloaded' });
-        await expect(page.getByTestId('shell-navbar')).toBeVisible({ timeout: 15000 });
+        if (isAuthRoute(route)) {
+          await expect(page.getByTestId('shell-navbar')).toHaveCount(0);
+        } else {
+          await expect(page.getByTestId('shell-navbar')).toBeVisible({ timeout: 15000 });
+        }
         await expect(page.getByTestId('shell-main')).toBeVisible({ timeout: 15000 });
         const overflow = await page.evaluate(
           () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
         );
         expect(overflow).toBeLessThanOrEqual(1);
+        if (isAuthRoute(route)) {
+          const vertical = await page.evaluate(
+            () => document.documentElement.scrollHeight - window.innerHeight,
+          );
+          expect(vertical).toBeLessThanOrEqual(1);
+        }
       });
     }
 

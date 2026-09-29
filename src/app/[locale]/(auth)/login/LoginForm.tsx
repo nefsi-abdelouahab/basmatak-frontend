@@ -2,13 +2,16 @@
 
 import { useState, type FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
+import { Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { errorStateFor, mapToApiError } from '@/lib/api/errors';
 import { emailSchema } from '@/lib/api/auth';
 import { useLoginRedirect, useResendVerificationMutation } from '@/hooks/useAuth';
-import { AuthError, AuthShell } from '../components';
+import { AuthError, AuthSuccess } from '../components';
+import { AuthSplit } from '../AuthSplit';
+import { PasswordInput } from '../PasswordInput';
 
 type Status =
   | { kind: 'idle' }
@@ -18,15 +21,16 @@ type Status =
   | { kind: 'rate-limited' }
   | { kind: 'generic' };
 
-export function LoginForm({ next }: { next?: string }) {
+export function LoginForm({ next, status }: { next?: string; status?: string }) {
   const t = useTranslations('auth');
+  const tCommon = useTranslations('common');
   const { login, isPending } = useLoginRedirect();
   const resend = useResendVerificationMutation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState<string | undefined>();
   const [passwordError, setPasswordError] = useState<string | undefined>();
-  const [status, setStatus] = useState<Status>({ kind: 'idle' });
+  const [formStatus, setFormStatus] = useState<Status>({ kind: 'idle' });
   const [resendSent, setResendSent] = useState(false);
 
   async function onSubmit(event: FormEvent) {
@@ -36,17 +40,17 @@ export function LoginForm({ next }: { next?: string }) {
     const passwordOk = password.length > 0;
     setPasswordError(passwordOk ? undefined : t('shared.required'));
     if (!emailOk || !passwordOk) return;
-    setStatus({ kind: 'idle' });
+    setFormStatus({ kind: 'idle' });
     try {
       await login({ email, password }, { next });
     } catch (err) {
       const apiError = mapToApiError(err);
-      if (apiError.code === 'INVALID_CREDENTIALS') setStatus({ kind: 'invalid' });
-      else if (apiError.code === 'EMAIL_NOT_VERIFIED') setStatus({ kind: 'unverified' });
+      if (apiError.code === 'INVALID_CREDENTIALS') setFormStatus({ kind: 'invalid' });
+      else if (apiError.code === 'EMAIL_NOT_VERIFIED') setFormStatus({ kind: 'unverified' });
       else if (apiError.code === 'ACCOUNT_SUSPENDED' || apiError.code === 'ACCOUNT_INACCESSIBLE')
-        setStatus({ kind: 'suspended', code: apiError.code });
-      else if (errorStateFor(apiError) === 'rate-limited') setStatus({ kind: 'rate-limited' });
-      else setStatus({ kind: 'generic' });
+        setFormStatus({ kind: 'suspended', code: apiError.code });
+      else if (errorStateFor(apiError) === 'rate-limited') setFormStatus({ kind: 'rate-limited' });
+      else setFormStatus({ kind: 'generic' });
     }
   }
 
@@ -55,12 +59,27 @@ export function LoginForm({ next }: { next?: string }) {
       await resend.mutateAsync();
       setResendSent(true);
     } catch {
-      setStatus({ kind: 'generic' });
+      setFormStatus({ kind: 'generic' });
     }
   }
 
   return (
-    <AuthShell testId="auth-login" title={t('login.title')} subtitle={t('login.subtitle')}>
+    <AuthSplit
+      testId="auth-login"
+      title={t('login.title')}
+      subtitle={t('login.subtitle')}
+      imageSrc="/auth/auth-vol.png"
+      fit="contain"
+      backHref="/"
+      backLabel={tCommon('actions.goHome')}
+      tagline={t('login.tagline')}
+    >
+      {status === 'password-reset' ? (
+        <AuthSuccess
+          title={t('login.passwordResetOk')}
+          description=""
+        />
+      ) : null}
       {next ? (
         <p data-testid="auth-continue-notice" className="text-sm font-medium text-primary">
           {t('login.continueNotice')}
@@ -75,26 +94,41 @@ export function LoginForm({ next }: { next?: string }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           error={emailError}
+          className="h-10"
         />
-        <Input
-          id="login-password"
-          label={t('login.passwordLabel')}
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={passwordError}
-        />
-        {status.kind === 'invalid' ? <AuthError message={t('login.invalidCredentials')} /> : null}
-        {status.kind === 'generic' ? <AuthError message={t('shared.genericError')} /> : null}
-        {status.kind === 'rate-limited' ? (
+        <div className="flex flex-col gap-1">
+          <PasswordInput
+            id="login-password"
+            label={t('login.passwordLabel')}
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={passwordError}
+            className="h-10"
+          />
+          <div className="flex justify-end">
+            <Link href="/forgot-password" className="text-sm font-medium text-primary">
+              {t('login.forgot')}
+            </Link>
+          </div>
+        </div>
+        {formStatus.kind === 'invalid' ? <AuthError message={t('login.invalidCredentials')} /> : null}
+        {formStatus.kind === 'generic' ? <AuthError message={t('shared.genericError')} /> : null}
+        {formStatus.kind === 'rate-limited' ? (
           <AuthError message={t('login.rateLimited')} />
         ) : null}
-        <Button type="submit" disabled={isPending}>
-          {isPending ? t('login.submitting') : t('login.submit')}
+        <Button type="submit" disabled={isPending} className="h-10 w-full">
+          {isPending ? (
+            <>
+              <Loader2 aria-hidden="true" size={18} className="animate-spin" />
+              {t('login.submitting')}
+            </>
+          ) : (
+            t('login.submit')
+          )}
         </Button>
       </form>
-      {status.kind === 'unverified' ? (
+      {formStatus.kind === 'unverified' ? (
         <div data-testid="auth-unverified" className="flex flex-col gap-2">
           <h2 className="text-base font-semibold text-ink">{t('login.unverifiedTitle')}</h2>
           <p className="text-sm text-ink-muted">{t('login.unverifiedDescription')}</p>
@@ -114,34 +148,29 @@ export function LoginForm({ next }: { next?: string }) {
           {resendSent ? <p className="text-sm text-ink-muted">{t('login.resendSent')}</p> : null}
         </div>
       ) : null}
-      {status.kind === 'suspended' ? (
+      {formStatus.kind === 'suspended' ? (
         <div data-testid="auth-suspended" className="flex flex-col gap-2">
           <h2 className="text-base font-semibold text-ink">{t('login.suspendedTitle')}</h2>
           <p className="text-sm text-ink-muted">{t('login.suspendedDescription')}</p>
           <Link
-            href={`/system/forbidden?code=${status.code}`}
+            href={`/system/forbidden?code=${formStatus.code}`}
             className="text-sm font-medium text-primary"
           >
             {t('login.viewDetails')}
           </Link>
         </div>
       ) : null}
-      {status.kind === 'rate-limited' ? (
+      {formStatus.kind === 'rate-limited' ? (
         <Link href="/system/rate-limited" className="text-sm font-medium text-primary">
           {t('login.viewStatus')}
         </Link>
       ) : null}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-        <Link href="/forgot-password" className="font-medium text-primary">
-          {t('login.forgot')}
+      <p className="text-sm text-ink-muted">
+        {t('login.noAccount')}{' '}
+        <Link href="/create-account" className="font-medium text-primary">
+          {t('login.createAccount')}
         </Link>
-        <p className="text-ink-muted">
-          {t('login.noAccount')}{' '}
-          <Link href="/create-account" className="font-medium text-primary">
-            {t('login.createAccount')}
-          </Link>
-        </p>
-      </div>
-    </AuthShell>
+      </p>
+    </AuthSplit>
   );
 }

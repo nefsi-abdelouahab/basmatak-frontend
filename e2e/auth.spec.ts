@@ -54,7 +54,7 @@ async function loginAs(
   });
   await page.goto(opts?.next ? `/en/login?next=${encodeURIComponent(opts.next)}` : '/en/login');
   await page.getByLabel(authEn.login.emailLabel).fill('vol@example.com');
-  await page.getByLabel(authEn.login.passwordLabel).fill('s3cret-pass');
+  await page.getByLabel(authEn.login.passwordLabel, { exact: true }).fill('s3cret-pass');
   await page.getByRole('button', { name: authEn.login.submit }).click();
 }
 
@@ -84,15 +84,36 @@ for (const width of [1440, 1100, 390]) {
         ).toHaveAttribute('href', `/${locale}/create-account`);
       });
 
-      test(`create-account links both registration routes (${locale})`, async ({ page }) => {
+      test(`create-account tabs switch role and side image (${locale})`, async ({ page }) => {
         await page.goto(`/${locale}/create-account`);
         await expect(page.getByTestId('auth-create-account')).toBeVisible();
+        const volunteerTab = page.getByTestId('auth-type-volunteer');
+        const orgTab = page.getByTestId('auth-type-organization');
+        await expect(volunteerTab).toHaveAttribute('aria-pressed', 'true');
+        await expect(orgTab).toHaveAttribute('aria-pressed', 'false');
+        await expect(page.getByRole('button', { name: catalogs[locale].registerVolunteer.submit }))
+          .toBeVisible();
+        await expect(page.locator('aside img').first()).toHaveAttribute('srcset', /auth-vol/);
+
+        await orgTab.click();
+        await expect(orgTab).toHaveAttribute('aria-pressed', 'true');
         await expect(
-          page.getByRole('link', { name: catalogs[locale].createAccount.volunteerCta }),
-        ).toHaveAttribute('href', `/${locale}/register-volunteer`);
+          page.getByRole('button', { name: catalogs[locale].registerOrganization.submit }),
+        ).toBeVisible();
+        await expect(page.locator('aside img').first()).toHaveAttribute('srcset', /auth-org/);
+      });
+
+      test(`create-account preselects the organization tab from ?type= (${locale})`, async ({
+        page,
+      }) => {
+        await page.goto(`/${locale}/create-account?type=organization`);
+        await expect(page.getByTestId('auth-type-organization')).toHaveAttribute(
+          'aria-pressed',
+          'true',
+        );
         await expect(
-          page.getByRole('link', { name: catalogs[locale].createAccount.orgCta }),
-        ).toHaveAttribute('href', `/${locale}/register-organization`);
+          page.getByRole('button', { name: catalogs[locale].registerOrganization.submit }),
+        ).toBeVisible();
       });
     }
 
@@ -105,7 +126,7 @@ for (const width of [1440, 1100, 390]) {
       });
       await page.goto('/en/login');
       await page.getByLabel(authEn.login.emailLabel).fill('vol@example.com');
-      await page.getByLabel(authEn.login.passwordLabel).fill('wrong-pass');
+      await page.getByLabel(authEn.login.passwordLabel, { exact: true }).fill('wrong-pass');
       await page.getByRole('button', { name: authEn.login.submit }).click();
       await expect(page.getByTestId('auth-error')).toHaveText(
         authEn.login.invalidCredentials,
@@ -132,9 +153,9 @@ for (const width of [1440, 1100, 390]) {
       await mockAuth(page, {
         '/auth/register/volunteer': { status: 201, body: tokensFor(unverifiedVolunteer) },
       });
-      await page.goto('/en/register-volunteer');
+      await page.goto('/en/create-account');
       await page.getByLabel(authEn.registerVolunteer.emailLabel).fill('new@example.com');
-      await page.getByLabel(authEn.registerVolunteer.passwordLabel).fill('s3cret-pass');
+      await page.getByLabel(authEn.registerVolunteer.passwordLabel, { exact: true }).fill('s3cret-pass');
       await page.getByRole('button', { name: authEn.registerVolunteer.submit }).click();
       await expect(page.getByTestId('auth-success')).toContainText(
         authEn.registerVolunteer.successTitle,
@@ -145,15 +166,23 @@ for (const width of [1440, 1100, 390]) {
       await mockAuth(page, {
         '/auth/register/organization': { status: 201, body: tokensFor(unverifiedVolunteer) },
       });
-      await page.goto('/en/register-organization');
+      await page.goto('/en/create-account?type=organization');
       await page.getByLabel(authEn.registerOrganization.emailLabel).fill('org@example.com');
-      await page.getByLabel(authEn.registerOrganization.passwordLabel).fill('s3cret-pass');
+      await page.getByLabel(authEn.registerOrganization.passwordLabel, { exact: true }).fill('s3cret-pass');
       await page
         .getByRole('button', { name: authEn.registerOrganization.submit })
         .click();
       await expect(page.getByTestId('auth-success')).toContainText(
         authEn.registerOrganization.pendingTitle,
       );
+    });
+
+    test('password visibility toggle reveals the password', async ({ page }) => {
+      await page.goto('/en/login');
+      const password = page.getByLabel(authEn.login.passwordLabel, { exact: true });
+      await expect(password).toHaveAttribute('type', 'password');
+      await page.getByRole('button', { name: authEn.shared.showPassword }).click();
+      await expect(password).toHaveAttribute('type', 'text');
     });
 
     test('forgot password shows neutral success copy', async ({ page }) => {
@@ -174,11 +203,37 @@ for (const width of [1440, 1100, 390]) {
         },
       });
       await page.goto('/en/reset-password?token=stale');
-      await page.getByLabel(authEn.resetPassword.newPasswordLabel).fill('new-s3cret-pass');
+      await page.getByLabel(authEn.resetPassword.newPasswordLabel, { exact: true }).fill('new-s3cret-pass');
+      await page.getByLabel(authEn.resetPassword.confirmPasswordLabel, { exact: true }).fill('new-s3cret-pass');
       await page.getByRole('button', { name: authEn.resetPassword.submit }).click();
       await expect(page.getByTestId('auth-reset-expired')).toContainText(
         authEn.resetPassword.expiredTitle,
       );
+    });
+
+    test('mismatched reset confirmation blocks the request', async ({ page }) => {
+      await mockAuth(page, {
+        '/auth/reset-password': { status: 204 },
+      });
+      await page.goto('/en/reset-password?token=good');
+      await page.getByLabel(authEn.resetPassword.newPasswordLabel, { exact: true }).fill('new-s3cret-pass');
+      await page.getByLabel(authEn.resetPassword.confirmPasswordLabel, { exact: true }).fill('other-s3cret-pass');
+      await page.getByRole('button', { name: authEn.resetPassword.submit }).click();
+      await expect(page.getByText(authEn.resetPassword.mismatch)).toBeVisible();
+      // No redirect: the request never leaves the form.
+      await expect(page).toHaveURL(/\/en\/reset-password\?token=good/);
+    });
+
+    test('reset success redirects to sign in with a notice', async ({ page }) => {
+      await mockAuth(page, {
+        '/auth/reset-password': { status: 204 },
+      });
+      await page.goto('/en/reset-password?token=good');
+      await page.getByLabel(authEn.resetPassword.newPasswordLabel, { exact: true }).fill('new-s3cret-pass');
+      await page.getByLabel(authEn.resetPassword.confirmPasswordLabel, { exact: true }).fill('new-s3cret-pass');
+      await page.getByRole('button', { name: authEn.resetPassword.submit }).click();
+      await expect(page).toHaveURL(/\/en\/login\?status=password-reset/);
+      await expect(page.getByText(authEn.login.passwordResetOk)).toBeVisible();
     });
 
     test('verify-email token success links to sign in', async ({ page }) => {

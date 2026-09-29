@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import {
   Archive,
-  ArrowRight,
   BadgeCheck,
   CircleCheck,
   ClipboardCheck,
@@ -19,6 +18,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
+import { ArrowIcon } from '@/components/ui/ArrowIcon';
 import { Button } from '@/components/ui/Button';
 import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
@@ -64,7 +64,7 @@ import {
 // Talent avatars resolve the real public media URL when present.
 //
 // Icon map (code.html Material Symbol -> lucide-react, sizes copied over):
-// search -> Search, arrow_forward -> ArrowRight, verified_user -> ShieldCheck,
+// search -> Search, arrow_forward -> ArrowIcon (shared ui, hover-slide), verified_user -> ShieldCheck,
 // explore -> Compass, location_on -> MapPin, fact_check -> ClipboardCheck,
 // inventory_2 -> Archive, verified -> BadgeCheck, gavel -> Gavel,
 // check_circle -> CircleCheck, badge -> IdCard, account_balance -> Landmark,
@@ -178,9 +178,10 @@ function OppRow({
           <Link
             href={applyHref}
             data-testid="apply-cta"
-            className="inline-flex h-9 items-center rounded-md bg-primary-tint px-4 text-label-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
+            className="group inline-flex h-9 items-center gap-1.5 rounded-md bg-primary-tint px-4 text-label-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
           >
             {t('landing.apply')}
+            <ArrowIcon size={16} />
           </Link>
         </div>
       </div>
@@ -293,9 +294,9 @@ function TalentCard({
           <BadgeCheck aria-hidden="true" size={16} />
           <span>{t('talents.expCount', { count: expCount })}</span>
         </span>
-        <Link href={`/volunteers/${sample.username}`} className="inline-flex items-center gap-1 text-label-xs text-ink-muted hover:text-ink">
+        <Link href={`/volunteers/${sample.username}`} className="group inline-flex items-center gap-1 text-label-xs text-ink-muted hover:text-ink">
           <span>{t('talents.viewRecord')}</span>
-          <ArrowRight aria-hidden="true" size={14} className="rtl:rotate-180" />
+          <ArrowIcon size={14} />
         </Link>
       </div>
     </div>
@@ -472,10 +473,10 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             <div className="mt-8 flex w-full flex-wrap items-center gap-4 sm:w-auto">
               <Link
                 href="/volunteer/opportunities"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-6 text-label-md font-medium text-white transition-colors hover:bg-primary-hover"
+                className="group inline-flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-6 text-label-md font-medium text-white transition-colors hover:bg-primary-hover"
               >
                 <span>{t('hero.ctaPrimary')}</span>
-                <ArrowRight aria-hidden="true" size={18} className="rtl:rotate-180" />
+                <ArrowIcon size={18} />
               </Link>
               <Link
                 href="/create-account"
@@ -585,11 +586,11 @@ export function PublicLandingPage({ locale }: { locale: string }) {
               <p className="mt-1 text-body-md text-ink-muted">{t('opps.lede')}</p>
             </div>
             <Link
-              href="/volunteer/opportunities"
-              className="inline-flex items-center gap-1 text-label-md font-medium text-primary hover:text-primary-hover"
+              href="/opportunities"
+              className="group inline-flex items-center gap-1 text-label-md font-medium text-primary hover:text-primary-hover"
             >
               <span>{t('opps.viewAll')}</span>
-              <ArrowRight aria-hidden="true" size={18} className="rtl:rotate-180" />
+              <ArrowIcon size={18} />
             </Link>
           </div>
           <div data-testid="opp-feed" className="flex flex-col gap-3">
@@ -685,10 +686,10 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             </div>
             <Link
               href="/talents"
-              className="inline-flex items-center gap-1 text-label-md font-medium text-primary hover:text-primary-hover"
+              className="group inline-flex items-center gap-1 text-label-md font-medium text-primary hover:text-primary-hover"
             >
               <span>{t('talents.discover')}</span>
-              <ArrowRight aria-hidden="true" size={18} className="rtl:rotate-180" />
+              <ArrowIcon size={18} />
             </Link>
           </div>
           <div data-testid="talent-samples" className="flex flex-col gap-3">
@@ -754,7 +755,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             </div>
             <div className="flex flex-wrap gap-4 pt-4">
               <Link
-                href="/register-organization"
+                href="/create-account?type=organization"
                 className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-label-md font-medium text-white transition-colors hover:bg-primary-hover"
               >
                 {t('orgCta.registerCta')}
