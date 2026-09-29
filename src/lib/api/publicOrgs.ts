@@ -78,12 +78,22 @@ export type PublicOrgCard = z.infer<typeof PublicOrgCardSchema>;
 
 export const PublicOrgAggregatesSchema = z
   .object({
+    // Real keys served by OrgPublicStatsProviderImpl
+    // (`GET /organizations/:slug` → `aggregates`): volunteers,
+    // initiativesActive, initiativesCompleted, verifiedHours (minutes),
+    // responseRate, perDomain, activeSince.
+    volunteers: z.number().nullable().optional(),
+    initiativesActive: z.number().nullable().optional(),
+    initiativesCompleted: z.number().nullable().optional(),
     opportunitiesActive: z.number().nullable().optional(),
     opportunitiesCompleted: z.number().nullable().optional(),
     participantsActive: z.number().nullable().optional(),
     participantsCompleted: z.number().nullable().optional(),
     volunteersCount: z.number().nullable().optional(),
     verifiedHours: z.number().nullable().optional(),
+    responseRate: z.number().nullable().optional(),
+    perDomain: z.array(z.unknown()).nullable().optional(),
+    activeSince: z.number().nullable().optional(),
   })
   .passthrough();
 
@@ -503,6 +513,46 @@ export function orgSlugOf(
 export function aggregatesOf(profile: PublicOrgProfile | null | undefined): PublicOrgAggregates | null {
   if (!profile) return null;
   return profile.aggregates ?? profile.stats ?? null;
+}
+
+export interface NormalizedOrgStats {
+  /** Open initiatives (real `initiativesActive`, legacy `opportunitiesActive`). */
+  active: number;
+  /** Finished initiatives (real `initiativesCompleted`, legacy `opportunitiesCompleted`). */
+  completed: number;
+  /** Distinct engaged volunteers (real `volunteers`, legacy fallbacks). */
+  volunteers: number;
+  /** Lifetime verified minutes (real `verifiedHours` sum of durations). */
+  verifiedMinutes: number | null;
+  /** Founding year from the profile row or the derived `activeSince`. */
+  foundedYear: number | null;
+}
+
+function num(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
+}
+
+// Normalized stats ribbon: real keys first, legacy fixtures second, 0 when the
+// backend sent no usable count (never a placeholder — 0 means "none counted").
+export function normalizedOrgStatsOf(
+  profile: PublicOrgProfile | null | undefined,
+): NormalizedOrgStats | null {
+  const aggregates = aggregatesOf(profile);
+  if (!profile || !aggregates) return null;
+  return {
+    active: num(aggregates.initiativesActive) ?? num(aggregates.opportunitiesActive) ?? 0,
+    completed: num(aggregates.initiativesCompleted) ?? num(aggregates.opportunitiesCompleted) ?? 0,
+    volunteers:
+      num(aggregates.volunteers) ??
+      num(aggregates.participantsActive) ??
+      num(aggregates.volunteersCount) ??
+      0,
+    verifiedMinutes: num(aggregates.verifiedHours),
+    foundedYear:
+      (typeof profile.foundedYear === 'number' && Number.isFinite(profile.foundedYear)
+        ? profile.foundedYear
+        : null) ?? num(aggregates.activeSince),
+  };
 }
 
 // OQ2-approved: server-returned per-tab counts are primary; page `total`

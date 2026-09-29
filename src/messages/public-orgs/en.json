@@ -24,7 +24,9 @@
     "searchPlaceholder": "Search talents…",
     "dashboard": "Dashboard",
     "workspace": "Workspace",
-    "adminArea": "Admin"
+    "adminArea": "Admin",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "footer": {
     "tagline": "A platform for meaningful volunteer opportunities and verified experience in Algeria.",
@@ -415,6 +417,20 @@
   },
   "orgProfile": {
     "overview": "Overview",
+    "manageLabel": "Manage organization",
+    "breadcrumbHome": "Home",
+    "breadcrumbOrgs": "Organizations",
+    "share": "Share",
+    "copied": "Link copied",
+    "websiteCta": "Official Website",
+    "about": "About the organization",
+    "headquarters": "Headquarters",
+    "scope": "Operating scope",
+    "viewApply": "View opportunity & apply",
+    "seats": "{open} of {total} positions open",
+    "skills": "Skills:",
+    "deadline": "Deadline: {date}",
+    "dates": "{from} – {to}",
     "location": "Location",
     "website": "Website",
     "founded": "Founded",

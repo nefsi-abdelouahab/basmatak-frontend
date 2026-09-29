@@ -24,7 +24,9 @@
     "searchPlaceholder": "ابحث عن المواهب…",
     "dashboard": "لوحة التحكم",
     "workspace": "مساحة العمل",
-    "adminArea": "الإدارة"
+    "adminArea": "الإدارة",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة"
   },
   "footer": {
     "tagline": "منصة لفرص التطوع الهادفة والخبرة الموثقة في الجزائر.",
@@ -415,6 +417,20 @@
   },
   "orgProfile": {
     "overview": "نظرة عامة",
+    "manageLabel": "إدارة المنظمة",
+    "breadcrumbHome": "الرئيسية",
+    "breadcrumbOrgs": "المنظمات",
+    "share": "مشاركة",
+    "copied": "تم نسخ الرابط",
+    "websiteCta": "الموقع الرسمي",
+    "about": "عن المنظمة",
+    "headquarters": "المقر",
+    "scope": "نطاق العمل",
+    "viewApply": "عرض الفرصة والترشح",
+    "seats": "{open} من {total} من المناصب مفتوحة",
+    "skills": "المهارات:",
+    "deadline": "آخر أجل: {date}",
+    "dates": "{from} – {to}",
     "location": "الموقع",
     "website": "الموقع الإلكتروني",
     "founded": "سنة التأسيس",
