@@ -5,63 +5,82 @@
     "retry": "إعادة المحاولة",
     "empty": "لا يوجد شيء بعد."
   },
-  "header": {
-    "title": "لوحة تحكم المنظمة",
-    "subtitle": "نظرة عامة على صحة منظمتك.",
-    "locationLabel": "الموقع",
-    "foundedLabel": "سنة التأسيس",
-    "statusLabel": "التحقق",
-    "coverEmptyTitle": "لا يوجد غلاف بعد",
-    "coverEmptyBody": "أضف غلافًا من ملف منظمتك."
+  "nav": {
+    "main": "الرئيسية",
+    "discover": "اكتشف",
+    "account": "الحساب",
+    "menu": "قائمة المنظمة",
+    "overview": "نظرة عامة",
+    "opportunities": "فرصي",
+    "applications": "الطلبات",
+    "participants": "المشاركون",
+    "contributions": "المساهمات",
+    "experiences": "التجارب الموثقة",
+    "talents": "اكتشاف المواهب",
+    "settings": "الإعدادات",
+    "verifiedOrg": "منظمة موثقة",
+    "searchPlaceholder": "ابحث في الفرص والمساهمين…",
+    "workspace": "مساحة المنظمة"
+  },
+  "hero": {
+    "viewPublicProfile": "عرض الملف العام",
+    "established": "تأسست سنة {year}",
+    "verifiedOrg": "منظمة موثقة"
+  },
+  "greeting": {
+    "morning": "صباح الخير، {name}",
+    "afternoon": "مساء الخير، {name}",
+    "evening": "مساء الخير، {name}",
+    "subtitle": "أدر فرص التطوع والطلبات والمساهمات الموثقة."
+  },
+  "actions": {
+    "viewAll": "عرض كل الفرص",
+    "reviewApps": "مراجعة الطلبات",
+    "create": "إنشاء فرصة"
   },
   "stats": {
-    "title": "أرقام أساسية",
-    "opportunitiesActive": "فرص نشطة",
-    "opportunitiesCompleted": "فرص مكتملة",
-    "applicationsPending": "طلبات قيد الانتظار",
-    "applicationsUnderReview": "طلبات قيد المراجعة",
-    "participantsActive": "مشاركون نشطون",
-    "participantsCompleted": "مشاركات مكتملة",
-    "verifiedHours": "ساعات موثقة",
-    "decisionsLast30d": "قرارات (30 يومًا)",
-    "decidedRatio": "معدل القرارات",
-    "medianDecisionHours": "متوسط زمن القرار (ساعة)"
+    "published": "الفرص المنشورة",
+    "applications": "الطلبات المستلمة",
+    "participants": "المشاركون النشطون",
+    "review": "مساهمات للمراجعة",
+    "hours": "الساعات الموثقة"
   },
-  "gate": {
-    "lockedTitle": "النشر مقفل",
-    "lockedBody": "{count} عناصر بانتظار التحقق. أكمل التحقق لفتح النشر.",
-    "unlockedNote": "النشر متاح."
-  },
-  "submissions": {
+  "contributions": {
     "title": "مساهمات للمراجعة",
-    "subtitle": "أحدث المساهمات بانتظار مراجعتك.",
-    "count": "{total} مساهمات",
+    "subtitle": "مساهمات بانتظار مراجعتك",
+    "pending": "{count} بانتظار المراجعة",
     "empty": "لا توجد مساهمات بانتظار المراجعة.",
-    "viewAll": "فتح قائمة المساهمات"
+    "review": "مراجعة المساهمة",
+    "submittedOn": "أُرسلت {date}"
   },
   "applications": {
     "title": "أحدث الطلبات",
-    "subtitle": "أحدث الطلبات عبر فرصك.",
-    "count": "{total} طلبات",
+    "subtitle": "متطوعون يتقدمون للمناصب المفتوحة",
+    "viewAll": "عرض الكل {count}",
     "empty": "لا توجد طلبات بعد.",
-    "viewAll": "فتح صندوق الطلبات"
+    "appliedFor": "تقدّم لـ",
+    "in": "في",
+    "appliedOn": "قُدّم {date}",
+    "view": "عرض الطلب"
   },
-  "participants": {
-    "title": "لمحة عن المشاركين",
-    "subtitle": "المشاركات النشطة والمكتملة.",
-    "count": "{total} مشاركين",
-    "empty": "لا يوجد مشاركون بعد.",
-    "viewAll": "فتح قائمة المشاركين"
+  "activities": {
+    "title": "أنشطة تطوعية جارية",
+    "subtitle": "عمل ميداني ومجتمعي متواصل",
+    "count": "{count} مبادرات نشطة",
+    "empty": "لا توجد أنشطة نشطة حاليًا.",
+    "view": "عرض النشاط",
+    "participantsActive": "{count} مشاركين"
+  },
+  "recentOpps": {
+    "title": "أحدث الفرص",
+    "viewAll": "عرض الكل",
+    "empty": "لا توجد فرص بعد.",
+    "positions": "{count} مناصب",
+    "manage": "إدارة الفرصة"
   },
   "activity": {
     "title": "النشاط الأخير",
     "empty": "لا يوجد نشاط أخير.",
     "error": "تعذّر تحميل النشاط الأخير."
-  },
-  "notifications": {
-    "title": "التنبيهات",
-    "empty": "لا توجد تنبيهات.",
-    "unread": "غير مقروء",
-    "read": "مقروء"
   }
 }

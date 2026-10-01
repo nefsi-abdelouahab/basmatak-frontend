@@ -16,10 +16,13 @@ const user = {
 const org = {
   _id: '64f0000000000000000000aa',
   registryId: 'a1b2c3',
-  verificationStatus: 'pending',
+  verificationStatus: 'verified',
+  slug: 'org-a',
   nameFr: 'Org A',
   nameAr: 'منظمة أ',
+  description: 'Community heritage work.',
   coverMediaId: null,
+  logoMediaId: null,
   location: { wilayaId: 'Alger', municipalityId: 'Bab Ezzouar', address: 'Rue 12' },
   foundedYear: 2018,
 };
@@ -40,8 +43,10 @@ const submissions = [
     _id: '64f0000000000000000000s1',
     status: 'submitted',
     title: 'Beach cleanup report',
-    volunteer: { nameFr: 'Volunteer One' },
+    description: 'Twenty captioned field photos.',
+    volunteer: { nameFr: 'Volunteer One', avatarMediaId: null },
     opportunity: { title: 'Cleanup day' },
+    evidence: [],
     createdAt: '2026-09-10T00:00:00.000Z',
   },
 ];
@@ -50,8 +55,10 @@ const applications = [
   {
     _id: '64f0000000000000000000a1',
     status: 'pending',
-    applicant: { nameFr: 'Applicant One' },
+    applicant: { nameFr: 'Applicant One', avatarMediaId: null },
+    volunteer: null,
     opportunity: { title: 'Food drive' },
+    position: { title: 'Driver' },
     createdAt: '2026-09-09T00:00:00.000Z',
   },
 ];
@@ -61,18 +68,47 @@ const participants = [
     _id: '64f0000000000000000000p1',
     status: 'active',
     volunteer: { nameFr: 'Volunteer One' },
-    opportunity: { title: 'Cleanup day' },
+    opportunity: { id: '64f0000000000000000000o1', title: 'Cleanup day' },
     createdAt: '2026-09-08T00:00:00.000Z',
   },
 ];
 
-const activity = [
-  { _id: 'e2', type: 'submission.received', createdAt: '2026-09-10T00:00:00.000Z' },
-  { _id: 'e1', type: 'application.submitted', createdAt: '2026-09-09T00:00:00.000Z' },
+const recentOpps = [
+  {
+    _id: '64f0000000000000000000o1',
+    title: 'Cleanup day',
+    status: 'published',
+    startDate: '2026-09-25T00:00:00.000Z',
+    location: { address: 'Rue 12' },
+    positions: [{ title: 'Cleaner', requiredCount: 2 }],
+    coverMediaId: null,
+  },
+  {
+    _id: '64f0000000000000000000o2',
+    title: 'Food drive',
+    status: 'published',
+    startDate: '2026-10-10T00:00:00.000Z',
+    location: { address: 'Bab Ezzouar' },
+    positions: [{ title: 'Driver', requiredCount: 3 }],
+    coverMediaId: null,
+  },
 ];
 
-const notifications = [
-  { _id: 'n1', title: 'New application', isRead: false, createdAt: '2026-09-10T00:00:00.000Z' },
+const activity = [
+  {
+    _id: 'e2',
+    type: 'submission.submitted',
+    title: 'Contribution submitted',
+    ts: '2026-09-10T00:00:00.000Z',
+    entity: { type: 'submission', id: 's1', name: 'Beach cleanup report', summary: 'Opportunity Cleanup day' },
+  },
+  {
+    _id: 'e1',
+    type: 'application.applied',
+    title: 'Application submitted',
+    ts: '2026-09-09T00:00:00.000Z',
+    entity: { type: 'application', id: 'a1', name: 'Food drive', summary: 'Volunteer Applicant One' },
+  },
 ];
 
 interface Captured {
@@ -81,8 +117,9 @@ interface Captured {
 }
 
 interface MockOptions {
-  gateLocked?: boolean;
   coverMediaId?: string | null;
+  verificationStatus?: string;
+  empty?: boolean;
   authMeStatus?: number;
 }
 
@@ -96,8 +133,9 @@ const pageEnvelope = (items: unknown[]) => ({
 });
 
 async function mockApi(page: Page, captured: Captured[], options?: MockOptions) {
-  const gateLocked = options?.gateLocked ?? false;
   const coverMediaId = options?.coverMediaId ?? null;
+  const verificationStatus = options?.verificationStatus ?? org.verificationStatus;
+  const empty = options?.empty ?? false;
   await page.route('**/api/v1/**', async (route: Route) => {
     const url = route.request().url();
     const parsed = new URL(url);
@@ -113,50 +151,46 @@ async function mockApi(page: Page, captured: Captured[], options?: MockOptions) 
     if (path.endsWith('/organizations/me/stats')) {
       return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(stats) });
     }
+    if (path.endsWith('/organizations/me/opportunities')) {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(pageEnvelope(empty ? [] : recentOpps)),
+      });
+    }
     if (path.endsWith('/organizations/me/participants')) {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(pageEnvelope(participants)),
+        body: JSON.stringify(pageEnvelope(empty ? [] : participants)),
       });
     }
     if (path.endsWith('/organizations/me/submissions')) {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(pageEnvelope(submissions)),
+        body: JSON.stringify(pageEnvelope(empty ? [] : submissions)),
       });
     }
     if (path.endsWith('/organizations/me/applications')) {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(pageEnvelope(applications)),
+        body: JSON.stringify(pageEnvelope(empty ? [] : applications)),
       });
     }
     if (path.endsWith('/organizations/me/activity')) {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(pageEnvelope(activity)),
-      });
-    }
-    if (path.endsWith('/organizations/me/publish-gate')) {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(
-          gateLocked
-            ? { locked: true, pendingCount: 2, threshold: 5, pendingOpportunities: [] }
-            : { locked: false, pendingCount: 0, threshold: 5, pendingOpportunities: [] },
-        ),
+        body: JSON.stringify(pageEnvelope(empty ? [] : activity)),
       });
     }
     if (path.endsWith('/notifications')) {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(pageEnvelope(notifications)),
+        body: JSON.stringify(pageEnvelope([])),
       });
     }
     const mediaMatch = path.match(/\/media\/([^/]+)$/);
@@ -171,14 +205,13 @@ async function mockApi(page: Page, captured: Captured[], options?: MockOptions) 
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ ...org, coverMediaId }),
+        body: JSON.stringify({ ...org, coverMediaId, verificationStatus }),
       });
     }
     return route.fulfill({ status: 404, body: '{}' });
   });
   // Serve a real image file for mocked CDN URLs so <img> elements load instead
-  // of erroring (public-talent.spec.ts uses a similar stub). Required now that
-  // cover imgs fall back to /org.png on load failure.
+  // of erroring (public-talent.spec.ts uses a similar stub).
   await page.route('**/cdn.example/**', (route: Route) =>
     route.fulfill({
       status: 200,
@@ -193,85 +226,95 @@ for (const width of [1440, 1100, 390]) {
     test.use({ viewport: { width, height: 800 } });
 
     for (const locale of ['en', 'ar'] as const satisfies Locale[]) {
-      test(`dashboard numbers match fixtures, no lock banner (${locale})`, async ({ page }) => {
+      test(`dashboard numbers match fixtures, no forbidden copy (${locale})`, async ({ page }) => {
         const captured: Captured[] = [];
-        await mockApi(page, captured, { gateLocked: false });
+        await mockApi(page, captured, { coverMediaId: '64f0000000000000000000c1' });
         await page.goto(`/${locale}/org/dashboard`);
         await expect(page.getByTestId('org-dashboard')).toBeVisible();
         await expect(page.locator('html')).toHaveAttribute(
           'dir',
           locale === 'ar' ? 'rtl' : 'ltr',
         );
-        await expect(page.getByTestId('org-code')).toContainText('ORG-a1b2c3');
-        await expect(page.getByTestId('dashboard-stat-verifiedHours')).toContainText('180');
-        await expect(page.getByTestId('dashboard-stat-applicationsPending')).toContainText('4');
-        await expect(page.getByTestId('dashboard-stat-participantsActive')).toContainText('12');
-        await expect(page.getByTestId('submissions-count')).toContainText('1');
-        await expect(page.getByTestId('applications-count')).toContainText('1');
-        await expect(page.getByTestId('participants-count')).toContainText('1');
+        // Hero: real org name, verified badge, public-profile link, no registry line.
+        await expect(page.getByTestId('org-name')).toContainText(locale === 'ar' ? 'منظمة أ' : 'Org A');
+        await expect(page.getByTestId('org-verified')).toHaveCount(1);
+        await expect(page.getByTestId('org-public-profile')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/orgs/org-a'),
+        );
+        // 5-stat row from real aggregates + inbox totals (180 minutes -> 3 hours).
+        await expect(page.getByTestId('dashboard-stat-published')).toContainText('3');
+        await expect(page.getByTestId('dashboard-stat-applications')).toContainText('1');
+        await expect(page.getByTestId('dashboard-stat-participants')).toContainText('12');
+        await expect(page.getByTestId('dashboard-stat-review')).toContainText('1');
+        await expect(page.getByTestId('dashboard-stat-hours')).toContainText('3');
+        // Quick actions point at real routes.
+        await expect(page.getByTestId('action-view-opps')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/org/opportunities'),
+        );
+        await expect(page.getByTestId('action-review-apps')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/org/applications'),
+        );
+        await expect(page.getByTestId('action-create-opp')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/org/opportunities/new'),
+        );
+        // Lists render real rows with working review links.
+        await expect(page.getByTestId('contribution-row')).toHaveCount(1);
+        await expect(page.getByTestId('contribution-review-64f0000000000000000000s1')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/org/contributions/64f0000000000000000000s1'),
+        );
+        await expect(page.getByTestId('application-row')).toHaveCount(1);
+        await expect(page.getByTestId('application-view-64f0000000000000000000a1')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/org/applications/64f0000000000000000000a1'),
+        );
+        await expect(page.getByTestId('volunteer-activity-row')).toHaveCount(1);
+        await expect(page.getByTestId('recent-opp-row')).toHaveCount(2);
+        await expect(page.getByTestId('recent-opp-manage-64f0000000000000000000o1')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/org/opportunities/64f0000000000000000000o1'),
+        );
         await expect(page.getByTestId('activity-item')).toHaveCount(2);
-        await expect(page.getByTestId('notification-item')).toHaveCount(1);
-        await expect(page.getByTestId('publish-gate-locked')).toHaveCount(0);
+        // Forbidden copy is gone entirely, never rephrased.
+        const body = (await page.getByTestId('org-dashboard').textContent()) ?? '';
+        expect(body).not.toMatch(/minted|minting|registry|12-06|sovereign|civic audit|accreditation|charter|DZ-ALG|DZ-TIM/i);
+        expect(body).not.toMatch(/Approve|Reject|Verify submission/i);
+        // Org navbar carries no public browse links; the sidebar does.
+        const navbar = (await page.getByTestId('shell-navbar').textContent()) ?? '';
+        expect(navbar).not.toMatch(/Discover Talents|اكتشاف المواهب/);
         const statsCalls = captured.filter((c) => c.url.includes('/organizations/me/stats'));
         expect(statsCalls.length).toBeGreaterThan(0);
       });
 
-      test(`pending org sees publish-locked explanation (${locale})`, async ({ page }) => {
+      test(`empty inboxes render i18n empty states (${locale})`, async ({ page }) => {
         const captured: Captured[] = [];
         void captured;
-        await mockApi(page, captured, { gateLocked: true });
+        await mockApi(page, captured, { empty: true });
         await page.goto(`/${locale}/org/dashboard`);
-        await expect(page.getByTestId('publish-gate-locked')).toBeVisible();
-        await expect(page.getByTestId('publish-gate-locked')).toContainText(
-          catalogs[locale].gate.lockedTitle,
-        );
-      });
-
-      test(`neutral cover empty state without coverMediaId (${locale})`, async ({ page }) => {
-        const captured: Captured[] = [];
-        void captured;
-        await mockApi(page, captured, { coverMediaId: null });
-        await page.goto(`/${locale}/org/dashboard`);
-        await expect(page.getByTestId('org-cover-empty')).toBeVisible();
-        await expect(page.getByTestId('org-cover')).toHaveCount(0);
-      });
-
-      test(`real cover renders from coverMediaId (${locale})`, async ({ page }) => {
-        const captured: Captured[] = [];
-        void captured;
-        await mockApi(page, captured, { coverMediaId: '64f0000000000000000000c1' });
-        await page.goto(`/${locale}/org/dashboard`);
-        await expect(page.getByTestId('org-cover')).toBeVisible();
-        await expect(page.getByTestId('org-cover')).toHaveAttribute(
-          'src',
-          'https://cdn.example/cover.jpg',
-        );
-      });
-
-      test(`summaries link to F11 queues with zero review actions (${locale})`, async ({
-        page,
-      }) => {
-        const captured: Captured[] = [];
-        void captured;
-        await mockApi(page, captured, { gateLocked: false });
-        await page.goto(`/${locale}/org/dashboard`);
-        await expect(page.getByTestId('submissions-view-all')).toHaveAttribute(
-          'href',
-          expect.stringContaining('/org/contributions'),
-        );
-        await expect(page.getByTestId('applications-view-all')).toHaveAttribute(
-          'href',
-          expect.stringContaining('/org/applications'),
-        );
-        await expect(page.getByTestId('participants-view-all')).toHaveAttribute(
-          'href',
-          expect.stringContaining('/org/participants'),
-        );
+        await expect(page.getByTestId('org-dashboard')).toBeVisible();
+        await expect(page.getByTestId('dashboard-stat-review')).toContainText('0');
+        await expect(page.getByTestId('dashboard-stat-applications')).toContainText('0');
+        await expect(page.getByTestId('contribution-row')).toHaveCount(0);
+        await expect(page.getByTestId('application-row')).toHaveCount(0);
+        await expect(page.getByTestId('recent-opp-row')).toHaveCount(0);
         const body = (await page.getByTestId('org-dashboard').textContent()) ?? '';
-        expect(body).not.toMatch(/Approve|Reject|Verify submission/i);
-        await expect(page.getByTestId('submission-row')).toHaveCount(1);
-        await expect(page.getByTestId('application-row')).toHaveCount(1);
-        await expect(page.getByTestId('participant-row')).toHaveCount(1);
+        expect(body).toContain(catalogs[locale].contributions.empty);
+        expect(body).toContain(catalogs[locale].applications.empty);
+        expect(body).toContain(catalogs[locale].recentOpps.empty);
+        expect(body).toContain(catalogs[locale].activity.empty);
+      });
+
+      test(`unverified org shows no verified badge (${locale})`, async ({ page }) => {
+        const captured: Captured[] = [];
+        void captured;
+        await mockApi(page, captured, { verificationStatus: 'pending' });
+        await page.goto(`/${locale}/org/dashboard`);
+        await expect(page.getByTestId('org-dashboard')).toBeVisible();
+        await expect(page.getByTestId('org-verified')).toHaveCount(0);
       });
     }
   });

@@ -5,63 +5,82 @@
     "retry": "Retry",
     "empty": "Nothing here yet."
   },
-  "header": {
-    "title": "Organization dashboard",
-    "subtitle": "Health of your organization at a glance.",
-    "locationLabel": "Location",
-    "foundedLabel": "Founded",
-    "statusLabel": "Verification",
-    "coverEmptyTitle": "No cover yet",
-    "coverEmptyBody": "Add a cover from your organization profile."
+  "nav": {
+    "main": "Main",
+    "discover": "Discover",
+    "account": "Account",
+    "menu": "Organization menu",
+    "overview": "Overview",
+    "opportunities": "My Opportunities",
+    "applications": "Applications",
+    "participants": "Participants",
+    "contributions": "Contributions",
+    "experiences": "Verified Experiences",
+    "talents": "Discover Talents",
+    "settings": "Settings",
+    "verifiedOrg": "Verified Organization",
+    "searchPlaceholder": "Search opportunities, contributors…",
+    "workspace": "Organization Workspace"
+  },
+  "hero": {
+    "viewPublicProfile": "View public profile",
+    "established": "Established {year}",
+    "verifiedOrg": "Verified Organization"
+  },
+  "greeting": {
+    "morning": "Good morning, {name}",
+    "afternoon": "Good afternoon, {name}",
+    "evening": "Good evening, {name}",
+    "subtitle": "Manage your volunteer opportunities, applications, and verified contributions."
+  },
+  "actions": {
+    "viewAll": "View all opportunities",
+    "reviewApps": "Review applications",
+    "create": "Create opportunity"
   },
   "stats": {
-    "title": "Key figures",
-    "opportunitiesActive": "Active opportunities",
-    "opportunitiesCompleted": "Completed opportunities",
-    "applicationsPending": "Pending applications",
-    "applicationsUnderReview": "Applications under review",
-    "participantsActive": "Active participants",
-    "participantsCompleted": "Completed participations",
-    "verifiedHours": "Verified hours",
-    "decisionsLast30d": "Decisions (30 days)",
-    "decidedRatio": "Decision rate",
-    "medianDecisionHours": "Median decision time (h)"
+    "published": "Published opportunities",
+    "applications": "Applications received",
+    "participants": "Active participants",
+    "review": "Contributions to review",
+    "hours": "Documented Hours"
   },
-  "gate": {
-    "lockedTitle": "Publishing is locked",
-    "lockedBody": "{count} items are waiting for verification. Complete verification to unlock publishing.",
-    "unlockedNote": "Publishing is available."
-  },
-  "submissions": {
-    "title": "Submissions to review",
-    "subtitle": "Latest contributions waiting for your review.",
-    "count": "{total} submissions",
-    "empty": "No submissions waiting for review.",
-    "viewAll": "Open contributions queue"
+  "contributions": {
+    "title": "Contributions to review",
+    "subtitle": "Submissions awaiting your review",
+    "pending": "{count} pending",
+    "empty": "No contributions waiting for review.",
+    "review": "Review contribution",
+    "submittedOn": "Submitted {date}"
   },
   "applications": {
     "title": "Recent applications",
-    "subtitle": "Newest applications across your opportunities.",
-    "count": "{total} applications",
+    "subtitle": "Volunteers applying for open positions",
+    "viewAll": "View all {count}",
     "empty": "No applications yet.",
-    "viewAll": "Open applications inbox"
+    "appliedFor": "Applied for",
+    "in": "in",
+    "appliedOn": "Applied {date}",
+    "view": "View application"
   },
-  "participants": {
-    "title": "Participants snapshot",
-    "subtitle": "Active and completed participations.",
-    "count": "{total} participants",
-    "empty": "No participants yet.",
-    "viewAll": "Open participants roster"
+  "activities": {
+    "title": "Active volunteer activities",
+    "subtitle": "Ongoing fieldwork and community actions",
+    "count": "{count} active initiatives",
+    "empty": "No active activities right now.",
+    "view": "View activity",
+    "participantsActive": "{count} participants"
+  },
+  "recentOpps": {
+    "title": "Recent opportunities",
+    "viewAll": "View all",
+    "empty": "No opportunities yet.",
+    "positions": "{count} positions",
+    "manage": "Manage opportunity"
   },
   "activity": {
     "title": "Recent activity",
     "empty": "No recent activity.",
     "error": "Could not load recent activity."
-  },
-  "notifications": {
-    "title": "Notifications",
-    "empty": "No notifications.",
-    "unread": "Unread",
-    "read": "Read"
   }
 }

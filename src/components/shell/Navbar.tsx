@@ -3,12 +3,14 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { Bell, Search, User } from 'lucide-react';
+import { Bell, Building2, Search, User } from 'lucide-react';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { Container } from '@/components/ui/Container';
 import { useSessionQuery } from '@/hooks/useSession';
 import { useLogoutMutation } from '@/hooks/useAuth';
 import { useVolunteerMeQuery, useVolunteerMediaQuery } from '@/hooks/useVolunteerAccount';
+import { useAccountMediaQuery, useOrgAccountQuery } from '@/hooks/useOrgAccount';
+import { accountMediaUrlOf } from '@/lib/api/orgAccount';
 import { volunteerMediaUrlOf } from '@/lib/api/volunteers';
 import {
   notificationIdOf,
@@ -23,6 +25,37 @@ import {
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 type Menu = 'bell' | 'avatar' | null;
+
+function OrgSearch() {
+  const t = useTranslations('orgWorkspace');
+  const router = useRouter();
+  const [value, setValue] = useState('');
+
+  function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    const q = value.trim();
+    router.push(q === '' ? '/org/opportunities' : `/org/opportunities?q=${encodeURIComponent(q)}`);
+  }
+
+  return (
+    <form role="search" onSubmit={onSubmit} className="relative hidden items-center md:flex">
+      <Search
+        size={18}
+        aria-hidden="true"
+        className="pointer-events-none absolute start-3 text-ink-muted"
+      />
+      <input
+        type="search"
+        data-testid="navbar-search"
+        aria-label={t('nav.searchPlaceholder')}
+        placeholder={t('nav.searchPlaceholder')}
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        className="w-56 rounded-md border border-border bg-surface-muted py-1.5 pe-3 ps-9 text-body-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none lg:w-72"
+      />
+    </form>
+  );
+}
 
 function VolunteerSearch() {
   const t = useTranslations('common');
@@ -306,12 +339,102 @@ function AvatarMenu({ open, onToggle }: { open: boolean; onToggle: () => void })
   );
 }
 
+// Organization identity: org name + workspace label + logo with a neutral
+// Building2 fallback block (never a letter, never user.jpg — that fallback
+// is person-only). Mounts only for the organization role so its account
+// query never fires for volunteers/admins. No browse links: the navbar
+// carries search, notifications, and identity only.
+function OrgIdentity({ open, onToggle }: { open: boolean; onToggle: () => void }) {
+  const t = useTranslations('common');
+  const tOrg = useTranslations('orgWorkspace');
+  const logout = useLogoutMutation();
+  const orgQuery = useOrgAccountQuery();
+  const logoQuery = useAccountMediaQuery(orgQuery.data?.logoMediaId ?? null);
+  const logoSrc = accountMediaUrlOf(logoQuery.data);
+  const orgName = orgQuery.data?.nameFr ?? orgQuery.data?.nameAr ?? '';
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        data-testid="navbar-avatar"
+        aria-label={t('nav.accountMenu')}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        onClick={onToggle}
+        className="flex items-center gap-2 rounded-md p-1 transition-colors hover:bg-surface-muted"
+      >
+        <span className="hidden text-end sm:block">
+          {orgName !== '' ? (
+            <span className="block max-w-44 truncate text-title-sm font-medium text-ink">
+              {orgName}
+            </span>
+          ) : null}
+          <span className="block text-label-xs text-ink-muted">{tOrg('nav.workspace')}</span>
+        </span>
+        {logoSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element -- session-resolved media URL with neutral fallback
+          <img
+            src={logoSrc}
+            alt=""
+            width={32}
+            height={32}
+            loading="lazy"
+            onError={(event) => {
+              event.currentTarget.style.display = 'none';
+            }}
+            className="h-8 w-8 shrink-0 rounded-full bg-surface-muted object-cover"
+          />
+        ) : (
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-muted text-ink-muted">
+            <Building2 size={18} aria-hidden="true" />
+          </span>
+        )}
+      </button>
+      {open ? (
+        <div
+          role="menu"
+          aria-label={t('nav.accountMenu')}
+          data-testid="navbar-avatar-menu"
+          className="absolute end-0 top-full z-50 mt-2 w-52 rounded-lg border border-border bg-surface p-1 shadow-raised"
+        >
+          <Link
+            href="/org/profile"
+            role="menuitem"
+            className="block rounded-md px-3 py-2 text-body-md text-ink hover:bg-surface-muted"
+          >
+            {t('nav.viewProfile')}
+          </Link>
+          <Link
+            href="/org/settings"
+            role="menuitem"
+            className="block rounded-md px-3 py-2 text-body-md text-ink hover:bg-surface-muted"
+          >
+            {t('nav.settings')}
+          </Link>
+          <button
+            type="button"
+            role="menuitem"
+            data-testid="navbar-logout"
+            disabled={logout.isPending}
+            onClick={() => logout.mutate()}
+            className="block w-full rounded-md px-3 py-2 text-start text-body-md text-ink hover:bg-surface-muted disabled:opacity-50"
+          >
+            {t('nav.logout')}
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function Navbar() {
   const t = useTranslations('common');
   const pathname = usePathname();
   const session = useSessionQuery();
   const [menu, setMenu] = useState<Menu>(null);
   const isVolunteer = session.data?.role === 'volunteer';
+  const isOrg = session.data?.role === 'organization';
   const isAuthed = !!session.data;
 
   useEffect(() => {
@@ -354,11 +477,13 @@ export function Navbar() {
               priority
             />
           </Link>
-          {/* Volunteer destinations live in the sidebar (Discover Talents)
-              and dashboard (Home, Opportunities) — no top-nav links. */}
+          {/* Browse destinations live in the sidebars — the top navbar
+              carries search, notifications, and identity only. No
+              Opportunities / Discover Talents links for any role. */}
         </div>
         <div className="flex shrink-0 items-center gap-1 sm:gap-2" data-menu-root="navbar">
           {isVolunteer ? <VolunteerSearch /> : null}
+          {isOrg ? <OrgSearch /> : null}
           {!isAuthed ? (
             <Link href="/" className="rounded-md px-2 py-2 text-sm text-ink hover:text-primary">
               {t('nav.home')}
@@ -368,7 +493,11 @@ export function Navbar() {
           {isAuthed ? (
             <>
               <NotificationBell open={menu === 'bell'} onToggle={() => setMenu(menu === 'bell' ? null : 'bell')} />
-              <AvatarMenu open={menu === 'avatar'} onToggle={() => setMenu(menu === 'avatar' ? null : 'avatar')} />
+              {isOrg ? (
+                <OrgIdentity open={menu === 'avatar'} onToggle={() => setMenu(menu === 'avatar' ? null : 'avatar')} />
+              ) : (
+                <AvatarMenu open={menu === 'avatar'} onToggle={() => setMenu(menu === 'avatar' ? null : 'avatar')} />
+              )}
             </>
           ) : null}
         </div>

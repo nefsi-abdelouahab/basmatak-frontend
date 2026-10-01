@@ -3,18 +3,24 @@
 import { useTranslations } from 'next-intl';
 import {
   Award,
+  BadgeCheck,
   ClipboardList,
   Compass,
+  Hourglass,
   Images,
+  Inbox,
   LayoutDashboard,
   ListChecks,
+  Megaphone,
   Settings,
+  UserSearch,
   Users,
   type LucideIcon,
 } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { useSessionQuery } from '@/hooks/useSession';
 import { useMyApplicationsQuery, useMyParticipationsQuery } from '@/hooks/useTasks';
+import { useMyOrganizationQuery } from '@/hooks/useOrgStats';
 import { FooterLegalLink } from './FooterLegal';
 
 // Volunteer sidebar mirrors code.html's left rail ("My Space" + "Discover" +
@@ -47,6 +53,135 @@ const DISCOVER: SpaceLink[] = [
   { key: 'opportunities', href: '/volunteer/opportunities', Icon: Compass },
   { key: 'talents', href: '/volunteer/talents', Icon: Users },
 ];
+
+// Organization Workspace rail mirrors code.html's left rail (MAIN +
+// DISCOVER + ACCOUNT groups). Discover Talents stays here as the org's
+// single desktop path to browse volunteers (public talent directory) —
+// the top navbar carries no browse links, so this is not duplication.
+// Icons are lucide maps of the design's Material Symbols (dashboard,
+// campaign→Megaphone, inbox, groups→Users, hourglass_top→Hourglass,
+// verified→BadgeCheck, person_search→UserSearch, tune→Settings).
+interface OrgLink {
+  key: string;
+  href: string;
+  Icon: LucideIcon;
+}
+
+const ORG_MAIN: OrgLink[] = [
+  { key: 'overview', href: '/org/dashboard', Icon: LayoutDashboard },
+  { key: 'opportunities', href: '/org/opportunities', Icon: Megaphone },
+  { key: 'applications', href: '/org/applications', Icon: Inbox },
+  { key: 'participants', href: '/org/participants', Icon: Users },
+  { key: 'contributions', href: '/org/contributions', Icon: Hourglass },
+  { key: 'experiences', href: '/org/experiences', Icon: BadgeCheck },
+];
+
+const ORG_DISCOVER: OrgLink[] = [{ key: 'talents', href: '/talents', Icon: UserSearch }];
+
+// Neutral verification note: renders ONLY when the API proves verification
+// (verificationStatus === 'verified'). No charter/audit/registry copy.
+function OrgVerifiedBadge() {
+  const t = useTranslations('orgWorkspace');
+  const orgQuery = useMyOrganizationQuery();
+  if (orgQuery.data?.verificationStatus !== 'verified') return null;
+  return (
+    <div className="rounded-lg bg-surface-muted p-3">
+      <p className="flex items-center gap-1.5 text-label-xs font-medium text-status-success">
+        <BadgeCheck size={14} aria-hidden="true" className="shrink-0" />
+        <span>{t('nav.verifiedOrg')}</span>
+      </p>
+    </div>
+  );
+}
+
+function OrgSidebar({ pathname }: { pathname: string }) {
+  const t = useTranslations('orgWorkspace');
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  return (
+    <aside
+      data-testid="shell-sidebar"
+      className="hidden w-64 shrink-0 rounded-lg border border-border bg-surface p-2 shadow-sm lg:sticky lg:top-20 lg:block lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
+    >
+      <div className="space-y-4">
+        <div>
+          <p className="mb-1 px-3 text-label-xs font-semibold uppercase tracking-wider text-ink-muted">
+            {t('nav.main')}
+          </p>
+          <nav aria-label={t('nav.main')} className="space-y-0.5">
+            {ORG_MAIN.map(({ key, href, Icon }) => {
+              const active = isActive(href);
+              return (
+                <Link
+                  key={key}
+                  href={href}
+                  data-testid={`sidebar-link-org-${key}`}
+                  aria-current={active ? 'page' : undefined}
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+                    active
+                      ? 'bg-primary-tint font-medium text-primary'
+                      : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
+                  }`}
+                >
+                  <Icon size={20} aria-hidden="true" className="shrink-0" />
+                  <span className="min-w-0 flex-1 truncate">{t(`nav.${key}`)}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+        <div>
+          <p className="mb-1 px-3 text-label-xs font-semibold uppercase tracking-wider text-ink-muted">
+            {t('nav.discover')}
+          </p>
+          <nav aria-label={t('nav.discover')} className="space-y-0.5">
+            {ORG_DISCOVER.map(({ key, href, Icon }) => {
+              const active = isActive(href);
+              return (
+                <Link
+                  key={key}
+                  href={href}
+                  data-testid={`sidebar-link-org-${key}`}
+                  aria-current={active ? 'page' : undefined}
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+                    active
+                      ? 'bg-primary-tint font-medium text-primary'
+                      : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
+                  }`}
+                >
+                  <Icon size={20} aria-hidden="true" className="shrink-0" />
+                  <span className="min-w-0 flex-1 truncate">{t(`nav.${key}`)}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+        <div className="border-t border-border-muted pt-2">
+          <p className="mb-1 px-3 text-label-xs font-semibold uppercase tracking-wider text-ink-muted">
+            {t('nav.account')}
+          </p>
+          <nav aria-label={t('nav.account')} className="space-y-0.5">
+            <Link
+              href="/org/settings"
+              data-testid="sidebar-link-org-settings"
+              aria-current={isActive('/org/settings') ? 'page' : undefined}
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+                isActive('/org/settings')
+                  ? 'bg-primary-tint font-medium text-primary'
+                  : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
+              }`}
+            >
+              <Settings size={20} aria-hidden="true" className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate">{t('nav.settings')}</span>
+            </Link>
+          </nav>
+        </div>
+        <div className="px-1 pt-1">
+          <OrgVerifiedBadge />
+        </div>
+      </div>
+    </aside>
+  );
+}
 
 function SidebarLink({
   href,
@@ -93,11 +228,16 @@ export function Sidebar() {
   const pathname = usePathname();
   const session = useSessionQuery();
   const isVolunteer = session.data?.role === 'volunteer';
+  const isOrg = session.data?.role === 'organization';
 
   // Badge totals read the real list endpoints with limit=1 (only the
   // cursor `total` is used). Zero totals render no badge — never invented.
   const applicationsQuery = useMyApplicationsQuery({ limit: 1 }, isVolunteer);
   const participationsQuery = useMyParticipationsQuery({ limit: 1 }, isVolunteer);
+
+  if (isOrg) {
+    return <OrgSidebar pathname={pathname} />;
+  }
 
   if (!isVolunteer) {
     return (
