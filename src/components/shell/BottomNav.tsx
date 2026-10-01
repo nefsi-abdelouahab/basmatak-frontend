@@ -4,21 +4,27 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Award,
+  BadgeCheck,
   ClipboardList,
   Compass,
+  Hourglass,
   Images,
+  Inbox,
   LayoutDashboard,
   ListChecks,
+  Megaphone,
   Menu,
   Settings,
+  UserSearch,
   Users,
   type LucideIcon,
 } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { useSessionQuery } from '@/hooks/useSession';
 
-// Mobile tab bar (sidebar becomes this below the lg breakpoint): icon+label
-// tabs, active tab in primary. Four primary tabs stay visible; the
+// Mobile tab bar (sidebar becomes this below the lg breakpoint): icon-only
+// tabs (labels survive as aria-labels; the More sheet shows icon+label
+// rows), active tab in primary. Four primary tabs stay visible; the
 // least-critical destinations (Experiences, Portfolio, Discover Talents,
 // Settings) fold into the "More" tab menu so the bar fits 390px without
 // overflow. Discover Talents lives in More here (not duplication): the top
@@ -43,11 +49,38 @@ const MORE_TABS: Tab[] = [
   { key: 'settings', href: '/volunteer/settings', Icon: Settings },
 ];
 
+// Organization Workspace rail (same 4+More pattern, same component): the
+// sidebar's 8 destinations cannot fit 390px as icon tabs, so the 4
+// daily-driver destinations stay visible — Overview, My Opportunities,
+// Applications, Participants — while Contributions, Verified Experiences,
+// Discover Talents, and Settings fold into More (same judgment as the
+// volunteer side: review queues stay primary, archives/config stay a tap
+// away). Icons and hrefs match the org sidebar exactly (dashboard→
+// LayoutDashboard, campaign→Megaphone, inbox→Inbox, groups→Users,
+// hourglass_top→Hourglass, verified→BadgeCheck, person_search→UserSearch,
+// tune→Settings); labels come from the orgWorkspace catalog, like the
+// sidebar. Discover Talents points at /talents (the sidebar's single org
+// path to the talent directory), not a duplicated route.
+const ORG_PRIMARY_TABS: Tab[] = [
+  { key: 'overview', href: '/org/dashboard', Icon: LayoutDashboard },
+  { key: 'opportunities', href: '/org/opportunities', Icon: Megaphone },
+  { key: 'applications', href: '/org/applications', Icon: Inbox },
+  { key: 'participants', href: '/org/participants', Icon: Users },
+];
+
+const ORG_MORE_TABS: Tab[] = [
+  { key: 'contributions', href: '/org/contributions', Icon: Hourglass },
+  { key: 'experiences', href: '/org/experiences', Icon: BadgeCheck },
+  { key: 'talents', href: '/talents', Icon: UserSearch },
+  { key: 'settings', href: '/org/settings', Icon: Settings },
+];
+
 const TAB_CLASS =
   'flex min-w-0 flex-1 items-center justify-center rounded-md px-1 py-2.5 transition-colors';
 
 export function BottomNav() {
   const t = useTranslations('common');
+  const tOrg = useTranslations('orgWorkspace');
   const pathname = usePathname();
   const session = useSessionQuery();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -76,7 +109,10 @@ export function BottomNav() {
     };
   }, [moreOpen]);
 
-  if (session.data?.role !== 'volunteer') {
+  const isVolunteer = session.data?.role === 'volunteer';
+  const isOrg = session.data?.role === 'organization';
+
+  if (!isVolunteer && !isOrg) {
     return (
       <nav
         data-testid="shell-bottomnav"
@@ -92,13 +128,18 @@ export function BottomNav() {
     );
   }
 
+  const primaryTabs = isOrg ? ORG_PRIMARY_TABS : PRIMARY_TABS;
+  const moreTabs = isOrg ? ORG_MORE_TABS : MORE_TABS;
+  const tabLabel = (key: string) => (isOrg ? tOrg(`nav.${key}`) : t(`nav.${key}`));
+  const menuLabel = isOrg ? tOrg('nav.menu') : t('nav.menu');
+
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
-  const moreActive = MORE_TABS.some((tab) => isActive(tab.href));
+  const moreActive = moreTabs.some((tab) => isActive(tab.href));
 
   return (
     <nav
       data-testid="shell-bottomnav"
-      aria-label={t('nav.menu')}
+      aria-label={menuLabel}
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface lg:hidden"
     >
       <div className="relative" data-menu-root="bottomnav">
@@ -109,7 +150,7 @@ export function BottomNav() {
             data-testid="bottomnav-more-menu"
             className="absolute inset-x-2 bottom-full z-50 mb-2 rounded-lg border border-border bg-surface p-2 shadow-raised"
           >
-            {MORE_TABS.map(({ key, href, Icon }) => (
+            {moreTabs.map(({ key, href, Icon }) => (
               <Link
                 key={key}
                 href={href}
@@ -120,20 +161,20 @@ export function BottomNav() {
                 }`}
               >
                 <Icon size={20} aria-hidden="true" className="shrink-0" />
-                <span className="truncate">{t(`nav.${key}`)}</span>
+                <span className="truncate">{tabLabel(key)}</span>
               </Link>
             ))}
           </div>
         ) : null}
         <div className="flex items-stretch px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1">
-          {PRIMARY_TABS.map(({ key, href, Icon }) => {
+          {primaryTabs.map(({ key, href, Icon }) => {
             const active = isActive(href);
             return (
               <Link
                 key={key}
                 href={href}
                 data-testid={`bottomnav-tab-${key}`}
-                aria-label={t(`nav.${key}`)}
+                aria-label={tabLabel(key)}
                 aria-current={active ? 'page' : undefined}
                 className={`${TAB_CLASS} ${active ? 'font-medium text-primary' : 'text-ink-muted'}`}
               >

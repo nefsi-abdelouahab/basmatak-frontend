@@ -1,5 +1,4 @@
 import { setRequestLocale } from 'next-intl/server';
-import { RequireGuest } from '@/components/guards/RequireGuest';
 import { ForgotPasswordForm } from './ForgotPasswordForm';
 
 export default function ForgotPasswordPage({
@@ -8,10 +7,6 @@ export default function ForgotPasswordPage({
   params: { locale: string };
 }) {
   setRequestLocale(locale);
-  // Guest-only: authenticated visits bounce to the role home.
-  return (
-    <RequireGuest>
-      <ForgotPasswordForm />
-    </RequireGuest>
-  );
+  // Guest-only enforcement lives in the (auth) layout.
+  return <ForgotPasswordForm />;
 }

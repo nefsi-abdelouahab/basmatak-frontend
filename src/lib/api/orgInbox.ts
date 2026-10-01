@@ -330,6 +330,7 @@ export interface InboxListParams {
   opportunityId?: string;
   status?: string | string[];
   q?: string;
+  sort?: string;
   cursor?: string;
   limit?: number;
 }

@@ -11,6 +11,10 @@ import { ROLE_HOME, type AuthRole } from '@/hooks/useAuth';
 // - Guest-only routes (public landing + discovery lists, auth screens) render
 //   for logged-out visitors. An authenticated session redirects to the role's
 //   authenticated counterpart instead of rendering.
+// - Exception: /verify-email stays reachable for authenticated-but-unverified
+//   sessions (the post-login/post-register `status=unverified` gate and token
+//   links that complete a pending signup). Verified sessions bounce from it
+//   like any other auth screen; guests always render it.
 // - Shared routes (public detail pages deep-linked from authenticated UI:
 //   /opportunities/:id, /volunteers/:username, /orgs/:slug) render for
 //   everyone and never mount this guard.
@@ -36,6 +40,17 @@ export function guestRedirectTarget(pathname: string, role: AuthRole): string {
   return ROLE_HOME[role];
 }
 
+// Verify-email normalization shared by the guard: locale-less pathname in,
+// trailing-slash tolerant. Unverified sessions (no emailVerifiedAt) must keep
+// the gate + token links; verified sessions bounce to the role home.
+export function isUnverifiedVerifyEmailVisit(
+  pathname: string,
+  emailVerifiedAt: string | null | undefined,
+): boolean {
+  const normalized = pathname.endsWith('/') && pathname !== '/' ? pathname.slice(0, -1) : pathname;
+  return normalized === '/verify-email' && !emailVerifiedAt;
+}
+
 export function RequireGuest({ children }: { children: ReactNode }) {
   const t = useTranslations('common');
   const session = useSessionQuery();
@@ -54,7 +69,10 @@ export function RequireGuest({ children }: { children: ReactNode }) {
     }
   }, [session.isPending, session.isError, session.data, arrivedAuthed]);
   const target =
-    arrivedAuthed === true && !session.isError && session.data
+    arrivedAuthed === true &&
+    !session.isError &&
+    session.data &&
+    !isUnverifiedVerifyEmailVisit(pathname, session.data.emailVerifiedAt)
       ? guestRedirectTarget(pathname, session.data.role)
       : null;
 

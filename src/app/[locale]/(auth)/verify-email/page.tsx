@@ -15,6 +15,8 @@ export default function VerifyEmailPage({
   searchParams,
 }: VerifyEmailPageProps) {
   setRequestLocale(locale);
+  // Guest-only enforcement lives in the (auth) layout; RequireGuest keeps
+  // this route reachable for guests and authenticated-but-unverified sessions.
   return (
     <VerifyEmailForm
       token={first(searchParams.token)}

@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { Shell } from './Shell';
 import commonEn from '@/messages/common/en.json';
+import orgWorkspaceEn from '@/messages/org-workspace/en.json';
 import publicOrgsEn from '@/messages/public-orgs/en.json';
 
 vi.mock('@/i18n/navigation', () => ({
@@ -42,6 +43,7 @@ describe('Shell', () => {
         locale="en"
         messages={{
           common: commonEn,
+          orgWorkspace: orgWorkspaceEn as unknown as AbstractIntlMessages,
           publicOrgs: publicOrgsEn as unknown as AbstractIntlMessages,
         }}
       >

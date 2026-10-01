@@ -351,6 +351,9 @@ function OrgIdentity({ open, onToggle }: { open: boolean; onToggle: () => void }
   const orgQuery = useOrgAccountQuery();
   const logoQuery = useAccountMediaQuery(orgQuery.data?.logoMediaId ?? null);
   const logoSrc = accountMediaUrlOf(logoQuery.data);
+  // Broken logo URLs fall back to the neutral block via state (never a raw
+  // <img> with alt text leaking into layout, never display:none holes).
+  const [logoFailed, setLogoFailed] = useState(false);
   const orgName = orgQuery.data?.nameFr ?? orgQuery.data?.nameAr ?? '';
 
   return (
@@ -372,7 +375,7 @@ function OrgIdentity({ open, onToggle }: { open: boolean; onToggle: () => void }
           ) : null}
           <span className="block text-label-xs text-ink-muted">{tOrg('nav.workspace')}</span>
         </span>
-        {logoSrc ? (
+        {logoSrc && !logoFailed ? (
           // eslint-disable-next-line @next/next/no-img-element -- session-resolved media URL with neutral fallback
           <img
             src={logoSrc}
@@ -380,9 +383,7 @@ function OrgIdentity({ open, onToggle }: { open: boolean; onToggle: () => void }
             width={32}
             height={32}
             loading="lazy"
-            onError={(event) => {
-              event.currentTarget.style.display = 'none';
-            }}
+            onError={() => setLogoFailed(true)}
             className="h-8 w-8 shrink-0 rounded-full bg-surface-muted object-cover"
           />
         ) : (
