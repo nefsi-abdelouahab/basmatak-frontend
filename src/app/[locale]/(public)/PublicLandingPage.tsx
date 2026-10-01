@@ -18,6 +18,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
+import { Container } from '@/components/ui/Container';
 import { ArrowIcon } from '@/components/ui/ArrowIcon';
 import { Button } from '@/components/ui/Button';
 import { Empty } from '@/components/ui/Empty';
@@ -316,7 +317,13 @@ function RecordCard({
   const date = formatDate(record.verifiedAt, locale);
   const hours = hoursFromMinutes(typeof record.duration === 'number' ? record.duration : null);
   const code = expDisplayCode(record.registryId) ?? record.verificationCode ?? '';
-  const skills = Array.isArray(record.skills) ? record.skills.filter((s) => s !== '') : [];
+  // Backend experience `skills` is an ObjectId snapshot, not names: drop raw
+  // ids (and blanks) so a database id never renders as visible text.
+  const skills = Array.isArray(record.skills)
+    ? record.skills.filter(
+        (s) => typeof s === 'string' && s.trim() !== '' && !/^[0-9a-fA-F]{24}$/.test(s.trim()),
+      )
+    : [];
 
   return (
     <div data-testid="sample-record-card" className="rounded-lg bg-surface-muted p-6 shadow-sm sm:p-8">
@@ -458,7 +465,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
     <div data-testid="public-landing">
       {/* 1. Hero */}
       <section data-section="hero" className="w-full bg-surface">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 py-12 lg:grid-cols-12 lg:gap-16 lg:py-20">
+        <Container className="grid grid-cols-1 items-center gap-12 py-12 lg:grid-cols-12 lg:gap-16 lg:py-20">
           <div className="flex flex-col items-start lg:col-span-7">
             <p className="inline-flex items-center gap-2 rounded-full bg-surface-muted px-3 py-1 text-label-xs text-ink-muted">
               <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -472,7 +479,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             </p>
             <div className="mt-8 flex w-full flex-wrap items-center gap-4 sm:w-auto">
               <Link
-                href="/volunteer/opportunities"
+                href="/opportunities"
                 className="group inline-flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-6 text-label-md font-medium text-white transition-colors hover:bg-primary-hover"
               >
                 <span>{t('hero.ctaPrimary')}</span>
@@ -507,12 +514,12 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             </div>
             <p className="mt-3 text-body-sm italic text-ink-muted">{t('hero.captionNote')}</p>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* 2. Philosophy */}
       <section data-section="philosophy" className="w-full bg-surface-muted py-16">
-        <div className="mx-auto max-w-7xl px-6">
+        <Container>
           <div className="max-w-2xl">
             <Eyebrow>{t('philosophy.eyebrow')}</Eyebrow>
             <h2 className="mt-2 text-headline-lg font-semibold text-ink">{t('philosophy.title')}</h2>
@@ -537,12 +544,12 @@ export function PublicLandingPage({ locale }: { locale: string }) {
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* 3. How it works */}
       <section data-section="how" className="w-full bg-surface py-20">
-        <div className="mx-auto max-w-7xl px-6">
+        <Container>
           <div className="flex flex-col justify-between gap-6 pb-12 md:flex-row md:items-end">
             <div>
               <Eyebrow>{t('how.eyebrow')}</Eyebrow>
@@ -573,12 +580,12 @@ export function PublicLandingPage({ locale }: { locale: string }) {
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* 4. Opportunities preview */}
       <section data-section="opportunities" className="w-full bg-surface-muted py-20">
-        <div className="mx-auto max-w-7xl px-6">
+        <Container>
           <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               <Eyebrow>{t('opps.eyebrow')}</Eyebrow>
@@ -624,12 +631,12 @@ export function PublicLandingPage({ locale }: { locale: string }) {
               </>
             ) : null}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* 5. Verification showcase */}
       <section data-section="showcase" className="w-full bg-surface py-20">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-12">
+        <Container className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
           <div className="space-y-4 lg:col-span-5">
             <Eyebrow>{t('showcase.eyebrow')}</Eyebrow>
             <h2 className="text-headline-lg font-semibold text-ink">{t('showcase.title')}</h2>
@@ -672,12 +679,12 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             ) : null}
             {record ? <RecordCard locale={locale} record={record} /> : null}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* 6. Talents */}
       <section data-section="talents" className="w-full bg-surface-muted py-20">
-        <div className="mx-auto max-w-7xl px-6">
+        <Container>
           <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               <Eyebrow>{t('talents.eyebrow')}</Eyebrow>
@@ -720,12 +727,12 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             ) : null}
           </div>
           <p className="mt-8 text-center text-body-sm text-ink-muted">{t('talents.browseNote')}</p>
-        </div>
+        </Container>
       </section>
 
       {/* 7. Organization CTA */}
       <section data-section="org-cta" className="w-full bg-surface py-20">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-12">
+        <Container className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
           <div className="order-2 lg:order-1 lg:col-span-5">
             <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-surface-muted shadow-sm">
               <Image
@@ -761,19 +768,19 @@ export function PublicLandingPage({ locale }: { locale: string }) {
                 {t('orgCta.registerCta')}
               </Link>
               <Link
-                href="/volunteer/opportunities"
+                href="/opportunities"
                 className="inline-flex h-11 items-center justify-center rounded-md bg-surface-muted px-6 text-label-md font-medium text-ink transition-colors hover:bg-border-muted"
               >
                 {t('orgCta.exploreCta')}
               </Link>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* 8. Trust */}
       <section data-section="trust" className="w-full bg-surface-muted py-20">
-        <div className="mx-auto max-w-7xl px-6">
+        <Container>
           <div className="mb-12 max-w-3xl">
             <Eyebrow>{t('trust.eyebrow')}</Eyebrow>
             <h2 className="mt-2 text-headline-lg font-semibold text-ink">{t('trust.title')}</h2>
@@ -793,17 +800,18 @@ export function PublicLandingPage({ locale }: { locale: string }) {
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* 9. Final CTA */}
       <section data-section="cta" className="w-full bg-surface py-20">
-        <div className="mx-auto max-w-4xl px-6 text-center">
+        <Container className="text-center">
+          <div className="mx-auto max-w-4xl">
           <h2 className="text-headline-lg font-semibold text-ink">{t('cta.title')}</h2>
           <p className="mx-auto mt-3 max-w-xl text-body-lg text-ink-muted">{t('cta.lede')}</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
-              href="/volunteer/opportunities"
+              href="/opportunities"
               className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-label-md font-medium text-white transition-colors hover:bg-primary-hover"
             >
               {t('cta.exploreCta')}
@@ -815,7 +823,8 @@ export function PublicLandingPage({ locale }: { locale: string }) {
               {t('cta.accountCta')}
             </Link>
           </div>
-        </div>
+          </div>
+        </Container>
       </section>
     </div>
   );

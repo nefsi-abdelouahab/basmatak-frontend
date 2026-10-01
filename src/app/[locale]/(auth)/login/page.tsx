@@ -1,4 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
+import { RequireGuest } from '@/components/guards/RequireGuest';
 import { LoginForm } from './LoginForm';
 
 interface LoginPageProps {
@@ -12,5 +13,11 @@ export default function LoginPage({ params: { locale }, searchParams }: LoginPag
   const next = typeof raw === 'string' ? raw : undefined;
   const statusRaw = searchParams.status;
   const status = typeof statusRaw === 'string' ? statusRaw : undefined;
-  return <LoginForm next={next} status={status} />;
+  // Guest-only: authenticated visits bounce to the role home (verify-email
+  // stays shared — it serves authenticated-but-unverified users too).
+  return (
+    <RequireGuest>
+      <LoginForm next={next} status={status} />
+    </RequireGuest>
+  );
 }

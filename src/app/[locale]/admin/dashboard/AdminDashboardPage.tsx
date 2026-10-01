@@ -510,7 +510,7 @@ export function AdminDashboardPage({ locale }: { locale: string }) {
 
   if (session.isPending) {
     return (
-      <div data-testid="admin-dashboard" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+      <div data-testid="admin-dashboard" className="flex min-w-0 flex-col gap-6">
         <Loader label={t('shared.loading')} />
       </div>
     );
@@ -520,14 +520,14 @@ export function AdminDashboardPage({ locale }: { locale: string }) {
 
   if (!isAdmin || gate.isForbidden) {
     return (
-      <div data-testid="admin-dashboard-forbidden" className="mx-auto w-full max-w-3xl p-4">
+      <div data-testid="admin-dashboard-forbidden" className="min-w-0">
         <ForbiddenScreen />
       </div>
     );
   }
 
   return (
-    <div data-testid="admin-dashboard" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+    <div data-testid="admin-dashboard" className="flex min-w-0 flex-col gap-6">
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold text-ink">{t('header.title')}</h1>
         <p className="text-sm text-ink-muted">{t('header.subtitle')}</p>

@@ -3,15 +3,18 @@
 import { useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { ArrowLeft, BadgeCheck, Check, Copy, MapPin, Pencil, ShieldCheck } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { Container } from '@/components/ui/Container';
 import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
 import { Pagination } from '@/components/ui/Pagination';
 import { Pill } from '@/components/ui/Pill';
 import { mapToApiError } from '@/lib/api/errors';
 import { useSessionQuery, getLoginHref } from '@/hooks/useSession';
+import { useVolunteerMeQuery } from '@/hooks/useVolunteerAccount';
 import { useToggleTalentFavoriteMutation, isAuthError } from '@/hooks/useFavorites';
 import {
   usePublicTalentExperiencesQuery,
@@ -25,12 +28,14 @@ import {
   emptySchedule,
   experiencesGateOpen,
   hoursFromMinutes,
+  humanExperienceSkillLabels,
   isImageMedia,
   isLinkMedia,
   mergeUniqueById,
   publicDisplayName,
   registryCode,
   resolvePublicProfileSections,
+  skillNameMapOf,
   sortAreasByPercentDesc,
   verifiedLineParts,
   type DayKey,
@@ -38,11 +43,31 @@ import {
   type PublicPortfolioItem,
   type WeeklySchedule,
 } from '@/lib/api/publicTalent';
-import { PublicEvidenceMedia, PublicMediaImage, PublicMediaLink } from './PublicMediaParts';
+import { PublicEvidenceMedia, PublicMediaImage, PublicMediaLink, PublicLinkPreview, PortfolioPlaceholder } from './PublicMediaParts';
 
 // F17 merged public volunteer profile (plan M1: Talent layout as the base plus
-// the Volunteer folder's media grid and stats strip). Guests may view every
-// block; the save control redirects guests to Login with `next`.
+// the Volunteer folder's media grid and stats strip). This route ALWAYS renders
+// inside the (shared) group (PublicNavbar + PublicFooter) for every viewer —
+// anonymous, volunteer, or organization. There is no sidebar on this route and
+// no layout branch: session only toggles two header buttons (content-level).
+//
+// - Save: visible only when authenticated AND not the profile owner (real
+//   POST/DELETE /favorites/talents/:username; hidden for guests and owners).
+// - Edit profile: visible only when the viewer owns this profile.
+// Icon map (Public Talent Profile code.html Material Symbol -> lucide-react):
+// arrow_back -> ArrowLeft, verified/check_circle -> BadgeCheck (verified line),
+// location_on -> MapPin (location meta), verified_user -> ShieldCheck
+// (neutral Verification card — no tier/endorsement copy, which has no backend
+// field), open_in_new -> Copy/Check (Copy Profile Link button),
+// calendar_today -> omitted (member-since is a registry-membership claim,
+// never rendered), task_alt -> omitted (endorsement copy has no backend
+// field), article/psychology/workspace_premium/folder_open/volunteer_activism/
+// mic/map/translate/format_quote/schedule/lock/output/check -> documented
+// only (sections render as neutral cards without per-section icons),
+// expand_more, assignment, explore, group, language, notifications, search,
+// space_dashboard, folder_shared, tune (dashboard sidebar icons — the
+// app-shell sidebar is never rendered on this route, so these have no
+// mapping target; the in-content profile <aside> below carries no icon set).
 //
 // GATING: every block renders from `resolvePublicProfileSections`, so a closed
 // show-flag emits no heading, count, placeholder, empty state or reserved
@@ -50,7 +75,9 @@ import { PublicEvidenceMedia, PublicMediaImage, PublicMediaLink } from './Public
 // Curation deliberately absent: the payload's ungated `createdAt` is never
 // rendered (a member-since line is a registry-membership claim), there is no
 // apply/contact/invite control, no verification tier, and no public activity
-// stream.
+// stream. The design's free-form "Community Contributions" list is CUT per the
+// reconciliation (no backend field); the Recommendations (reviews) section is
+// the real community signal and the tab points there.
 
 function formatDate(iso: string | null | undefined, locale: string): string {
   if (!iso) return '';
@@ -59,7 +86,14 @@ function formatDate(iso: string | null | undefined, locale: string): string {
   return new Date(iso).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-function Avatar({ mediaId }: { mediaId: string | null }) {
+function Avatar({ mediaId, hidden }: { mediaId: string | null; hidden: boolean }) {
+  // Photo when one is uploaded; the neutral public/user.jpg fallback when
+  // the profile is otherwise public but no photo was uploaded. Nothing at
+  // all only when the profile is fully closed (every opt-out gate shut) —
+  // the fallback never overrides an explicit hide. The API sends null for
+  // both "never uploaded" and "hidden", so "any open gate" is the proxy for
+  // "public profile" (see avatarHidden below).
+  if (hidden) return null;
   return (
     <div
       data-testid="profile-avatar"
@@ -68,7 +102,7 @@ function Avatar({ mediaId }: { mediaId: string | null }) {
       {mediaId ? (
         <PublicMediaImage media={{ mediaId }} fallbackSrc="/user.jpg" />
       ) : (
-        // eslint-disable-next-line @next/next/no-img-element -- local fallback portrait
+        // eslint-disable-next-line @next/next/no-img-element -- neutral local fallback portrait
         <img src="/user.jpg" alt="" className="h-full w-full object-cover" />
       )}
     </div>
@@ -130,19 +164,24 @@ function StatsStrip({
   completedTasks,
   verifiedExperiences,
   volunteerHours,
+  skillsCount,
 }: {
   completedTasks: number;
   verifiedExperiences: number;
   volunteerHours: number;
+  skillsCount: number | null;
 }) {
   const t = useTranslations('publicTalent');
   const cells = [
     { key: 'completedTasks', value: completedTasks, label: t('stats.completedTasks') },
     { key: 'verifiedExperiences', value: verifiedExperiences, label: t('stats.verifiedExperiences') },
     { key: 'volunteerHours', value: volunteerHours, label: t('stats.volunteerHours') },
+    ...(skillsCount !== null
+      ? [{ key: 'skills', value: skillsCount, label: t('stats.skills') }]
+      : []),
   ];
   return (
-    <dl data-testid="profile-stats" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <dl data-testid="profile-stats" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       {cells.map((cell) => (
         <div key={cell.key} className="rounded-md border border-border bg-surface p-3">
           <dt className="text-xs font-medium uppercase tracking-wide text-ink-muted">{cell.label}</dt>
@@ -150,6 +189,42 @@ function StatsStrip({
         </div>
       ))}
     </dl>
+  );
+}
+
+function CopyProfileLink() {
+  const t = useTranslations('publicTalent');
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="flex flex-col items-start gap-1">
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        data-testid="profile-copy"
+        onClick={() => {
+          try {
+            const url = window.location.href;
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(url).catch(() => undefined);
+            }
+          } catch {
+            // Clipboard unavailable (permissions, non-secure context) — the
+            // inline confirmation below is best-effort only, never an error.
+          }
+          setCopied(true);
+          window.setTimeout(() => setCopied(false), 2500);
+        }}
+      >
+        {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+        {copied ? t('copy.copied') : t('copy.label')}
+      </Button>
+      {copied ? (
+        <span data-testid="profile-copied" role="status" className="text-xs text-ink-muted">
+          {t('copy.copied')}
+        </span>
+      ) : null}
+    </div>
   );
 }
 
@@ -189,15 +264,21 @@ function AvailabilityBlock({ schedule, note }: { schedule: WeeklySchedule; note:
 function ExperienceCard({
   experience,
   locale,
+  skillNames,
 }: {
   experience: PublicExperience;
   locale: string;
+  /** Profile skill catalog (id -> locale name) to resolve raw skill ids. */
+  skillNames: Map<string, string>;
 }) {
   const t = useTranslations('publicTalent');
   const parts = verifiedLineParts(experience, locale);
   const date = formatDate(parts.verifiedAt, locale);
   const hours = hoursFromMinutes(experience.duration);
   const ref = registryCode(experience.registryId, 'EXP');
+  // Backend `skills` is an ObjectId snapshot: resolve to catalog names and
+  // drop unresolvable raw ids so a database id never renders as text.
+  const skillLabels = humanExperienceSkillLabels(experience.skills, skillNames);
   return (
     <li data-testid="experience-card" className="flex flex-col gap-2 rounded-md border border-border p-3">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -207,14 +288,16 @@ function ExperienceCard({
       {experience.description ? (
         <p className="text-sm text-ink-muted">{experience.description}</p>
       ) : null}
-      <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
-        {hours ? <span>{t('experiences.hours', { hours })}</span> : null}
-        {(experience.skills ?? []).map((skill) => (
-          <Pill key={skill} tone="neutral">
-            {skill}
-          </Pill>
-        ))}
-      </div>
+      {hours || skillLabels.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+          {hours ? <span>{t('experiences.hours', { hours })}</span> : null}
+          {skillLabels.map((skill) => (
+            <Pill key={skill} tone="neutral">
+              {skill}
+            </Pill>
+          ))}
+        </div>
+      ) : null}
       {parts.organization ? (
         <p data-testid="experience-verified" className="text-xs font-medium text-status-success">
           <span aria-hidden="true">✓ </span>
@@ -238,13 +321,22 @@ function PortfolioItem({ item }: { item: PublicPortfolioItem }) {
   const media = item.media ?? [];
   const images = media.filter(isImageMedia);
   const links = media.filter((m) => isLinkMedia(m));
+  // A link row is the only shape a remote image can take in the media model,
+  // so the first link doubles as the hero preview (image-first, anchor
+  // fallback inside). Remaining links keep their plain anchors below.
+  const heroLink = images.length === 0 ? (links[0] ?? null) : null;
+  const restLinks = images.length === 0 ? links.slice(1) : links;
   return (
     <li data-testid="portfolio-item" className="flex flex-col gap-2 rounded-md border border-border p-3">
       {images[0] ? (
         <div className="h-40 w-full overflow-hidden rounded-md bg-surface-muted">
           <PublicMediaImage media={images[0]} />
         </div>
-      ) : null}
+      ) : heroLink ? (
+        <PublicLinkPreview media={heroLink} />
+      ) : (
+        <PortfolioPlaceholder />
+      )}
       {item.title ? <h4 className="text-sm font-semibold text-ink">{item.title}</h4> : null}
       {item.typeLabel ? <span className="text-xs text-ink-muted">{item.typeLabel}</span> : null}
       {item.description ? <p className="text-sm text-ink-muted">{item.description}</p> : null}
@@ -257,7 +349,7 @@ function PortfolioItem({ item }: { item: PublicPortfolioItem }) {
           ))}
         </div>
       ) : null}
-      {links.map((link) => (
+      {restLinks.map((link) => (
         <PublicMediaLink key={link.mediaId ?? link.url} media={link} />
       ))}
     </li>
@@ -267,14 +359,34 @@ function PortfolioItem({ item }: { item: PublicPortfolioItem }) {
 export function PublicTalentProfilePage({
   locale,
   username,
+  // Optional volunteer-context overrides. Defaults preserve the public
+  // route exactly: breadcrumb/404 back link → `/talents`, post-login
+  // return → the public profile URL. The Volunteer talent route passes its
+  // in-area equivalents so an authenticated volunteer never leaves the
+  // Volunteer experience through this component.
+  backHref = '/talents',
+  loginNext,
 }: {
   locale: string;
   username: string;
+  backHref?: string;
+  loginNext?: string;
 }) {
   const t = useTranslations('publicTalent');
   const c = useTranslations('common');
+  const session = useSessionQuery();
   const profileQuery = usePublicTalentProfileQuery(username);
   const wilayasQuery = usePublicTalentWilayasQuery();
+  // Owner check: only a signed-in volunteer whose own username matches this
+  // route owns the profile. A pending/failed own-profile read means
+  // not-owner (Save stays visible for signed-in non-owners; Edit appears
+  // only on a confirmed username match). Guests never own a profile.
+  const meQuery = useVolunteerMeQuery();
+  const ownUsername = session.data?.role === 'volunteer' ? (meQuery.data?.username ?? null) : null;
+  const isOwner = ownUsername !== null && ownUsername === username;
+  const isAuthenticated = session.data != null;
+  const showSave = isAuthenticated && !isOwner;
+  const showEdit = isOwner;
   const [expPageIdx, setExpPageIdx] = useState(0);
   const [expCursors, setExpCursors] = useState<(string | undefined)[]>([undefined]);
   const [reviewPageIdx, setReviewPageIdx] = useState(0);
@@ -312,40 +424,44 @@ export function PublicTalentProfilePage({
     return mergeUniqueById(sections.experiences.data, experiencesQuery.data?.items ?? []);
   }, [sections, experiencesQuery.data]);
 
+  // Catalog to resolve raw experience skill ids into display names.
+  const skillNames = useMemo(
+    () =>
+      skillNameMapOf(
+        sections?.skills.open ? sections.skills.data : null,
+        locale,
+      ),
+    [sections, locale],
+  );
+
   if (profileQuery.isPending) return <Loader label={t('shared.loading')} />;
 
   if (profileQuery.isError) {
     const err = mapToApiError(profileQuery.error);
     if (err.statusCode === 404) {
       return (
-        <div
-          data-testid="public-profile"
-          className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4"
-        >
+        <Container testId="public-profile" className="flex flex-col gap-6 py-4">
           <Empty
             title={t('profile.notFoundTitle')}
             description={t('profile.notFoundBody')}
             action={
-              <Link href="/talents" className="text-sm font-medium text-primary">
+              <Link href={backHref} className="text-sm font-medium text-primary">
                 {t('profile.backToTalents')}
               </Link>
             }
           />
-        </div>
+        </Container>
       );
     }
     return (
-      <div
-        data-testid="public-profile"
-        className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4"
-      >
+      <Container testId="public-profile" className="flex flex-col gap-6 py-4">
         <p data-testid="profile-error" role="alert" className="text-sm text-status-error">
           {t('shared.loadError')}
         </p>
         <Button variant="secondary" onClick={() => profileQuery.refetch()}>
           {t('shared.retry')}
         </Button>
-      </div>
+      </Container>
     );
   }
 
@@ -353,10 +469,34 @@ export function PublicTalentProfilePage({
 
   // Locale-less: the locale-aware router adds the prefix, and the post-login
   // `router.push(next)` would double-prefix a pre-prefixed value.
-  const next = `/volunteers/${username}`;
+  const next = loginNext ?? `/volunteers/${username}`;
   const displayName = publicDisplayName(sections.bio.data.firstName, profile.username);
   const code = registryCode(profile.registryId, 'VOL');
   const areas = sortAreasByPercentDesc(sections.areas.data);
+  // Neutral verified line: real stats count first, embedded experiences length
+  // as fallback, omitted when both gates are closed. Never a tier, registry,
+  // or counterparty claim — just the count and the word "verified".
+  const verifiedCount =
+    sections.stats.open && sections.stats.data
+      ? sections.stats.data.verifiedExperiences
+      : sections.experiences.open
+        ? experiences.length
+        : null;
+  const skillsCount = sections.skills.open ? sections.skills.data.length : null;
+  const overviewLocation = wilayaName ?? sections.bio.data.geographicBase;
+  // "Fully closed" = every opt-out gate shut (karim-style). Anything public
+  // (stats, skills, bio, ...) makes this a public profile, which always gets
+  // an avatar node: photo if uploaded, user.jpg if not.
+  const avatarHidden =
+    !sections.avatar.open &&
+    !sections.bio.open &&
+    !sections.location.open &&
+    !sections.stats.open &&
+    !sections.areas.open &&
+    !sections.experiences.open &&
+    !sections.availability.open &&
+    !sections.skills.open &&
+    !sections.portfolio.open;
   const expPage = experiencesQuery.data?.page ?? expPageIdx + 1;
   const expPages = experiencesQuery.data?.pages ?? expPageIdx + 1;
   const reviewPage = reviewsQuery.data?.page ?? reviewPageIdx + 1;
@@ -364,9 +504,13 @@ export function PublicTalentProfilePage({
   const reviews = reviewsQuery.data?.items ?? [];
 
   return (
-    <div data-testid="public-profile" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+    <Container testId="public-profile" className="flex flex-col gap-6 py-4">
       <nav aria-label={c('a11y.breadcrumb')} className="flex flex-wrap items-center gap-2 text-sm">
-        <Link href="/talents" className="font-medium text-ink-muted">
+        <Link
+          href={backHref}
+          className="inline-flex items-center gap-1 font-medium text-ink-muted transition-colors hover:text-ink"
+        >
+          <ArrowLeft size={16} aria-hidden="true" />
           {t('profile.backToTalents')}
         </Link>
         <span aria-hidden="true" className="text-ink-muted">
@@ -375,9 +519,24 @@ export function PublicTalentProfilePage({
         <span className="text-ink-muted">{displayName}</span>
       </nav>
 
-      <header data-testid="profile-header" className="flex flex-col gap-4">
+      <header data-testid="profile-header" id="overview" className="flex flex-col gap-4 scroll-mt-20">
+        <div data-testid="profile-cover" className="h-24 w-full overflow-hidden rounded-xl border border-border bg-surface-muted sm:h-28">
+          {profile.banner ? (
+            <PublicMediaImage
+              media={{ mediaId: profile.banner }}
+              fallbackSrc="/banner.png"
+            />
+          ) : (
+            /* Neutral local cover when the volunteer shared no banner. */
+            /* eslint-disable-next-line @next/next/no-img-element -- neutral local fallback cover */
+            <img src="/banner.png" alt="" className="h-full w-full object-cover" />
+          )}
+        </div>
         <div className="flex flex-wrap items-start gap-4">
-          {sections.avatar.open ? <Avatar mediaId={sections.avatar.data ?? null} /> : null}
+          <Avatar
+            mediaId={sections.avatar.open ? (sections.avatar.data ?? null) : null}
+            hidden={avatarHidden}
+          />
           <div className="flex flex-1 flex-col gap-1">
             <h1 className="text-2xl font-bold text-ink">{displayName}</h1>
             {sections.bio.open && sections.bio.data.headline ? (
@@ -389,34 +548,85 @@ export function PublicTalentProfilePage({
                   {t('profile.registryCode')}: {code}
                 </span>
               ) : null}
-              {sections.location.open && wilayaName ? (
-                <span data-testid="profile-location">
-                  {t('profile.locationTitle')}: {wilayaName}
+              {overviewLocation ? (
+                <span data-testid="profile-location" className="inline-flex items-center gap-1">
+                  <MapPin size={14} aria-hidden="true" />
+                  {t('profile.locationTitle')}: {overviewLocation}
                 </span>
               ) : null}
             </div>
+            {verifiedCount !== null ? (
+              <p data-testid="profile-verified-line" className="inline-flex items-center gap-1 text-xs font-medium text-status-success">
+                <BadgeCheck size={14} aria-hidden="true" />
+                {t('profile.verifiedCount', { count: verifiedCount })}
+              </p>
+            ) : null}
           </div>
-          <SaveProfileButton
-            username={profile.username}
-            favorited={Boolean(profile.isFavorited)}
-            count={profile.favoriteCount ?? 0}
-            next={next}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            {showSave ? (
+              <SaveProfileButton
+                username={profile.username}
+                favorited={Boolean(profile.isFavorited)}
+                count={profile.favoriteCount ?? 0}
+                next={next}
+              />
+            ) : null}
+            {showEdit ? (
+              <Link
+                href="/volunteer/profile"
+                data-testid="profile-edit"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-surface-muted"
+              >
+                <Pencil size={16} aria-hidden="true" />
+                {t('profile.editLabel')}
+              </Link>
+            ) : null}
+            <CopyProfileLink />
+          </div>
         </div>
-        {sections.bio.open && sections.bio.data.bio ? (
-          <p data-testid="profile-bio" className="text-sm text-ink">
-            {sections.bio.data.bio}
-          </p>
-        ) : null}
       </header>
 
+      <nav
+        aria-label={t('tabs.label')}
+        data-testid="profile-tabs"
+        className="flex flex-wrap items-center gap-2 border-b border-border pb-2 text-sm"
+      >
+        <a href="#overview" className="rounded-md px-3 py-1.5 font-medium text-ink transition-colors hover:bg-surface-muted">
+          {t('tabs.overview')}
+        </a>
+        {sections.experiences.open ? (
+          <a href="#experiences" className="rounded-md px-3 py-1.5 text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink">
+            {t('tabs.experience')}
+          </a>
+        ) : null}
+        {sections.portfolio.open ? (
+          <a href="#portfolio" className="rounded-md px-3 py-1.5 text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink">
+            {t('tabs.portfolio')}
+          </a>
+        ) : null}
+        <a href="#reviews" className="rounded-md px-3 py-1.5 text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink">
+          {t('tabs.recommendations')}
+        </a>
+      </nav>
+
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+      <div className="flex min-w-0 flex-col gap-6 lg:col-span-8">
       {sections.stats.open && sections.stats.data ? (
         <Card title={t('stats.title')}>
           <StatsStrip
             completedTasks={sections.stats.data.completedTasks}
             verifiedExperiences={sections.stats.data.verifiedExperiences}
             volunteerHours={sections.stats.data.volunteerHours}
+            skillsCount={skillsCount}
           />
+        </Card>
+      ) : null}
+
+      {sections.bio.open && sections.bio.data.bio ? (
+        <Card title={t('about.title')}>
+          <p data-testid="profile-bio" className="text-sm leading-relaxed text-ink">
+            {sections.bio.data.bio}
+          </p>
         </Card>
       ) : null}
 
@@ -453,16 +663,8 @@ export function PublicTalentProfilePage({
         </Card>
       ) : null}
 
-      {sections.availability.open ? (
-        <Card title={t('availability.title')}>
-            <AvailabilityBlock
-              schedule={sections.availability.data ?? emptySchedule()}
-              note={sections.bio.data.availabilityNote}
-            />
-        </Card>
-      ) : null}
-
       {sections.experiences.open ? (
+        <div id="experiences" className="scroll-mt-20">
         <Card title={t('experiences.title')}>
           {experiencesQuery.isPending ? (
             <Loader label={t('shared.loading')} />
@@ -475,7 +677,7 @@ export function PublicTalentProfilePage({
             <>
               <ul className="flex flex-col gap-3">
                 {experiences.map((experience) => (
-                  <ExperienceCard key={experience.id} experience={experience} locale={locale} />
+                  <ExperienceCard key={experience.id} experience={experience} locale={locale} skillNames={skillNames} />
                 ))}
               </ul>
               {expPages > 1 ? (
@@ -501,9 +703,11 @@ export function PublicTalentProfilePage({
             </>
           )}
         </Card>
+        </div>
       ) : null}
 
       {sections.portfolio.open ? (
+        <div id="portfolio" className="scroll-mt-20">
         <Card title={t('portfolio.title')}>
           {sections.portfolio.data.length === 0 ? (
             <Empty
@@ -518,8 +722,10 @@ export function PublicTalentProfilePage({
             </ul>
           )}
         </Card>
+        </div>
       ) : null}
 
+      <div id="reviews" className="scroll-mt-20">
       <Card title={t('reviews.title')}>
         {reviews.length === 0 ? (
           <Empty title={t('reviews.emptyTitle')} description={t('reviews.emptyBody')} />
@@ -574,6 +780,82 @@ export function PublicTalentProfilePage({
           </>
         )}
       </Card>
-    </div>
+      </div>
+      </div>
+      <aside data-testid="profile-sidebar" aria-label={t('overview.title')} className="flex min-w-0 flex-col gap-6 lg:col-span-4">
+        {(overviewLocation || skillsCount !== null || verifiedCount !== null || (sections.stats.open && sections.stats.data)) ? (
+          <Card title={t('overview.title')}>
+            <dl data-testid="profile-overview" className="flex flex-col gap-2 text-sm">
+              {overviewLocation ? (
+                <div className="flex items-baseline justify-between gap-3">
+                  <dt className="text-ink-muted">{t('profile.locationTitle')}</dt>
+                  <dd className="text-end font-medium text-ink">{overviewLocation}</dd>
+                </div>
+              ) : null}
+              {skillsCount !== null ? (
+                <div className="flex items-baseline justify-between gap-3">
+                  <dt className="text-ink-muted">{t('stats.skills')}</dt>
+                  <dd className="font-medium text-ink">{skillsCount}</dd>
+                </div>
+              ) : null}
+              {verifiedCount !== null ? (
+                <div className="flex items-baseline justify-between gap-3">
+                  <dt className="text-ink-muted">{t('stats.verifiedExperiences')}</dt>
+                  <dd className="font-medium text-ink">{verifiedCount}</dd>
+                </div>
+              ) : null}
+              {sections.stats.open && sections.stats.data ? (
+                <div className="flex items-baseline justify-between gap-3">
+                  <dt className="text-ink-muted">{t('stats.volunteerHours')}</dt>
+                  <dd className="font-medium text-ink">{sections.stats.data.volunteerHours}</dd>
+                </div>
+              ) : null}
+            </dl>
+          </Card>
+        ) : null}
+
+        <Card title={t('verify.title')}>
+          <div className="flex flex-col gap-2">
+            <p className="inline-flex items-center gap-1.5 text-sm font-medium text-ink">
+              <ShieldCheck size={16} aria-hidden="true" className="text-status-success" />
+              {t('verify.title')}
+            </p>
+            <p className="text-sm leading-relaxed text-ink-muted">{t('verify.body')}</p>
+          </div>
+        </Card>
+
+        {sections.availability.open ? (
+          <Card title={t('availability.title')}>
+            <AvailabilityBlock
+              schedule={sections.availability.data ?? emptySchedule()}
+              note={sections.bio.data.availabilityNote}
+            />
+            {(sections.bio.data.preferredDomains ?? []).length > 0 ? (
+              <div className="mt-3 flex flex-col gap-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+                  {t('overview.preferredDomains')}
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {(sections.bio.data.preferredDomains ?? []).map((domain) => (
+                    <Pill key={domain} tone="neutral">
+                      {domain}
+                    </Pill>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            {sections.bio.data.geographicBase ? (
+              <p className="mt-3 text-sm text-ink-muted">
+                <span className="font-medium text-ink">{t('overview.geographicBase')}: </span>
+                {sections.bio.data.geographicBase}
+              </p>
+            ) : null}
+          </Card>
+        ) : null}
+
+        <p className="text-xs leading-relaxed text-ink-muted">{t('privacy.note')}</p>
+      </aside>
+      </div>
+    </Container>
   );
 }

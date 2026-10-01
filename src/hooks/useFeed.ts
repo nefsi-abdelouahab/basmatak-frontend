@@ -72,12 +72,13 @@ export function useVolunteerHomeDashboardQuery() {
   });
 }
 
-export function useOpportunitiesQuery(params: OpportunityFeedParams) {
+export function useOpportunitiesQuery(params: OpportunityFeedParams, enabled = true) {
   return useQuery({
     queryKey: feedKeys().opportunities(params),
     queryFn: () => feedApi.listOpportunities(api, params),
     staleTime: 30_000,
     retry: false,
+    enabled,
     placeholderData: (previous) => previous,
   });
 }

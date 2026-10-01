@@ -12,13 +12,42 @@
     "notFoundBody": "This profile is unavailable.",
     "backToTalents": "Back to talents",
     "saveLabel": "Save",
-    "unsaveLabel": "Saved"
+    "unsaveLabel": "Saved",
+    "editLabel": "Edit profile",
+    "verifiedCount": "{count} verified volunteer experiences"
+  },
+  "about": {
+    "title": "About"
+  },
+  "overview": {
+    "title": "Profile overview",
+    "preferredDomains": "Preferred domains",
+    "geographicBase": "Geographic base"
+  },
+  "verify": {
+    "title": "Verification",
+    "body": "An experience marked verified was confirmed by the organization named on it."
+  },
+  "copy": {
+    "label": "Copy profile link",
+    "copied": "Copied"
+  },
+  "privacy": {
+    "note": "Only information this volunteer chose to share is shown here."
+  },
+  "tabs": {
+    "label": "Profile sections",
+    "overview": "Overview",
+    "experience": "Volunteer experience",
+    "portfolio": "Public portfolio",
+    "recommendations": "Recommendations"
   },
   "stats": {
     "title": "Contribution summary",
     "completedTasks": "Tasks completed",
     "verifiedExperiences": "Verified experiences",
-    "volunteerHours": "Volunteer hours"
+    "volunteerHours": "Volunteer hours",
+    "skills": "Skills"
   },
   "areas": {
     "title": "Areas of contribution",

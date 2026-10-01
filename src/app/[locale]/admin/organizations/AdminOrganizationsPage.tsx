@@ -305,7 +305,7 @@ export function AdminOrganizationsPage() {
   );
 
   return (
-    <div data-testid="admin-organizations" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+    <div data-testid="admin-organizations" className="flex min-w-0 flex-col gap-6">
       <div>
         <h1 className="text-2xl font-bold text-ink">{t('organizations.title')}</h1>
         <p className="text-sm text-ink-muted">{t('organizations.subtitle')}</p>

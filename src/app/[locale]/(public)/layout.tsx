@@ -1,10 +1,12 @@
 import { setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
+import { RequireGuest } from '@/components/guards/RequireGuest';
 import { PublicFooter } from '@/components/shell/PublicFooter';
 import { PublicNavbar } from '@/components/shell/PublicNavbar';
 
-// Public layout: top navbar + footer, full-width sections. No sidebar,
-// no bottom nav — those belong to the authenticated shell only.
+// Public layout: guest-only discovery surface (landing + opportunity/talent
+// lists) with top navbar + footer. Detail pages linked from authenticated UI
+// live in the (shared) group instead so both audiences keep working URLs.
 export default function PublicLayout({
   children,
   params: { locale },
@@ -14,10 +16,10 @@ export default function PublicLayout({
 }) {
   setRequestLocale(locale);
   return (
-    <div className="flex min-h-screen flex-col bg-surface">
+    <div className="flex min-h-screen flex-col bg-surface-muted">
       <PublicNavbar />
       <main data-testid="shell-main" className="min-w-0 flex-1">
-        {children}
+        <RequireGuest>{children}</RequireGuest>
       </main>
       <PublicFooter locale={locale} />
     </div>

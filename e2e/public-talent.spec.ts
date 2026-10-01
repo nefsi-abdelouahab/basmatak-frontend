@@ -1,7 +1,6 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import en from '../src/messages/public-talent/en.json';
 import ar from '../src/messages/public-talent/ar.json';
-import { expectLoginRedirect } from './login-redirect';
 
 type Locale = 'en' | 'ar';
 const catalogs = { en, ar } as const;
@@ -590,18 +589,70 @@ test.describe('profile behavior', () => {
     expect(requestsTo(captured, '/volunteers/amina/experiences')).toHaveLength(1);
   });
 
-  test('a guest save on the profile redirects to login and sends no mutation', async ({ page }) => {
-    const locale: Locale = 'en';
+  test('a guest sees no save and no edit controls and no sidebar', async ({ page }) => {
     const captured: Captured[] = [];
     await mockApi(page, profileHandlers(PROFILE), captured);
     await page.goto('/en/volunteers/amina');
-    await expect(page.getByTestId('profile-save')).toBeVisible();
-
-    await page.getByTestId('profile-save').click();
-    // Soft navigation through the locale-aware router: the login pathname must
-    // carry the locale exactly once, and `next` must be locale-less.
-    await expectLoginRedirect(page, locale, '/volunteers/amina');
+    await expect(page.getByTestId('public-profile')).toBeVisible();
+    // Content-level session rule: anonymous viewers get neither button.
+    await expect(page.getByTestId('profile-save')).toHaveCount(0);
+    await expect(page.getByTestId('profile-edit')).toHaveCount(0);
+    // Layout rule: this route always renders the public layout, no sidebar ever.
+    await expect(page.getByTestId('profile-sidebar')).toBeVisible();
+    await expect(page.getByTestId('shell-sidebar')).toHaveCount(0);
+    // Two-column content: overview card + copy-link button, all real data.
+    await expect(page.getByTestId('profile-overview')).toBeVisible();
+    await expect(page.getByTestId('profile-copy')).toBeVisible();
+    await expect(page.getByTestId('profile-verified-line')).toContainText('4');
+    // The profile content itself still renders identically.
+    await expect(page.getByTestId('profile-header').getByRole('heading', { level: 1 })).toHaveText(
+      'Amina',
+    );
     expect(captured.filter((c) => c.path.includes('/favorites/'))).toHaveLength(0);
+  });
+
+  test('an owner sees edit (no save) and no sidebar', async ({ page }) => {
+    const captured: Captured[] = [];
+    await mockApi(
+      page,
+      profileHandlers(PROFILE, {
+        '/auth/me': { status: 200, body: USER },
+        '/volunteers/me': {
+          status: 200,
+          body: { username: 'amina', registryId: 'VOL-000042', firstName: 'Amina' },
+        },
+      }),
+      captured,
+    );
+    await page.goto('/en/volunteers/amina');
+    await expect(page.getByTestId('public-profile')).toBeVisible();
+    await expect(page.getByTestId('profile-edit')).toBeVisible();
+    await expect(page.getByTestId('profile-save')).toHaveCount(0);
+    await expect(page.getByTestId('profile-sidebar')).toBeVisible();
+    await expect(page.getByTestId('shell-sidebar')).toHaveCount(0);
+    await expect(page.getByTestId('profile-edit')).toHaveAttribute('href', '/en/volunteer/profile');
+    expect(captured.filter((c) => c.path.includes('/favorites/'))).toHaveLength(0);
+  });
+
+  test('a signed-in non-owner sees save (no edit) and no sidebar', async ({ page }) => {
+    const captured: Captured[] = [];
+    await mockApi(
+      page,
+      profileHandlers(PROFILE, {
+        '/auth/me': { status: 200, body: USER },
+        '/volunteers/me': {
+          status: 200,
+          body: { username: 'karim', registryId: 'VOL-000077', firstName: 'Karim' },
+        },
+      }),
+      captured,
+    );
+    await page.goto('/en/volunteers/amina');
+    await expect(page.getByTestId('public-profile')).toBeVisible();
+    await expect(page.getByTestId('profile-save')).toBeVisible();
+    await expect(page.getByTestId('profile-edit')).toHaveCount(0);
+    await expect(page.getByTestId('profile-sidebar')).toBeVisible();
+    await expect(page.getByTestId('shell-sidebar')).toHaveCount(0);
   });
 
   test('a signed-in save posts the favorite and reflects the pressed state', async ({ page }) => {

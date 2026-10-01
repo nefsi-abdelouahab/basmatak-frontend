@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
+import { Container } from '@/components/ui/Container';
 import { FooterLegalLink } from './FooterLegal';
 
 // Public footer: brand + columns link to real routes only, plus the legal
@@ -13,7 +14,7 @@ export async function PublicFooter({ locale }: { locale: string }) {
 
   return (
     <footer data-testid="public-footer" className="mt-auto w-full border-t border-border-muted bg-surface">
-      <div className="mx-auto max-w-7xl px-6 py-12">
+      <Container className="py-12">
         <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
             <Image
@@ -30,7 +31,7 @@ export async function PublicFooter({ locale }: { locale: string }) {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/volunteer/opportunities"
+                  href="/opportunities"
                   className="text-sm text-ink-muted transition-colors hover:text-ink"
                 >
                   {t('footer.opportunities')}
@@ -88,7 +89,7 @@ export async function PublicFooter({ locale }: { locale: string }) {
           <p>{t('footer.rights', { year })}</p>
           <p className="text-center text-xs md:text-end">{t('footer.note')}</p>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

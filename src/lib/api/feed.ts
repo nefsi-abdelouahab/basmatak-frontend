@@ -43,6 +43,44 @@ export const OrganizationEmbedSchema = z
 
 export type OrganizationEmbed = z.infer<typeof OrganizationEmbedSchema>;
 
+// Card-level enrichment siblings assembled by OpportunityEmbedProvider.embedCards
+// (org embed + category/location labels + favorites). The schema stays
+// card-scoped: per-position application counts and assigned names are
+// detail-only (embedFull) and never read here.
+export const FeedLabelSchema = z
+  .object({
+    nameAr: z.string().optional(),
+    nameFr: z.string().optional(),
+  })
+  .passthrough();
+
+export type FeedLabel = z.infer<typeof FeedLabelSchema>;
+
+export const FeedPositionSchema = z
+  .object({
+    _id: z.string().optional(),
+    id: z.string().optional(),
+    title: z.string().optional(),
+    description: z.string().nullable().optional(),
+    requiredCount: z.number().optional(),
+    filledCount: z.number().optional(),
+    skillNames: z
+      .array(
+        z
+          .object({
+            skillId: z.string(),
+            nameAr: z.string().optional(),
+            nameFr: z.string().optional(),
+          })
+          .passthrough(),
+      )
+      .nullable()
+      .optional(),
+  })
+  .passthrough();
+
+export type FeedPosition = z.infer<typeof FeedPositionSchema>;
+
 export const OpportunityCardSchema = z
   .object({
     id: z.string().optional(),
@@ -52,10 +90,23 @@ export const OpportunityCardSchema = z
     idOrSlug: z.string().optional(),
     registryId: z.string().optional(),
     mode: z.string().optional(),
-    startAt: z.string().optional(),
+    status: z.string().optional(),
+    description: z.string().nullable().optional(),
+    startDate: z.string().nullable().optional(),
     endDate: z.string().nullable().optional(),
+    applicationDeadline: z.string().nullable().optional(),
     durationMinutes: z.number().nullable().optional(),
     coverMediaId: z.string().nullable().optional(),
+    categoryName: FeedLabelSchema.nullable().optional(),
+    locationLabels: z
+      .object({
+        wilaya: FeedLabelSchema.nullable().optional(),
+        municipality: FeedLabelSchema.nullable().optional(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+    positions: z.array(FeedPositionSchema).nullable().optional(),
     organization: OrganizationEmbedSchema.nullable().optional(),
     isFavorited: z.boolean().nullable().optional(),
     favoriteCount: z.number().nullable().optional(),
@@ -98,12 +149,28 @@ export const CursorPageSchema = <T extends z.ZodTypeAny>(item: T) =>
 export type OpportunityPage = z.infer<ReturnType<typeof CursorPageSchema>>;
 export type TalentPage = z.infer<ReturnType<typeof CursorPageSchema>>;
 
+export const LatestVerifiedExperienceOrganizationSchema = z
+  .object({
+    id: z.string().optional(),
+    slug: z.string().optional(),
+    nameFr: z.string().nullable().optional(),
+    nameAr: z.string().nullable().optional(),
+  })
+  .passthrough();
+
 export const LatestVerifiedExperienceSchema = z
   .object({
+    id: z.string().optional(),
     registryId: z.string().optional(),
+    title: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    skills: z.array(z.string()).nullable().optional(),
+    duration: z.number().nullable().optional(),
+    organization: LatestVerifiedExperienceOrganizationSchema.nullable().optional(),
     verificationCode: z.string().nullable().optional(),
     verifiedAt: z.string().nullable().optional(),
     organizationName: z.string().nullable().optional(),
+    publicVisibility: z.string().optional(),
   })
   .passthrough();
 

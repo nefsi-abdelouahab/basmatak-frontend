@@ -359,7 +359,7 @@ export function OrgDashboardPage({ locale }: { locale: string }) {
 
   if (session.isPending) {
     return (
-      <div data-testid="org-dashboard" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+      <div data-testid="org-dashboard" className="flex min-w-0 flex-col gap-6">
         <Loader label={t('shared.loading')} />
       </div>
     );
@@ -367,7 +367,7 @@ export function OrgDashboardPage({ locale }: { locale: string }) {
   if (session.isError) return null;
 
   return (
-    <div data-testid="org-dashboard" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+    <div data-testid="org-dashboard" className="flex min-w-0 flex-col gap-6">
       <FactHeader />
       <StatsPanel />
       <PublishGateBanner />

@@ -453,8 +453,8 @@
     "verified": "Verified"
   },
   "oppDetails": {
-    "backToOrg": "Back to organization",
     "mode": "Mode",
+    "location": "Location",
     "endDate": "End date",
     "duration": "Duration",
     "hours": "{hours} hours",
@@ -477,6 +477,11 @@
     "closedNote": "This opportunity is no longer open.",
     "notFoundTitle": "Opportunity not found",
     "notFoundBody": "This opportunity does not exist or is no longer published.",
-    "backToLanding": "Back to home"
+    "backToLanding": "Back to home",
+    "share": "Share",
+    "copied": "Link copied",
+    "backToOpps": "Back to opportunities",
+    "viewOrg": "View organization",
+    "viewOpp": "View opportunity"
   }
 }

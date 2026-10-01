@@ -6,15 +6,15 @@ import Image from 'next/image';
 import { LogIn, Menu, Search, UserPlus, X } from 'lucide-react';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { useSessionQuery } from '@/hooks/useSession';
+import { Container } from '@/components/ui/Container';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { NavIconLink } from './NavIconLink';
 
 // Public top navbar: brand, talent search, links to real routes only. Routes
 // without a page (About, How Verification, Privacy, Terms) render no link.
-// Shared verbatim by landing and the public opportunities list through
-// `(public)/layout.tsx` (plus the `(auth)` group): active-state via
-// usePathname plus guest / volunteer / org / admin auth-state in the same
-// markup and shell.
+// Shared verbatim by the (public) and (shared) groups through their layouts
+// (plus the `(auth)` group): active-state via usePathname plus guest /
+// volunteer / org / admin auth-state in the same markup and shell.
 //
 // Responsive contract (single fix, propagates to every public screen):
 // - ≥lg (1024px): one row — logo + search (narrower at lg, full at xl) +
@@ -129,7 +129,7 @@ export function PublicNavbar() {
 
   return (
     <header data-testid="shell-navbar" className="sticky top-0 z-50 border-b border-border bg-surface">
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+      <Container>
         {/* Main bar: logo + (desktop) search / nav / actions + (mobile) hamburger. */}
         <div className="flex h-16 items-center gap-3">
           <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -302,7 +302,7 @@ export function PublicNavbar() {
             </div>
           </div>
         )}
-      </div>
+      </Container>
     </header>
   );
 }

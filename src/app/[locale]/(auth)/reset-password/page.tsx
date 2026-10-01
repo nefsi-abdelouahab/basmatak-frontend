@@ -1,4 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
+import { RequireGuest } from '@/components/guards/RequireGuest';
 import { ResetPasswordForm } from './ResetPasswordForm';
 
 interface ResetPasswordPageProps {
@@ -13,5 +14,10 @@ export default function ResetPasswordPage({
   setRequestLocale(locale);
   const raw = searchParams.token;
   const token = typeof raw === 'string' ? raw : undefined;
-  return <ResetPasswordForm token={token} />;
+  // Guest-only: authenticated visits bounce to the role home.
+  return (
+    <RequireGuest>
+      <ResetPasswordForm token={token} />
+    </RequireGuest>
+  );
 }

@@ -205,6 +205,36 @@ export const SkillCategorySchema = z
 
 export type SkillCategory = z.infer<typeof SkillCategorySchema>;
 
+export const VolunteerMediaReadSchema = z
+  .object({
+    url: z.string().nullable().optional(),
+    media: z
+      .object({ url: z.string().nullable().optional() })
+      .nullable()
+      .optional(),
+  })
+  .passthrough();
+
+export type VolunteerMediaRead = z.infer<typeof VolunteerMediaReadSchema>;
+
+// Resolve a viewable URL from an own-profile media read (`GET /media/:mediaId`
+// → `{ media, url }`). Null means real-or-absent: callers fall back to
+// `public/user.jpg` (never hidden, never invented).
+export function volunteerMediaUrlOf(read: VolunteerMediaRead | null | undefined): string | null {
+  if (!read) return null;
+  if (typeof read.url === 'string' && read.url !== '') return read.url;
+  const nested = read.media?.url;
+  return typeof nested === 'string' && nested !== '' ? nested : null;
+}
+
+export async function getVolunteerMedia(
+  client: Pick<AxiosInstance, 'get'>,
+  mediaId: string,
+): Promise<VolunteerMediaRead> {
+  const { data } = await client.get(`/media/${encodeURIComponent(mediaId)}`);
+  return VolunteerMediaReadSchema.parse(data);
+}
+
 type HttpClient = Pick<AxiosInstance, 'get' | 'post' | 'patch' | 'put' | 'delete'>;
 
 export async function getVolunteerMe(client: HttpClient): Promise<VolunteerMe> {

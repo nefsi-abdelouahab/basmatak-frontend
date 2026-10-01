@@ -453,8 +453,8 @@
     "verified": "موثّقة"
   },
   "oppDetails": {
-    "backToOrg": "العودة إلى المنظمة",
     "mode": "النمط",
+    "location": "الموقع",
     "endDate": "تاريخ الانتهاء",
     "duration": "المدة",
     "hours": "{hours} ساعات",
@@ -477,6 +477,11 @@
     "closedNote": "هذه الفرصة لم تعد مفتوحة.",
     "notFoundTitle": "الفرصة غير موجودة",
     "notFoundBody": "هذه الفرصة غير موجودة أو لم تعد منشورة.",
-    "backToLanding": "العودة إلى الرئيسية"
+    "backToLanding": "العودة إلى الرئيسية",
+    "share": "مشاركة",
+    "copied": "تم نسخ الرابط",
+    "backToOpps": "العودة إلى الفرص",
+    "viewOrg": "عرض المنظمة",
+    "viewOpp": "عرض الفرصة"
   }
 }

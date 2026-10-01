@@ -35,7 +35,7 @@ export function RequireAdminManage({
     return (
       <div
         data-testid="admin-forbidden"
-        className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4"
+        className="flex min-w-0 flex-col gap-6"
       >
         <Card title={t('guard.forbiddenTitle')}>
           <p className="text-sm text-ink-muted">{t('guard.forbiddenBody')}</p>

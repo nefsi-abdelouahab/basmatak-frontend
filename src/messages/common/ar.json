@@ -4,12 +4,37 @@
     "home": "الرئيسية",
     "menu": "القائمة",
     "openMenu": "فتح القائمة",
-    "closeMenu": "إغلاق القائمة"
+    "closeMenu": "إغلاق القائمة",
+    "dashboard": "لوحة التحكم",
+    "applications": "طلباتي",
+    "tasks": "مهامي",
+    "experiences": "تجاربي",
+    "portfolio": "ملف أعمالي",
+    "opportunities": "الفرص",
+    "talents": "اكتشاف المواهب",
+    "settings": "الإعدادات",
+    "more": "المزيد",
+    "discover": "اكتشف",
+    "mySpace": "مساحتي",
+    "account": "الحساب",
+    "searchLabel": "البحث",
+    "searchPlaceholder": "ابحث في الفرص والمهارات والمنظمات…",
+    "globalSearchLabel": "البحث في الموقع",
+    "notifications": "الإشعارات",
+    "notificationsEmpty": "لا توجد إشعارات.",
+    "notificationsError": "تعذّر تحميل الإشعارات.",
+    "unreadCount": "{count} غير مقروءة",
+    "markRead": "تعيين كمقروء",
+    "markAllRead": "تعيين الكل كمقروء",
+    "accountMenu": "الحساب",
+    "viewProfile": "عرض الملف",
+    "logout": "تسجيل الخروج"
   },
   "actions": {
     "retry": "حاول مرة أخرى",
     "goHome": "العودة إلى الرئيسية",
-    "signIn": "تسجيل الدخول"
+    "signIn": "تسجيل الدخول",
+    "loading": "جارٍ التحميل…"
   },
   "a11y": {
     "breadcrumb": "مسار التنقل"
@@ -28,5 +53,8 @@
   "home": {
     "title": "مرحبًا بك في بصمتك",
     "description": "منصة للمشاركة المدنية. هذه هي الواجهة الأساسية التي تُبنى عليها جميع الشاشات."
+  },
+  "footer": {
+    "rights": "© {year} {name}"
   }
 }

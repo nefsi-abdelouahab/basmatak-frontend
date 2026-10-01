@@ -306,3 +306,60 @@ for (const width of [1440, 1100, 390]) {
     });
   });
 }
+
+test.describe('org profile session states (content-level, no layout switch)', () => {
+  test('guest sees no manage control and no sidebar', async ({ page }) => {
+    const captured: Captured[] = [];
+    await mockApi(page, orgHandlers(), captured);
+    await page.goto('/en/orgs/timimoun-cultural');
+    await expect(page.getByTestId('public-org-profile')).toBeVisible();
+    await expect(page.getByTestId('org-facts')).toBeVisible();
+    await expect(page.getByTestId('org-manage')).toHaveCount(0);
+    await expect(page.locator('aside')).toHaveCount(0);
+    await expect(page.getByTestId('shell-sidebar')).toHaveCount(0);
+  });
+
+  test('signed-in non-owner sees no manage control and no sidebar', async ({ page }) => {
+    const captured: Captured[] = [];
+    await mockApi(
+      page,
+      {
+        ...orgHandlers(),
+        '/auth/me': {
+          status: 200,
+          body: { id: 'o9', email: 'other@example.org', role: 'organization', status: 'active' },
+        },
+        '/organizations/me': { status: 200, body: { slug: 'other-org' } },
+      },
+      captured,
+    );
+    await page.goto('/en/orgs/timimoun-cultural');
+    await expect(page.getByTestId('public-org-profile')).toBeVisible();
+    await expect(page.getByTestId('org-facts')).toBeVisible();
+    await expect(page.getByTestId('org-manage')).toHaveCount(0);
+    await expect(page.locator('aside')).toHaveCount(0);
+    await expect(page.getByTestId('shell-sidebar')).toHaveCount(0);
+  });
+
+  test('owner sees manage control and no sidebar', async ({ page }) => {
+    const captured: Captured[] = [];
+    await mockApi(
+      page,
+      {
+        ...orgHandlers(),
+        '/auth/me': {
+          status: 200,
+          body: { id: 'o1', email: 'owner@example.org', role: 'organization', status: 'active' },
+        },
+        '/organizations/me': { status: 200, body: { slug: 'timimoun-cultural' } },
+      },
+      captured,
+    );
+    await page.goto('/en/orgs/timimoun-cultural');
+    await expect(page.getByTestId('public-org-profile')).toBeVisible();
+    await expect(page.getByTestId('org-manage')).toBeVisible();
+    await expect(page.getByTestId('org-manage')).toHaveAttribute('href', '/en/org/profile');
+    await expect(page.locator('aside')).toHaveCount(0);
+    await expect(page.getByTestId('shell-sidebar')).toHaveCount(0);
+  });
+});

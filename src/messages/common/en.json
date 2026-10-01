@@ -4,12 +4,37 @@
     "home": "Home",
     "menu": "Menu",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "dashboard": "Dashboard",
+    "applications": "My Applications",
+    "tasks": "My Tasks",
+    "experiences": "My Experiences",
+    "portfolio": "My Portfolio",
+    "opportunities": "Opportunities",
+    "talents": "Discover Talents",
+    "settings": "Settings",
+    "more": "More",
+    "discover": "Discover",
+    "mySpace": "My Space",
+    "account": "Account",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search opportunities, skills, organizations…",
+    "globalSearchLabel": "Search the site",
+    "notifications": "Notifications",
+    "notificationsEmpty": "No notifications.",
+    "notificationsError": "Could not load notifications.",
+    "unreadCount": "{count} unread",
+    "markRead": "Mark read",
+    "markAllRead": "Mark all read",
+    "accountMenu": "Account",
+    "viewProfile": "View profile",
+    "logout": "Log out"
   },
   "actions": {
     "retry": "Try again",
     "goHome": "Back to home",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "loading": "Loading…"
   },
   "a11y": {
     "breadcrumb": "breadcrumb"
@@ -28,5 +53,8 @@
   "home": {
     "title": "Welcome to Basmatak",
     "description": "Civic engagement platform. This is the foundation shell every screen builds on."
+  },
+  "footer": {
+    "rights": "© {year} {name}"
   }
 }

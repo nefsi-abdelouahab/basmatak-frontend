@@ -12,13 +12,42 @@
     "notFoundBody": "هذا الملف غير متاح.",
     "backToTalents": "العودة إلى المواهب",
     "saveLabel": "حفظ",
-    "unsaveLabel": "محفوظ"
+    "unsaveLabel": "محفوظ",
+    "editLabel": "تعديل الملف",
+    "verifiedCount": "{count} خبرات تطوعية موثّقة"
+  },
+  "about": {
+    "title": "نبذة"
+  },
+  "overview": {
+    "title": "نظرة عامة على الملف",
+    "preferredDomains": "المجالات المفضلة",
+    "geographicBase": "القاعدة الجغرافية"
+  },
+  "verify": {
+    "title": "التوثيق",
+    "body": "الخبرة الموثّقة هي التي أكّدتها المنظمة المذكورة فيها."
+  },
+  "copy": {
+    "label": "نسخ رابط الملف",
+    "copied": "تم النسخ"
+  },
+  "privacy": {
+    "note": "لا يظهر هنا إلا ما اختار المتطوع مشاركته."
+  },
+  "tabs": {
+    "label": "أقسام الملف",
+    "overview": "نظرة عامة",
+    "experience": "الخبرات التطوعية",
+    "portfolio": "معرض الأعمال",
+    "recommendations": "التوصيات"
   },
   "stats": {
     "title": "ملف المساهمات",
     "completedTasks": "مهام منجزة",
     "verifiedExperiences": "خبرات موثّقة",
-    "volunteerHours": "ساعات تطوعية"
+    "volunteerHours": "ساعات تطوعية",
+    "skills": "المهارات"
   },
   "areas": {
     "title": "مجالات المساهمة",

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { Ban, CheckCircle2, Circle, Clock } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/Card';
 import { Loader } from '@/components/ui/Loader';
@@ -13,13 +14,33 @@ import {
   shortApplicationId,
 } from '@/lib/api/tasks';
 import { useApplicationQuery, useWithdrawApplicationMutation } from '@/hooks/useTasks';
-import {
-  ConfirmDialog,
-  SectionError,
-  StatusPill,
-  StatusTimeline,
-  joinName,
-} from './components';
+import { ConfirmDialog, SectionError, StatusTimeline, joinName } from './components';
+
+// Status indicator without any pill/badge box: icon + plain typography in
+// the status tone. Shared by the inline card expansion and the
+// deep-linkable detail page so both stay consistent.
+function DetailStatusLine({ status, label }: { status: string; label: string }) {
+  const tone =
+    status === 'accepted'
+      ? 'text-status-success'
+      : status === 'pending' || status === 'under_review'
+        ? 'text-status-pending'
+        : 'text-ink-muted';
+  const Icon =
+    status === 'accepted'
+      ? CheckCircle2
+      : status === 'pending' || status === 'under_review'
+        ? Clock
+        : status === 'rejected'
+          ? Circle
+          : Ban;
+  return (
+    <p className={`inline-flex items-center gap-1.5 text-label-md font-semibold ${tone}`}>
+      <Icon size={16} aria-hidden="true" className="shrink-0" />
+      <span>{label}</span>
+    </p>
+  );
+}
 
 // F6-owned application detail: joins, neutral timeline, short-form ID,
 // withdraw-with-confirm. Rendered inline (list expansion) and on the
@@ -41,7 +62,9 @@ export function ApplicationDetail({
 
   if (detailQuery.isPending) return <Loader label={t('shared.loading')} />;
   if (detailQuery.isError || !detailQuery.data)
-    return <SectionError testId="application-detail-error" message={t('applications.detailError')} />;
+    return (
+      <SectionError testId="application-detail-error" message={t('applications.detailError')} />
+    );
 
   const row = detailQuery.data;
   const timeline = applicationTimeline(row.status);
@@ -79,7 +102,7 @@ export function ApplicationDetail({
               {shortApplicationId(rowId(row))}
             </span>
           </p>
-          <StatusPill status={row.status} label={statusLabels[row.status] ?? row.status} />
+          <DetailStatusLine status={row.status} label={statusLabels[row.status] ?? row.status} />
         </div>
 
         <dl className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">

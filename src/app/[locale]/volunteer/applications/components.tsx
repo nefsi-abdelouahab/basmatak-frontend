@@ -63,11 +63,13 @@ export function TabBar({
   active,
   onTab,
   testId,
+  counts,
 }: {
   tabs: { value: string; label: string }[];
   active: string;
   onTab: (value: string) => void;
   testId: string;
+  counts?: Record<string, number | undefined>;
 }) {
   return (
     <div data-testid={testId} role="tablist" aria-label={testId} className="flex flex-wrap gap-2">
@@ -79,13 +81,22 @@ export function TabBar({
           aria-selected={active === tab.value}
           data-testid={`tab-${tab.value}`}
           onClick={() => onTab(tab.value)}
-          className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
             active === tab.value
               ? 'border-primary bg-primary text-white'
               : 'border-border bg-surface text-ink hover:bg-surface-muted'
           }`}
         >
-          {tab.label}
+          <span>{tab.label}</span>
+          {counts && typeof counts[tab.value] === 'number' ? (
+            <span
+              className={`rounded-full px-1.5 py-0.5 text-xs font-medium ${
+                active === tab.value ? 'bg-white/20 text-white' : 'bg-surface-muted text-ink-muted'
+              }`}
+            >
+              {counts[tab.value]}
+            </span>
+          ) : null}
         </button>
       ))}
     </div>

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
 import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
 import {
@@ -271,7 +272,7 @@ export function PublicTalentsPage({
   };
 
   return (
-    <div data-testid="public-talents" className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4">
+    <Container testId="public-talents" className="flex flex-col gap-6 py-4">
       <header className="flex flex-col gap-3 pb-2">
         <nav aria-label={t('discover.breadcrumb')} className="flex items-center gap-2 text-sm text-ink-muted">
           <Link href="/" className="transition-colors hover:text-ink">
@@ -520,6 +521,6 @@ export function PublicTalentsPage({
           </div>
         </div>
       </aside>
-    </div>
+    </Container>
   );
 }

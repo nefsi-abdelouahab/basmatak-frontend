@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
+import { Container } from '@/components/ui/Container';
 import { LanguageSwitcher } from '@/components/shell/LanguageSwitcher';
 
 // Split-screen auth frame, exactly 100dvh with no page scroll: the grid is
@@ -38,7 +39,7 @@ export function AuthSplit({
   return (
     <div data-testid={testId} className="grid min-h-0 w-full flex-1 lg:grid-cols-2">
       <section className="flex min-h-0 flex-col overflow-y-auto bg-surface">
-        <div className="mx-auto flex min-h-full w-full max-w-[400px] flex-col justify-center gap-6 p-6 sm:p-8">
+        <Container variant="narrow" className="flex min-h-full flex-col justify-center gap-6 py-6 sm:py-8">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-1">
               <Link
@@ -66,7 +67,7 @@ export function AuthSplit({
             <p className="text-body-md text-ink-muted">{subtitle}</p>
           </div>
           {children}
-        </div>
+        </Container>
       </section>
       <aside
         aria-hidden="true"

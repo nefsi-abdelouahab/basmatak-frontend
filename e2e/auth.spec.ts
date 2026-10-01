@@ -48,9 +48,35 @@ async function loginAs(
   user: unknown,
   opts?: { next?: string; meUser?: unknown },
 ) {
-  await mockAuth(page, {
-    '/auth/login': { status: 200, body: tokensFor(user) },
-    '/auth/me': { status: 200, body: opts?.meUser ?? user },
+  // Stateful session: /auth/me 401s until the login POST lands, mirroring a
+  // fresh browser (no tokens pre-login). A static 200 would trip the
+  // guest-only guard on /login before the form is ever filled.
+  let loggedIn = false;
+  await page.route('**/api/v1/auth/**', async (route: Route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith('/auth/login') && route.request().method() === 'POST') {
+      loggedIn = true;
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(tokensFor(user)),
+      });
+    }
+    if (path.endsWith('/auth/me')) {
+      if (!loggedIn) {
+        return route.fulfill({
+          status: 401,
+          contentType: 'application/json',
+          body: JSON.stringify({ statusCode: 401, code: 'UNAUTHORIZED', message: 'Expired' }),
+        });
+      }
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(opts?.meUser ?? user),
+      });
+    }
+    return route.fulfill({ status: 404, body: '{}' });
   });
   await page.goto(opts?.next ? `/en/login?next=${encodeURIComponent(opts.next)}` : '/en/login');
   await page.getByLabel(authEn.login.emailLabel).fill('vol@example.com');
@@ -145,8 +171,10 @@ for (const width of [1440, 1100, 390]) {
     });
 
     test('guest-continue next param survives login', async ({ page }) => {
-      await loginAs(page, verifiedVolunteer, { next: '/en/opportunities' });
-      await expect(page).toHaveURL(/\/en\/opportunities/);
+      await loginAs(page, verifiedVolunteer, { next: '/opportunities' });
+      // Public discovery lists are guest-only: the saved destination resolves
+      // to the authenticated counterpart instead of bouncing to the dashboard.
+      await expect(page).toHaveURL(/\/en\/volunteer\/opportunities/);
     });
 
     test('volunteer registration shows the verification notice', async ({ page }) => {
@@ -259,6 +287,126 @@ for (const width of [1440, 1100, 390]) {
       await expect(page.getByTestId('auth-error')).toHaveText(
         authEn.verifyEmail.rateLimited,
       );
+    });
+
+    test.describe('guest-only route separation', () => {
+      const volunteerMe = { status: 200, body: verifiedVolunteer };
+
+      async function gotoAuthed(page: Page, url: string) {
+        const meResponse = page.waitForResponse((r) => r.url().includes('/auth/me'));
+        await page.goto(url);
+        await meResponse;
+      }
+
+      test('direct URL: login bounces an authenticated volunteer to the dashboard', async ({
+        page,
+      }) => {
+        await mockAuth(page, { '/auth/me': volunteerMe });
+        await gotoAuthed(page, '/en/login');
+        await expect(page).toHaveURL(/\/en\/volunteer\/dashboard/);
+      });
+
+      test('direct URL: landing and public lists bounce to role counterparts', async ({
+        page,
+      }) => {
+        await mockAuth(page, { '/auth/me': volunteerMe });
+        await gotoAuthed(page, '/en/');
+        await expect(page).toHaveURL(/\/en\/volunteer\/dashboard/);
+        await gotoAuthed(page, '/en/talents');
+        await expect(page).toHaveURL(/\/en\/volunteer\/talents/);
+        await gotoAuthed(page, '/en/opportunities');
+        await expect(page).toHaveURL(/\/en\/volunteer\/opportunities/);
+      });
+
+      test('direct URL: org and admin land on their own counterparts', async ({ page }) => {
+        let role: 'organization' | 'admin' = 'organization';
+        await page.route('**/api/v1/auth/**', async (route: Route) => {
+          const path = new URL(route.request().url()).pathname;
+          if (path.endsWith('/auth/me')) {
+            const user =
+              role === 'organization'
+                ? verifiedOrg
+                : { ...verifiedVolunteer, email: 'admin@example.com', role: 'admin' };
+            return route.fulfill({
+              status: 200,
+              contentType: 'application/json',
+              body: JSON.stringify(user),
+            });
+          }
+          return route.fulfill({ status: 404, body: '{}' });
+        });
+        await gotoAuthed(page, '/en/opportunities');
+        await expect(page).toHaveURL(/\/en\/org\/opportunities/);
+        role = 'admin';
+        await gotoAuthed(page, '/en/opportunities');
+        await expect(page).toHaveURL(/\/en\/admin\/opportunities/);
+        await gotoAuthed(page, '/en/talents');
+        await expect(page).toHaveURL(/\/en\/admin\/dashboard/);
+      });
+
+      test('refresh preserves the guest-only redirect', async ({ page }) => {
+        await mockAuth(page, { '/auth/me': volunteerMe });
+        await gotoAuthed(page, '/en/talents');
+        await expect(page).toHaveURL(/\/en\/volunteer\/talents/);
+        const meResponse = page.waitForResponse((r) => r.url().includes('/auth/me'));
+        await page.reload();
+        await meResponse;
+        await expect(page).toHaveURL(/\/en\/volunteer\/talents/);
+      });
+
+      test('shared detail pages stay accessible when authenticated', async ({ page }) => {
+        await mockAuth(page, { '/auth/me': volunteerMe });
+        await gotoAuthed(page, '/en/volunteers/amina');
+        await expect(page).toHaveURL(/\/en\/volunteers\/amina/);
+        await expect(page.getByTestId('shell-navbar')).toBeVisible();
+      });
+
+      test('internal links to guest-only routes redirect', async ({ page }) => {
+        await mockAuth(page, { '/auth/me': volunteerMe });
+        await gotoAuthed(page, '/en/volunteers/amina');
+        // Client-side navigation reuses the fresh session cache (no refetch),
+        // so assert the redirect target directly.
+        await page.getByTestId('shell-navbar').locator('a[href="/en"]').first().click();
+        await expect(page).toHaveURL(/\/en\/volunteer\/dashboard/);
+      });
+
+      test('logout restores guest access to public routes', async ({ page }) => {
+        let loggedOut = false;
+        await page.route('**/api/v1/auth/**', async (route: Route) => {
+          const path = new URL(route.request().url()).pathname;
+          if (path.endsWith('/auth/logout') && route.request().method() === 'POST') {
+            loggedOut = true;
+            return route.fulfill({ status: 204, body: '' });
+          }
+          if (path.endsWith('/auth/me')) {
+            if (loggedOut) {
+              return route.fulfill({
+                status: 401,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                  statusCode: 401,
+                  code: 'UNAUTHORIZED',
+                  message: 'Expired',
+                }),
+              });
+            }
+            return route.fulfill({
+              status: 200,
+              contentType: 'application/json',
+              body: JSON.stringify(verifiedVolunteer),
+            });
+          }
+          return route.fulfill({ status: 404, body: '{}' });
+        });
+        await gotoAuthed(page, '/en/volunteer/dashboard');
+        await page.getByTestId('navbar-avatar').click();
+        await page.getByTestId('navbar-logout').click();
+        await expect(page).toHaveURL(/\/en\/login/);
+        // Session state cleared before the push: the landing renders as guest.
+        await gotoAuthed(page, '/en/');
+        await expect(page).toHaveURL(/\/en\/?$/);
+        await expect(page.getByTestId('shell-main')).toBeVisible();
+      });
     });
   });
 }

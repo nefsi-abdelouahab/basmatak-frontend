@@ -19,13 +19,14 @@ import type {
 const APPLICATIONS_DOMAIN = 'volunteer-applications';
 const TASKS_DOMAIN = 'volunteer-tasks';
 
-export function useMyApplicationsQuery(params: ApplicationListParams) {
+export function useMyApplicationsQuery(params: ApplicationListParams, enabled = true) {
   const { status, from, to, cursor, limit } = params;
   return useQuery({
     queryKey: queryKeys.list(APPLICATIONS_DOMAIN, { status, from, to, cursor, limit }),
     queryFn: () => tasksApi.listMyApplications(api, params),
     staleTime: 30_000,
     retry: false,
+    enabled,
   });
 }
 
@@ -50,13 +51,14 @@ export function useWithdrawApplicationMutation() {
   });
 }
 
-export function useMyParticipationsQuery(params: ParticipationListParams) {
+export function useMyParticipationsQuery(params: ParticipationListParams, enabled = true) {
   const { status, cursor, limit } = params;
   return useQuery({
     queryKey: queryKeys.list(TASKS_DOMAIN, { status, cursor, limit }),
     queryFn: () => tasksApi.listMyParticipations(api, params),
     staleTime: 30_000,
     retry: false,
+    enabled,
   });
 }
 

@@ -22,6 +22,7 @@ import {
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { Container } from '@/components/ui/Container';
 import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
 import { Pill } from '@/components/ui/Pill';
@@ -55,7 +56,7 @@ import {
   usePublicWilayasQuery,
 } from '@/hooks/usePublicOrgs';
 
-// Public organization profile. This route ALWAYS renders inside the (public)
+// Public organization profile. This route ALWAYS renders inside the (shared)
 // group (PublicNavbar + PublicFooter) for every viewer — anonymous,
 // volunteer, or organization. No sidebar, ever (no <aside> on this route);
 // no layout branch. Session only toggles one header button (content-level):
@@ -278,7 +279,7 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
     const err = mapToApiError(profileQuery.error);
     if (err.statusCode === 404) {
       return (
-        <div data-testid="public-org-profile" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+        <Container testId="public-org-profile" className="flex flex-col gap-6 py-4">
           <Empty
             title={t('shared.notFoundTitle')}
             description={t('shared.notFoundBody')}
@@ -288,11 +289,11 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
               </Link>
             }
           />
-        </div>
+        </Container>
       );
     }
     return (
-      <div data-testid="public-org-profile" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+      <Container testId="public-org-profile" className="flex flex-col gap-6 py-4">
         <p role="alert" className="text-sm text-status-error">
           {t('shared.loadError')}
         </p>
@@ -301,7 +302,7 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
             {t('shared.retry')}
           </Button>
         </div>
-      </div>
+      </Container>
     );
   }
 
@@ -330,11 +331,15 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
   })();
   const locationLine = [profile.location?.address, wilayaName].filter(Boolean).join(' · ') || null;
 
-  const focusNames = (profile.focusDisciplines ?? []).map((id) => {
-    const match = (categoriesQuery.data ?? []).find((cat) => (cat.id ?? cat._id) === id);
-    if (!match) return id;
-    return (locale === 'ar' ? match.nameAr : match.nameFr) ?? match.nameFr ?? match.nameAr ?? id;
-  });
+  const focusNames = (profile.focusDisciplines ?? [])
+    .map((id) => {
+      const match = (categoriesQuery.data ?? []).find((cat) => (cat.id ?? cat._id) === id);
+      if (!match) return null;
+      return (locale === 'ar' ? match.nameAr : match.nameFr) ?? match.nameFr ?? match.nameAr ?? null;
+    })
+    // Never render a raw database id as visible text: unresolvable entries
+    // are dropped, and an empty result hides the whole focus block.
+    .filter((name): name is string => typeof name === 'string' && name.trim() !== '');
 
   const contactEmail = profile.contact?.email ?? null;
   const contactPhone = profile.contact?.phone ?? null;
@@ -347,7 +352,7 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
   const hasAbout = (profile.description ?? '') !== '' || focusNames.length > 0;
 
   return (
-    <div data-testid="public-org-profile" className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4">
+    <Container testId="public-org-profile" className="flex flex-col gap-6 py-4">
       <nav aria-label={c('a11y.breadcrumb')} className="flex flex-wrap items-center gap-1.5 text-sm">
         <Link href="/" className="inline-flex items-center gap-1 font-medium text-ink-muted transition-colors hover:text-ink">
           <Home size={14} aria-hidden="true" />
@@ -641,6 +646,6 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
           ) : null}
         </div>
       </Card>
-    </div>
+    </Container>
   );
 }

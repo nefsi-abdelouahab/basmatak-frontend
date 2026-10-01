@@ -14,8 +14,10 @@ import {
   getPublicTalentProfile,
   getPublicTalentReviews,
   hoursFromMinutes,
+  humanExperienceSkillLabels,
   isImageMedia,
   isLinkMedia,
+  isRawDbId,
   listPublicTalents,
   localizedName,
   mediaUrlOf,
@@ -24,6 +26,7 @@ import {
   publicDisplayName,
   registryCode,
   resolvePublicProfileSections,
+  skillNameMapOf,
   sortAreasByPercentDesc,
   verifiedLineParts,
 } from './publicTalent';
@@ -421,5 +424,36 @@ describe('endpoint functions', () => {
     const read = await getPublicMedia(client, 'm 1');
     expect(get).toHaveBeenCalledWith('/media/m%201');
     expect(read.url).toBe('https://signed');
+  });
+
+  it('never renders a raw database id as an experience skill', () => {
+    expect(isRawDbId('6ab99c44abdfbc408f746eea')).toBe(true);
+    expect(isRawDbId('First aid')).toBe(false);
+    expect(isRawDbId('')).toBe(false);
+    const labels = humanExperienceSkillLabels(
+      ['6ab99c44abdfbc408f746eea', 'First aid', '6AB99C44ABDFBC408F746EEB', ''],
+      new Map(),
+    );
+    expect(labels).toEqual(['First aid']);
+  });
+
+  it('resolves experience skill ids through the profile skill catalog', () => {
+    const catalog = skillNameMapOf(
+      [
+        { skillId: '6ab99c44abdfbc408f746eea', nameFr: 'First aid', nameAr: 'الإسعافات' },
+        { skillId: 'other', nameFr: 'Logistics', nameAr: 'اللوجستيات' },
+      ],
+      'en',
+    );
+    expect(humanExperienceSkillLabels(['6ab99c44abdfbc408f746eea'], catalog)).toEqual([
+      'First aid',
+    ]);
+    const arCatalog = skillNameMapOf(
+      [{ skillId: '6ab99c44abdfbc408f746eea', nameFr: 'First aid', nameAr: 'الإسعافات' }],
+      'ar',
+    );
+    expect(humanExperienceSkillLabels(['6ab99c44abdfbc408f746eea'], arCatalog)).toEqual([
+      'الإسعافات',
+    ]);
   });
 });

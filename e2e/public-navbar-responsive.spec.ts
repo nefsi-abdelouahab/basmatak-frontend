@@ -6,7 +6,7 @@ import { expect, test, type Page, type Route } from '@playwright/test';
 //   1. no page-level horizontal overflow (body scrollWidth <= clientWidth),
 //   2. hamburger toggle visibility + open/close behaviour per breakpoint,
 //   3. mobile-menu content matches desktop content (same links, same auth),
-//   4. guest AND authenticated auth-state variants collapse correctly,
+//   4. authenticated visits to guest-only routes redirect to the dashboard,
 //   5. RTL mirrors (toggle at the logical end side) without overflow.
 
 type Handler = { status: number; body?: unknown };
@@ -197,28 +197,15 @@ for (const width of WIDTHS) {
       }
     });
 
-    test(`authenticated: dashboard action collapses into the menu (en)`, async ({ page }) => {
+    test(`authenticated: guest-only landing redirects to the dashboard (en)`, async ({
+      page,
+    }) => {
+      // Guest-only separation: an authenticated session never sees public
+      // chrome on the landing — it lands on the role dashboard instead.
       await mockApi(page, { '/auth/me': VOLUNTEER_ME });
       await gotoReady(page, '/en');
+      await expect(page).toHaveURL(/\/en\/volunteer\/dashboard/);
       await expect(page.getByTestId('shell-navbar')).toBeVisible({ timeout: 15000 });
-
-      const over = await overflow(page);
-      expect(over.body).toBeLessThanOrEqual(1);
-
-      if (isMobileLayout) {
-        await openMenu(page);
-        const menu = page.getByTestId('public-navbar-mobile-menu');
-        // Same auth state as desktop: dashboard link, no sign-in links.
-        await expect(menu.locator('a[href$="/volunteer/dashboard"]')).toBeVisible();
-        await expect(menu.locator('a[href$="/login"]')).toBeHidden();
-        expect(await mobileLinkHrefs(page)).toEqual(await desktopLinkHrefs(page));
-        const openOver = await overflow(page);
-        expect(openOver.body).toBeLessThanOrEqual(1);
-      } else {
-        await expect(
-          page.getByTestId('public-navbar-actions-desktop').locator('a[href$="/volunteer/dashboard"]'),
-        ).toBeVisible();
-      }
     });
   });
 }

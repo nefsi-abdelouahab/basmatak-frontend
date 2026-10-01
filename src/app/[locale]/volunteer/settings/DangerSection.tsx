@@ -2,8 +2,8 @@
 
 import { useState, type FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
+import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { useDeleteAccountMutation } from '@/hooks/useAccountSettings';
 import { SectionError } from '../components';
@@ -31,24 +31,44 @@ export function DangerSection() {
   }
 
   return (
-    <Card title={t('settings.dangerTitle')}>
+    <section
+      id="section-danger"
+      aria-label={t('settings.dangerZoneTitle')}
+      className="scroll-mt-24 rounded-xl border border-status-error/40 bg-surface p-4 shadow-sm sm:p-6"
+    >
+      <div className="flex flex-col gap-1 pb-4">
+        <div className="flex items-center gap-2">
+          <AlertTriangle size={20} aria-hidden="true" className="shrink-0 text-status-error" />
+          <h2 className="text-title-lg text-status-error">{t('settings.dangerZoneTitle')}</h2>
+        </div>
+        <p className="text-body-sm text-ink-muted">{t('settings.dangerZoneHint')}</p>
+      </div>
       <div data-testid="settings-danger" className="flex flex-col gap-3">
-        <p className="text-sm text-ink-muted">{t('settings.dangerHint')}</p>
-        {!open ? (
-          <div>
-            <Button type="button" variant="danger" onClick={() => setOpen(true)}>
+        <div className="flex flex-col justify-between gap-3 rounded-lg bg-surface-muted p-3.5 sm:flex-row sm:items-center">
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <span className="text-label-md font-semibold text-ink">{t('settings.dangerTitle')}</span>
+            <span className="text-body-sm text-ink-muted">{t('settings.dangerHint')}</span>
+          </div>
+          {!open ? (
+            <Button
+              type="button"
+              variant="danger"
+              onClick={() => setOpen(true)}
+              className="shrink-0 self-start sm:self-center"
+            >
               {t('settings.deleteCta')}
             </Button>
-          </div>
-        ) : (
+          ) : null}
+        </div>
+        {open ? (
           <form
             data-testid="delete-confirm"
             onSubmit={onSubmit}
-            className="flex flex-col gap-3"
+            className="flex flex-col gap-3 rounded-lg bg-surface-muted p-3.5"
             noValidate
           >
-            <h2 className="text-base font-semibold text-ink">{t('settings.deleteTitle')}</h2>
-            <p className="text-sm text-ink-muted">{t('settings.deleteBody')}</p>
+            <h3 className="text-title-sm text-ink">{t('settings.deleteTitle')}</h3>
+            <p className="text-body-sm text-ink-muted">{t('settings.deleteBody')}</p>
             <Input
               id="delete-confirm-word"
               label={t('settings.deleteConfirmLabel')}
@@ -68,8 +88,8 @@ export function DangerSection() {
               </Button>
             </div>
           </form>
-        )}
+        ) : null}
       </div>
-    </Card>
+    </section>
   );
 }

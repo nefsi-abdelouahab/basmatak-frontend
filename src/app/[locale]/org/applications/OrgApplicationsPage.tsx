@@ -69,7 +69,7 @@ export function OrgApplicationsPage({ locale }: { locale: string }) {
 
   return (
     <RequireOrg locale={locale} next={`/org/applications`}>
-      <div data-testid="org-applications" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+      <div data-testid="org-applications" className="flex min-w-0 flex-col gap-6">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('applications.title')}</h1>
           <p className="text-sm text-ink-muted">{t('applications.subtitle')}</p>

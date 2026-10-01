@@ -17,6 +17,8 @@ import {
   listPublicOpportunities,
   listPublicOrgOpportunities,
   listRelatedPublicOpportunities,
+  listSkillCategories,
+  listWilayas,
   oppDisplayCode,
   orgDisplayCode,
   orgDisplayName,
@@ -172,11 +174,23 @@ describe('publicOrgs endpoint functions', () => {
     const { page, counts } = await listPublicOrgOpportunities(client, 's', {
       status: 'completed',
     });
+    // The archive endpoint only accepts `status` (limit/cursor are rejected).
     expect(get).toHaveBeenCalledWith('/organizations/s/opportunities', {
-      params: { status: 'completed', limit: 12 },
+      params: { status: 'completed' },
     });
     expect(page.total).toBe(1);
     expect(ArchiveCountsSchema.parse(counts)?.completed).toBe(9);
+  });
+
+  it('parses bare-array archives (the served shape) with synthesized paging', async () => {
+    const { client } = stubClient({ get: () => [orgCard] });
+    const { page, counts } = await listPublicOrgOpportunities(client, 's', {
+      status: 'published',
+    });
+    expect(page.items.length).toBe(1);
+    expect(page.total).toBe(1);
+    expect(page.nextCursor).toBeNull();
+    expect(counts).toBeNull();
   });
 
   it('builds feed queries dropping empties', () => {
@@ -214,10 +228,11 @@ describe('publicOrgs endpoint functions', () => {
       { _id: 'cur', title: 'Current' },
       { _id: 'next', title: 'Next' },
     ];
-    const { client, get } = stubClient({ get: () => pageOf(items) });
+    // Served shape is a bare array; only `status` is an accepted param.
+    const { client, get } = stubClient({ get: () => items });
     const related = await listRelatedPublicOpportunities(client, 's', 'cur');
     expect(get).toHaveBeenCalledWith('/organizations/s/opportunities', {
-      params: { status: 'published', limit: 6 },
+      params: { status: 'published' },
     });
     expect(related.map((r) => r._id)).toEqual(['next']);
   });
@@ -227,5 +242,18 @@ describe('publicOrgs endpoint functions', () => {
     expect(
       OrgReliabilitySchema.parse({ responseRate: 0.75 }).responseRate,
     ).toBe(0.75);
+  });
+
+  it('reads lookups served as bare arrays (wilayas + skill categories)', async () => {
+    const wilaya = { _id: 'w1', code: '16', nameAr: 'الجزائر', nameFr: 'Alger' };
+    const { client: wClient, get: wGet } = stubClient({ get: () => [wilaya] });
+    const wilayas = await listWilayas(wClient);
+    expect(wGet).toHaveBeenCalledWith('/locations/wilayas');
+    expect(wilayas.find((w) => w.code === '16')?.nameFr).toBe('Alger');
+
+    const category = { _id: 'c1', nameAr: 'اللوجستيات', nameFr: 'Logistics' };
+    const { client: cClient } = stubClient({ get: () => [category] });
+    const categories = await listSkillCategories(cClient);
+    expect(categories.find((c) => (c.id ?? c._id) === 'c1')?.nameFr).toBe('Logistics');
   });
 });

@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
 import { Loader } from '@/components/ui/Loader';
 import { Pagination } from '@/components/ui/Pagination';
 import { Pill } from '@/components/ui/Pill';
@@ -525,7 +526,7 @@ export function PublicOpportunitiesPage({
   const next = `/opportunities${toPublicOpportunitiesSearchString(filters)}`;
 
   return (
-    <div data-testid="public-opportunities" className="mx-auto w-full max-w-7xl px-6 py-8">
+    <Container testId="public-opportunities" className="py-8">
       {/* 1. Header area + live counter */}
       <section data-section="header" className="mb-6 flex flex-col justify-between gap-6 border-b border-border-muted pb-6 md:flex-row md:items-end">
         <div className="max-w-2xl">
@@ -797,6 +798,6 @@ export function PublicOpportunitiesPage({
           </div>
         </section>
       ) : null}
-    </div>
+    </Container>
   );
 }

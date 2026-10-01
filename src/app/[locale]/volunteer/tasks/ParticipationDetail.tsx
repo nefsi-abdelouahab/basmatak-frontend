@@ -47,6 +47,37 @@ function formatSchedule(schedule: unknown, opportunity: unknown, locale: string)
   return '—';
 }
 
+// Location labels arrive as `{ wilaya: { nameFr, nameAr } | null,
+// municipality: { nameFr, nameAr } | null }` (backend
+// resolveLocationLabels); older rows/tests join a flat label object.
+function formatLocation(
+  locationLabels: unknown,
+  locale: string,
+): string {
+  if (locationLabels !== null && typeof locationLabels === 'object') {
+    const labels = locationLabels as {
+      wilaya?: { nameFr?: string | null; nameAr?: string | null } | null;
+      municipality?: { nameFr?: string | null; nameAr?: string | null } | null;
+    };
+    if ('wilaya' in labels || 'municipality' in labels) {
+      const parts = [labels.municipality, labels.wilaya]
+        .map((part) => joinName(part ?? null, locale))
+        .filter((part) => part !== '—' && part !== '');
+      return parts.length > 0 ? parts.join(' · ') : '—';
+    }
+  }
+  return joinName(
+    locationLabels as {
+      nameFr?: string | null;
+      nameAr?: string | null;
+      name?: string | null;
+      title?: string | null;
+      slug?: string | null;
+    } | null | undefined,
+    locale,
+  );
+}
+
 // F6-owned participation detail: joined context, neutral timeline,
 // leave-with-confirm, conditional attestation blob download, onward link
 // to the F7 submit route. No submission editing, no messaging UI.
@@ -135,7 +166,7 @@ export function ParticipationDetail({
           </div>
           <div>
             <dt className="text-ink-muted">{t('participations.locationLabel')}</dt>
-            <dd className="font-medium text-ink">{joinName(row.locationLabels, locale)}</dd>
+            <dd className="font-medium text-ink">{formatLocation(row.locationLabels, locale)}</dd>
           </div>
         </dl>
 

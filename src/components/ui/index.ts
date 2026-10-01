@@ -3,6 +3,8 @@ export { Button } from './Button';
 export type { ButtonProps, ButtonSize, ButtonVariant } from './Button';
 export { Card } from './Card';
 export type { CardProps } from './Card';
+export { Container } from './Container';
+export type { ContainerProps, ContainerVariant } from './Container';
 export { Checkbox } from './Checkbox';
 export type { CheckboxProps } from './Checkbox';
 export { Empty } from './Empty';

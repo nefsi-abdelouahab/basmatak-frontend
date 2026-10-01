@@ -83,7 +83,8 @@
   },
   "sidebar": {
     "title": "المنظمة",
-    "verified": "منظمة موثّقة"
+    "verified": "منظمة موثّقة",
+    "viewOrg": "عرض ملف المنظمة"
   },
   "cover": {
     "emptyTitle": "لا توجد صورة غلاف",

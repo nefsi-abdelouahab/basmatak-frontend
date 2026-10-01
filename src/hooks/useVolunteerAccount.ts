@@ -57,6 +57,16 @@ export function useVolunteerDashboardQuery() {
   });
 }
 
+export function useVolunteerMediaQuery(mediaId: string | null | undefined) {
+  return useQuery({
+    queryKey: queryKeys.detail(DOMAIN, `media-${mediaId ?? 'none'}`),
+    queryFn: () => volunteersApi.getVolunteerMedia(api, mediaId as string),
+    enabled: typeof mediaId === 'string' && mediaId.length > 0,
+    staleTime: 300_000,
+    retry: false,
+  });
+}
+
 export function useMySkillsQuery() {
   return useQuery({
     queryKey: queryKeys.list(`${DOMAIN}-skills`),

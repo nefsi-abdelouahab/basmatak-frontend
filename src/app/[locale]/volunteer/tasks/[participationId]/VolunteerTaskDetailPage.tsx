@@ -18,7 +18,7 @@ export function VolunteerTaskDetailPage({
     <RequireTasks locale={locale} next={`/volunteer/tasks/${participationId}`}>
       <div
         data-testid="volunteer-task-detail"
-        className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4"
+        className="flex min-w-0 flex-col gap-4"
       >
         <Link href="/volunteer/tasks" className="text-sm font-medium text-primary">
           {t('participations.title')}

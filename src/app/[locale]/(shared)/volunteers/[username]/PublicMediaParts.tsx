@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Image as ImageIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { usePublicMediaQuery } from '@/hooks/usePublicTalent';
 import { isImageMedia, isLinkMedia, mediaUrlOf, type PublicMedia } from '@/lib/api/publicTalent';
@@ -58,6 +59,50 @@ export function PublicMediaLink({ media }: { media: PublicMedia }) {
     >
       {t('portfolio.openLink')}
     </a>
+  );
+}
+
+/**
+ * Image-first preview for link-type media (remote images). The backend media
+ * model only knows `file | link`, so a remote image can only ever arrive as a
+ * `link` row — classifying it as a link unconditionally (as `isLinkMedia`
+ * does) would hide every remote portfolio image behind a text anchor. The
+ * embedded URL is already the final public file, so no `/media/:id` fetch is
+ * needed; when the URL does not resolve to an image (video links), the
+ * `onError` fallback restores the plain anchor.
+ */
+export function PublicLinkPreview({ media }: { media: PublicMedia }) {
+  const [failed, setFailed] = useState(false);
+  const url = media.url ?? '';
+  if (!isLinkMedia(media)) return null;
+  if (!failed && url) {
+    return (
+      <div className="h-40 w-full overflow-hidden rounded-md bg-surface-muted">
+        {/* eslint-disable-next-line @next/next/no-img-element -- embedded public URL of a link media row */}
+        <img
+          data-testid="public-media-image"
+          src={url}
+          alt={media.filename ?? ''}
+          loading="lazy"
+          onError={() => setFailed(true)}
+          className="h-full w-full object-cover"
+        />
+      </div>
+    );
+  }
+  return <PublicMediaLink media={media} />;
+}
+
+/** Neutral stand-in for a portfolio item with genuinely no media attached. */
+export function PortfolioPlaceholder() {
+  return (
+    <div
+      data-testid="portfolio-placeholder"
+      aria-hidden="true"
+      className="flex h-40 w-full items-center justify-center rounded-md bg-surface-muted"
+    >
+      <ImageIcon size={28} className="text-ink-muted" aria-hidden="true" />
+    </div>
   );
 }
 

@@ -38,7 +38,21 @@ import { ApplyDialog, ReportDialog, WithdrawDialog } from './OpportunityDialogs'
 // renders the detail `organization` embed only — the embed carries no
 // reliability sub-object (verified in opportunity-embed.provider.ts;
 // reliability is F18-owned), so no extra endpoint is called and no stat is
-// invented.
+// invented. Sidebar links to the real public org profile via the embedded
+// slug; no registration/dispatch/authority copy anywhere.
+//
+// Icon map (Opportunity Details code.html Material Symbol -> lucide-react):
+// arrow_forward -> ArrowRight, calendar_month -> CalendarDays,
+// check/check_circle -> CircleCheck (neutral requirement markers),
+// fact_check -> ClipboardCheck (neutral requirements header only — never the
+// deleted statutory section), flag -> Flag, group -> Users,
+// location_on/pin_drop -> MapPin, schedule/timer/hourglass_top -> Clock,
+// send -> Send, share -> Share2, shield/verified -> BadgeCheck,
+// assignment_turned_in/task -> ListChecks, open_in_new -> ExternalLink.
+// DELETED with the Law 12-06 / statutory framework (no neutral reuse):
+// gavel, security, verified_user ("Law 12-06 Accredited" badge).
+// Hospitality/perks rows (restaurant, lunch_dining, military_tech) are OMITTED:
+// no API fields exist (FCD CUT) — listed as gaps, never invented.
 
 function formatDate(iso: string | null | undefined, locale: string): string {
   if (!iso) return '';
@@ -136,7 +150,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
     const err = mapToApiError(detailQuery.error);
     if (err.statusCode === 404) {
       return (
-        <div data-testid="opportunity-details" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+        <div data-testid="opportunity-details" className="flex min-w-0 flex-col gap-6">
           <Empty
             title={t('detail.notFoundTitle')}
             description={t('detail.notFoundBody')}
@@ -150,7 +164,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
       );
     }
     return (
-      <div data-testid="opportunity-details" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+      <div data-testid="opportunity-details" className="flex min-w-0 flex-col gap-6">
         <p data-testid="detail-error" role="alert" className="text-sm text-status-error">
           {t('shared.loadError')}
         </p>
@@ -223,7 +237,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
   const myApp = mineQuery.data ?? null;
 
   return (
-    <div data-testid="opportunity-details" className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+    <div data-testid="opportunity-details" className="flex min-w-0 flex-col gap-6">
       <nav aria-label={c('a11y.breadcrumb')} className="flex flex-wrap items-center gap-2 text-sm">
         <Link href="/volunteer/opportunities" className="font-medium text-ink-muted">
           {t('detail.backToOpportunities')}
@@ -472,6 +486,14 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
                 <span className="text-ink-muted">
                   {[wilayaName, municipalityName].filter(Boolean).join(' — ')}
                 </span>
+              ) : null}
+              {detail.organization?.slug ? (
+                <Link
+                  href={`/orgs/${detail.organization.slug}`}
+                  className="font-medium text-primary"
+                >
+                  {t('sidebar.viewOrg')}
+                </Link>
               ) : null}
             </div>
           </Card>

@@ -17,7 +17,7 @@ export function AuthShell({
   children: ReactNode;
 }) {
   return (
-    <Card className="mx-auto w-full max-w-md">
+    <Card className="w-full">
       <div data-testid={testId}>
         <h1 className="mb-1 text-2xl font-bold text-ink">{title}</h1>
         {subtitle ? <p className="mb-4 text-ink-muted">{subtitle}</p> : null}

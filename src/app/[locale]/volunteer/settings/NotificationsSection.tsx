@@ -1,7 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Card } from '@/components/ui/Card';
 import { Loader } from '@/components/ui/Loader';
 import { NOTIFICATION_PREF_KEYS, type NotificationPrefKey } from '@/lib/api/notifications';
 import {
@@ -9,6 +8,7 @@ import {
   usePatchNotificationPreferencesMutation,
 } from '@/hooks/useAccountSettings';
 import { SectionError, Toggle } from '../components';
+import { SettingsCard } from './settings-ui';
 
 // All six prefs default ON (backend lazily creates defaults on first read).
 export function NotificationsSection() {
@@ -18,16 +18,16 @@ export function NotificationsSection() {
 
   if (prefsQuery.isPending) {
     return (
-      <Card title={t('settings.notificationsTitle')}>
+      <SettingsCard id="section-notifications" title={t('settings.notificationsTitle')}>
         <Loader label={t('shared.loading')} />
-      </Card>
+      </SettingsCard>
     );
   }
   if (prefsQuery.isError || !prefsQuery.data) {
     return (
-      <Card title={t('settings.notificationsTitle')}>
+      <SettingsCard id="section-notifications" title={t('settings.notificationsTitle')}>
         <SectionError testId="notifications-error" message={t('shared.loadError')} />
-      </Card>
+      </SettingsCard>
     );
   }
   const prefs = prefsQuery.data;
@@ -41,16 +41,19 @@ export function NotificationsSection() {
   }
 
   return (
-    <Card title={t('settings.notificationsTitle')}>
-      <div data-testid="settings-notifications" className="flex flex-col gap-3">
-        <p className="text-sm text-ink-muted">{t('settings.notificationsHint')}</p>
+    <SettingsCard
+      id="section-notifications"
+      title={t('settings.notificationsTitle')}
+      hint={t('settings.notificationsHint')}
+    >
+      <div data-testid="settings-notifications" className="flex flex-col gap-2">
         <ul className="flex flex-col gap-2">
           {NOTIFICATION_PREF_KEYS.map((key) => (
             <li
               key={key}
-              className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2"
+              className="flex items-center justify-between gap-4 rounded-lg p-3 transition-colors hover:bg-surface-muted"
             >
-              <span className="text-sm text-ink">{t(`prefs.${key}`)}</span>
+              <span className="min-w-0 text-label-md font-medium text-ink">{t(`prefs.${key}`)}</span>
               <Toggle
                 checked={prefs[key] ?? true}
                 onChange={(next) => onToggle(key, next)}
@@ -64,6 +67,6 @@ export function NotificationsSection() {
           <SectionError testId="notifications-error" message={t('shared.genericError')} />
         ) : null}
       </div>
-    </Card>
+    </SettingsCard>
   );
 }

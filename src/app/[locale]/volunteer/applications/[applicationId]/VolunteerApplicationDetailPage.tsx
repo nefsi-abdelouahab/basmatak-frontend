@@ -21,7 +21,7 @@ export function VolunteerApplicationDetailPage({
     <RequireTasks locale={locale} next={`/volunteer/applications/${applicationId}`}>
       <div
         data-testid="volunteer-application-detail"
-        className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4"
+        className="flex min-w-0 flex-col gap-4"
       >
         <Link
           href="/volunteer/applications"

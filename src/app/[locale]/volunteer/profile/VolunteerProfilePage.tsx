@@ -36,7 +36,7 @@ function PublicLink() {
   return (
     <Link
       data-testid="public-profile-link"
-      href={`/volunteers/${meQuery.data.username}`}
+      href={`/volunteer/talents/${meQuery.data.username}`}
       className="text-sm font-medium text-primary"
     >
       {t('profile.viewPublic')}
@@ -48,7 +48,7 @@ export function VolunteerProfilePage({ locale }: { locale: string }) {
   const t = useTranslations('volunteerAccount');
   return (
     <RequireVolunteer locale={locale} next={`/volunteer/profile`}>
-      <div data-testid="volunteer-profile" className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
+      <div data-testid="volunteer-profile" className="flex min-w-0 flex-col gap-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-ink">{t('profile.title')}</h1>

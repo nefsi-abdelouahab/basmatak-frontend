@@ -8,6 +8,7 @@ import { errorStateFor, mapToApiError } from '@/lib/api/errors';
 import { isSafeNextPath } from '@/hooks/useAuth';
 import { useResendVerificationMutation, useVerifyEmailMutation } from '@/hooks/useAuth';
 import { AuthError, AuthShell, AuthSuccess } from '../components';
+import { Container } from '@/components/ui/Container';
 
 type VerifyState = 'verifying' | 'success' | 'invalid';
 
@@ -55,7 +56,7 @@ export function VerifyEmailForm({
   const continueHref = isSafeNextPath(next) && next ? next : '/';
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-8">
+    <Container variant="narrow" className="flex flex-1 items-center justify-center py-8">
     <AuthShell testId="auth-verify-email" title={t('verifyEmail.title')}>
       <Link
         href="/login"
@@ -134,6 +135,6 @@ export function VerifyEmailForm({
       {resendSent ? <p className="text-sm text-ink-muted">{t('verifyEmail.resendSent')}</p> : null}
       {resendError ? <AuthError message={resendError} /> : null}
     </AuthShell>
-    </div>
+    </Container>
   );
 }

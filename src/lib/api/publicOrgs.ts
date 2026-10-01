@@ -654,14 +654,17 @@ export async function listPublicOrgOpportunities(
   slug: string,
   params: OrgOppsParams,
 ): Promise<{ page: z.infer<ReturnType<typeof CursorPageSchema>>; counts: ArchiveCounts | null }> {
+  // The public archive endpoint only accepts `status` (limit/cursor are
+  // rejected with 400) and returns a bare array of cards — NOT a CursorPage.
+  // Accept both shapes so the tabs render real data (or a genuine empty
+  // state) instead of a load error; paging stays client-disabled
+  // (nextCursor null) because the endpoint has no cursor paging.
   const { data } = await client.get(`/organizations/${encodeURIComponent(slug)}/opportunities`, {
     params: {
       ...(params.status ? { status: params.status } : {}),
-      ...(params.cursor ? { cursor: params.cursor } : {}),
-      limit: params.limit ?? 12,
     },
   });
-  const page = CursorPageSchema(PublicOppCardSchema).parse(data);
+  const page = normalizeOrgOppsPage(data);
   const counts = ArchiveCountsSchema.nullable()
     .optional()
     .parse((data as { counts?: unknown }).counts ?? null);
@@ -712,6 +715,22 @@ export async function getPublicOpportunityDetail(
   return PublicOppDetailSchema.parse(data);
 }
 
+// Normalizes the org-archive payload into a CursorPage: the endpoint serves
+// a bare card array today; a future CursorPage shape is accepted as-is.
+function normalizeOrgOppsPage(
+  data: unknown,
+): z.infer<ReturnType<typeof CursorPageSchema>> {
+  const asPage = CursorPageSchema(PublicOppCardSchema).safeParse(data);
+  if (asPage.success) return asPage.data;
+  const items = z.array(PublicOppCardSchema).parse(data);
+  return {
+    items,
+    nextCursor: null,
+    limit: items.length,
+    total: items.length,
+  };
+}
+
 // OQ3-approved: related is the published-only archive read through the
 // embedded org slug (small page); the current detail id is excluded client-side.
 export async function listRelatedPublicOpportunities(
@@ -719,11 +738,13 @@ export async function listRelatedPublicOpportunities(
   orgSlug: string,
   excludeId?: string,
 ): Promise<PublicOppCard[]> {
+  // Same contract as the archive read above: status-only params, bare array.
   const { data } = await client.get(`/organizations/${encodeURIComponent(orgSlug)}/opportunities`, {
-    params: { status: 'published', limit: 6 },
+    params: { status: 'published' },
   });
-  const page = CursorPageSchema(PublicOppCardSchema).parse(data);
-  return excludeId ? page.items.filter((item) => oppIdOf(item) !== excludeId) : page.items;
+  const page = normalizeOrgOppsPage(data);
+  const items = excludeId ? page.items.filter((item) => oppIdOf(item) !== excludeId) : page.items;
+  return items.slice(0, 6);
 }
 
 export async function listTalentSamples(
@@ -735,7 +756,9 @@ export async function listTalentSamples(
 }
 
 export async function listSkillCategories(client: HttpClient): Promise<SkillCategory[]> {
+  // Served as a bare array today; an `{items}` envelope is accepted too.
   const { data } = await client.get('/skill-categories');
+  if (Array.isArray(data)) return z.array(SkillCategorySchema).parse(data);
   const parsed = z
     .object({ items: z.array(SkillCategorySchema).optional() })
     .passthrough()
@@ -745,7 +768,9 @@ export async function listSkillCategories(client: HttpClient): Promise<SkillCate
 }
 
 export async function listWilayas(client: HttpClient): Promise<Wilaya[]> {
+  // Served as a bare array today; an `{items}` envelope is accepted too.
   const { data } = await client.get('/locations/wilayas');
+  if (Array.isArray(data)) return z.array(WilayaSchema).parse(data);
   const parsed = z
     .object({ items: z.array(WilayaSchema).optional() })
     .passthrough()

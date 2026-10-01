@@ -219,6 +219,8 @@ export const PublicVolunteerProfileSchema = z
     fullName: z.string().nullable().optional(),
     firstName: z.string().nullable().optional(),
     avatar: z.string().nullable().optional(),
+    /** Cover banner media id when the volunteer made it public (else null). */
+    banner: z.string().nullable().optional(),
     bio: z.string().nullable().optional(),
     headline: z.string().nullable().optional(),
     availabilityNote: z.string().nullable().optional(),
@@ -414,6 +416,52 @@ export function resolvePublicProfileSections(
 /** `false` keeps the standalone experiences route from being requested at all. */
 export function experiencesGateOpen(profile: PublicVolunteerProfile | null | undefined): boolean {
   return profile?.experiences != null;
+}
+
+/** True for a bare 24-hex Mongo id — never render these as visible text. */
+export function isRawDbId(value: string): boolean {
+  return /^[0-9a-fA-F]{24}$/.test(value.trim());
+}
+
+/**
+ * Maps raw experience skill entries (backend `skills` is an ObjectId
+ * snapshot, not names) to human labels via the profile skill catalog.
+ * Entries that resolve to a catalog name render the name; unresolvable raw
+ * ids are dropped so a database id never reaches the UI. Plain-text entries
+ * (if any) pass through unchanged.
+ */
+export function humanExperienceSkillLabels(
+  skills: string[] | null | undefined,
+  nameById: Map<string, string>,
+): string[] {
+  const out: string[] = [];
+  for (const skill of skills ?? []) {
+    if (typeof skill !== 'string' || skill.trim() === '') continue;
+    const named = nameById.get(skill);
+    if (named && named.trim() !== '') {
+      if (!out.includes(named)) out.push(named);
+      continue;
+    }
+    if (isRawDbId(skill)) continue;
+    if (!out.includes(skill)) out.push(skill);
+  }
+  return out;
+}
+
+/** Skill-id -> locale display name from the public profile skill catalog. */
+export function skillNameMapOf(
+  skills: PublicTalentSkill[] | null | undefined,
+  locale: string,
+): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const skill of skills ?? []) {
+    const name = localizedName(
+      { nameFr: skill.nameFr ?? null, nameAr: skill.nameAr ?? null },
+      locale,
+    );
+    if (skill.skillId && name.trim() !== '') map.set(skill.skillId, name);
+  }
+  return map;
 }
 
 /** `false` keeps the standalone portfolio route from being requested at all. */

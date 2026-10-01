@@ -13,6 +13,24 @@
     "subtitle": "Describe your work, add evidence, then submit for review.",
     "backToTasks": "Back to my tasks"
   },
+  "context": {
+    "scopeLabel": "Deliverable scope",
+    "viewDetails": "View opportunity details"
+  },
+  "rail": {
+    "opportunity": "Opportunity",
+    "lifecycle": "Submission steps",
+    "expected": "Expected from your role",
+    "contact": "Organization contact",
+    "emailCta": "Email the organization"
+  },
+  "lifecycle": {
+    "verifiedExperience": "Verified Experience",
+    "currentHint": "Current step"
+  },
+  "privacy": {
+    "body": "Evidence files stay private. Only you and the reviewing organization can open them. They appear on your public profile only if you choose to make the verified experience public."
+  },
   "draft": {
     "titleLabel": "Contribution title",
     "titleHint": "Optional, up to 200 characters.",

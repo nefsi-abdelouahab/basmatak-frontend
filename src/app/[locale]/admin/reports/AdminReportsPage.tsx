@@ -586,7 +586,7 @@ export function AdminReportsPage({ locale }: { locale: string }) {
 
   return (
     <RequireAdminModeration locale={locale} next={`/admin/reports`}>
-      <div data-testid="admin-reports" className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
+      <div data-testid="admin-reports" className="flex min-w-0 flex-col gap-6">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('reports.title')}</h1>
           <p className="text-sm text-ink-muted">{t('reports.subtitle')}</p>

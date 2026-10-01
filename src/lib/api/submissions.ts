@@ -84,14 +84,24 @@ export const SUBMISSION_STATUSES = [
 
 export type SubmissionStatus = (typeof SUBMISSION_STATUSES)[number];
 
+// Evidence reads carry `{ mediaId }` entries (backend stores
+// `evidence: [{ mediaId }]`; detail expands them with media metadata), while
+// writes send ObjectId strings — so reads accept both shapes. The backend
+// names the participation link `participantId` (unique index); older clients
+// read `participationId`, so both keys are accepted (passthrough keeps them).
+export const SubmissionEvidenceEntrySchema = z
+  .object({ mediaId: z.unknown().optional() })
+  .passthrough();
+
 export const SubmissionSchema = z
   .object({
     id: z.string().optional(),
     _id: z.string().optional(),
-    participationId: z.string().optional(),
+    participationId: z.unknown().optional(),
+    participantId: z.unknown().optional(),
     title: z.string().nullable().optional(),
     description: z.string().nullable().optional(),
-    evidence: z.array(z.string()).optional(),
+    evidence: z.array(z.union([z.string(), SubmissionEvidenceEntrySchema])).optional(),
     consentConfirmed: z.boolean().nullable().optional(),
     status: z.string().optional(),
     rejectionReason: z.string().nullable().optional(),
@@ -107,6 +117,27 @@ export function submissionIdOf(s: Submission): string {
 
 export function submissionStatusOf(s: Submission): string {
   return s.status ?? 'draft';
+}
+
+// The backend names the participation link `participantId` (unique index);
+// reads accept the legacy `participationId` alias too. Serialized ObjectIds
+// arrive as strings — non-string values coerce, missing links yield ''.
+export function submissionParticipantIdOf(s: Submission): string {
+  const raw = (s.participantId ?? s.participationId ?? '') as unknown;
+  return typeof raw === 'string' ? raw : String(raw ?? '');
+}
+
+// Evidence entries arrive as `{ mediaId }` objects on reads (detail expands
+// them with media metadata) and as ObjectId strings on writes.
+export function evidenceMediaIdOf(entry: string | { mediaId?: unknown }): string {
+  if (typeof entry === 'string') return entry;
+  const raw = (entry as { mediaId?: unknown } | null | undefined)?.mediaId;
+  return typeof raw === 'string' ? raw : String(raw ?? '');
+}
+
+export function evidenceMediaIdsOf(s: Submission): string[] {
+  if (!Array.isArray(s.evidence)) return [];
+  return s.evidence.map(evidenceMediaIdOf).filter((id) => id !== '');
 }
 
 export const CreateSubmissionInputSchema = z.object({

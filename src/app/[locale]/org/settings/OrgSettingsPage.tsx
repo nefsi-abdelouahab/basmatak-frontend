@@ -13,7 +13,7 @@ export function OrgSettingsPage({ locale }: { locale: string }) {
   const t = useTranslations('orgAccount');
   return (
     <RequireOrg locale={locale} next={`/org/settings`}>
-      <div data-testid="org-settings" className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
+      <div data-testid="org-settings" className="flex min-w-0 flex-col gap-6">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('settings.title')}</h1>
           <p className="text-sm text-ink-muted">{t('settings.subtitle')}</p>

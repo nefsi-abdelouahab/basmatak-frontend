@@ -16,7 +16,7 @@ export function OrgApplicationDetailPage({
   const t = useTranslations('orgReview');
   return (
     <RequireOrg locale={locale} next={`/org/applications/${applicationId}`}>
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+      <div className="flex min-w-0 flex-col gap-6">
         <div>
           <h1 className="text-2xl font-bold text-ink">{t('applications.detailTitle')}</h1>
         </div>

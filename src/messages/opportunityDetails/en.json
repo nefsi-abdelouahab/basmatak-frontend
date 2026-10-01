@@ -83,7 +83,8 @@
   },
   "sidebar": {
     "title": "Organization",
-    "verified": "Verified organization"
+    "verified": "Verified organization",
+    "viewOrg": "View organization profile"
   },
   "cover": {
     "emptyTitle": "No cover image",

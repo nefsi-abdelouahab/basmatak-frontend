@@ -34,7 +34,7 @@ export function RequireAdminModeration({
     return (
       <div
         data-testid="admin-moderation-forbidden"
-        className="mx-auto flex w-full max-w-3xl flex-col gap-2 p-4"
+        className="flex min-w-0 flex-col gap-2"
       >
         <h1 className="text-2xl font-bold text-ink">{t('shared.forbiddenTitle')}</h1>
         <p className="text-sm text-ink-muted">{t('shared.forbiddenDescription')}</p>
