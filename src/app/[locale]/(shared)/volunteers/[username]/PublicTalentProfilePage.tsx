@@ -366,11 +366,18 @@ export function PublicTalentProfilePage({
   // Volunteer experience through this component.
   backHref = '/talents',
   loginNext,
+  // Shell-agnostic save gate: the favorites backend only backs the volunteer
+  // role (POST/DELETE /favorites/talents/:username carry @Roles('volunteer'),
+  // so an organization-role session gets 403). The org workspace passes
+  // `allowSave={false}` to omit the button instead of calling a forbidden
+  // endpoint — same content, only the action differs.
+  allowSave = true,
 }: {
   locale: string;
   username: string;
   backHref?: string;
   loginNext?: string;
+  allowSave?: boolean;
 }) {
   const t = useTranslations('publicTalent');
   const c = useTranslations('common');
@@ -385,7 +392,7 @@ export function PublicTalentProfilePage({
   const ownUsername = session.data?.role === 'volunteer' ? (meQuery.data?.username ?? null) : null;
   const isOwner = ownUsername !== null && ownUsername === username;
   const isAuthenticated = session.data != null;
-  const showSave = isAuthenticated && !isOwner;
+  const showSave = allowSave && isAuthenticated && !isOwner;
   const showEdit = isOwner;
   const [expPageIdx, setExpPageIdx] = useState(0);
   const [expCursors, setExpCursors] = useState<(string | undefined)[]>([undefined]);

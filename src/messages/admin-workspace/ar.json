@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "menu": "قائمة الإدارة",
+    "overview": "نظرة عامة",
+    "dashboard": "لوحة التحكم",
+    "management": "الإدارة",
+    "volunteers": "المتطوعون",
+    "organizations": "المنظمات",
+    "verifications": "التحققات",
+    "opportunities": "الفرص",
+    "moderation": "الإشراف",
+    "reports": "البلاغات",
+    "system": "النظام",
+    "settings": "الإعدادات",
+    "more": "المزيد"
+  },
+  "identity": {
+    "role": "مشرف المنصة"
+  },
+  "search": {
+    "label": "البحث عن متطوعين",
+    "placeholder": "ابحث عن متطوعين…"
+  }
+}

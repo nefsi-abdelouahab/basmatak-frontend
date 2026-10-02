@@ -10,11 +10,12 @@
   "archive": {
     "title": "الخبرات الموثّقة",
     "subtitle": "كل خبرة وثّقتها جهتكم، مع الشهادات.",
+    "workspace": "فضاء الجهة المنظمة",
     "filtersTitle": "عوامل التصفية",
     "searchLabel": "بحث",
     "searchPlaceholder": "العنوان أو الرمز أو رقم EXP…",
     "opportunityLabel": "الفرصة",
-    "opportunityPlaceholder": "رقم الفرصة…",
+    "allOpportunities": "كل الفرص",
     "visibilityLabel": "الظهور",
     "allVisibilities": "الكل",
     "visibilityPublic": "عام",
@@ -39,6 +40,29 @@
     "reviewLabel": "تقييمكم",
     "nextPage": "الصفحة التالية",
     "prevPage": "الصفحة السابقة"
+  },
+  "stats": {
+    "verifiedLabel": "الخبرات الموثّقة",
+    "verified": "{total} من الخبرات الموثّقة",
+    "hoursLabel": "الساعات الموثّقة",
+    "hours": "{hours} ساعة موثّقة"
+  },
+  "list": {
+    "directory": "السجلات الموثّقة",
+    "showing": "عرض {shown} من {total}",
+    "selected": "محدّدة",
+    "endOfResults": "نهاية النتائج."
+  },
+  "detail": {
+    "empty": "اختر خبرة موثّقة لعرض التفاصيل.",
+    "backToList": "عودة إلى القائمة",
+    "verificationTitle": "تفاصيل التوثيق",
+    "verifiedBy": "وثّقتها",
+    "verifiedOnLabel": "تاريخ التوثيق",
+    "statusLabel": "الحالة",
+    "statusVerified": "موثّقة",
+    "durationLabel": "المدة",
+    "visibilityNote": "الظهور يحدّده المتطوع على خبرته الخاصة."
   },
   "reviews": {
     "title": "التقييمات الممنوحة",

@@ -10,11 +10,12 @@
   "archive": {
     "title": "Verified experiences",
     "subtitle": "Every experience your organization has verified, with attestations.",
+    "workspace": "Organization workspace",
     "filtersTitle": "Filters",
     "searchLabel": "Search",
     "searchPlaceholder": "Title, code, or EXP id…",
     "opportunityLabel": "Opportunity",
-    "opportunityPlaceholder": "Opportunity ID…",
+    "allOpportunities": "All opportunities",
     "visibilityLabel": "Visibility",
     "allVisibilities": "All",
     "visibilityPublic": "Public",
@@ -39,6 +40,29 @@
     "reviewLabel": "Your review",
     "nextPage": "Next page",
     "prevPage": "Previous page"
+  },
+  "stats": {
+    "verifiedLabel": "Verified experiences",
+    "verified": "{total} verified experiences",
+    "hoursLabel": "Documented hours",
+    "hours": "{hours} documented hours"
+  },
+  "list": {
+    "directory": "Verified records",
+    "showing": "Showing {shown} of {total}",
+    "selected": "Selected",
+    "endOfResults": "End of results."
+  },
+  "detail": {
+    "empty": "Select a verified experience to see details.",
+    "backToList": "Back to list",
+    "verificationTitle": "Verification details",
+    "verifiedBy": "Verified by",
+    "verifiedOnLabel": "Verified on",
+    "statusLabel": "Status",
+    "statusVerified": "Verified",
+    "durationLabel": "Duration",
+    "visibilityNote": "Visibility is set by the volunteer on their own experience."
   },
   "reviews": {
     "title": "Reviews given",

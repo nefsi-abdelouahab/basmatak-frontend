@@ -106,14 +106,20 @@ function PortfolioItemIcon({ item }: { item: PublicPortfolioItem }) {
 // Discover directory card (Discover Talents design): identity row, verified
 // stats, bio, skill tags, public-portfolio preview, availability line, and the
 // view-profile action. Only server-provided values render.
+// `profileBase` keeps the card shell-agnostic: the volunteer list passes
+// `/volunteer/talents` (default, preserves the existing route exactly) while
+// the org workspace passes `/org/volunteers` — same content, only the
+// wrapping shell/route differs.
 export function TalentCard({
   item,
   locale,
   wilayaLabel,
+  profileBase = '/volunteer/talents',
 }: {
   item: TalentCardData;
   locale: string;
   wilayaLabel: string | null;
+  profileBase?: string;
 }) {
   const t = useTranslations('volunteerHome');
   const name = publicDisplayName(item.firstName ?? null, item.username);
@@ -124,10 +130,10 @@ export function TalentCard({
   // Only a resolved localized label renders — an unknown wilaya id is
   // omitted entirely so internal ids never reach the UI.
   const hasWilaya = wilayaLabel;
-  // Stays inside the authenticated Volunteer experience: the profile route
-  // below lives under volunteer/talents and reuses the public profile
-  // content (same section ids, so the #portfolio anchor keeps working).
-  const profileHref = `/volunteer/talents/${item.username}`;
+  // Shell-agnostic profile route: volunteer (`/volunteer/talents/:username`)
+  // vs org (`/org/volunteers/:username`) — same public-profile content behind
+  // both (same section ids, so the #portfolio anchor keeps working).
+  const profileHref = `${profileBase}/${item.username}`;
 
   // Headline, availability, and portfolio are NOT in the card projection;
   // they resolve from the real public profile with the profile page's own

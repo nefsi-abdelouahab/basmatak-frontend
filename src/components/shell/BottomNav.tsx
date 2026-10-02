@@ -5,8 +5,10 @@ import { useTranslations } from 'next-intl';
 import {
   Award,
   BadgeCheck,
+  Building2,
   ClipboardList,
   Compass,
+  Flag,
   Hourglass,
   Images,
   Inbox,
@@ -59,8 +61,11 @@ const MORE_TABS: Tab[] = [
 // LayoutDashboard, campaign→Megaphone, inbox→Inbox, groups→Users,
 // hourglass_top→Hourglass, verified→BadgeCheck, person_search→UserSearch,
 // tune→Settings); labels come from the orgWorkspace catalog, like the
-// sidebar. Discover Talents points at /talents (the sidebar's single org
-// path to the talent directory), not a duplicated route.
+// sidebar. Discover Talents points at /org/discover-talents (the sidebar's
+// single org path to the talent directory), not a duplicated route. Detail
+// routes (/org/volunteers/:username, /org/orgs/:slug) stay out of the tab
+// bar: they are reached via links from Discover Talents, same as the
+// volunteer space (talents list is in nav, talent detail is not).
 const ORG_PRIMARY_TABS: Tab[] = [
   { key: 'overview', href: '/org/dashboard', Icon: LayoutDashboard },
   { key: 'opportunities', href: '/org/opportunities', Icon: Megaphone },
@@ -71,8 +76,26 @@ const ORG_PRIMARY_TABS: Tab[] = [
 const ORG_MORE_TABS: Tab[] = [
   { key: 'contributions', href: '/org/contributions', Icon: Hourglass },
   { key: 'experiences', href: '/org/experiences', Icon: BadgeCheck },
-  { key: 'talents', href: '/talents', Icon: UserSearch },
+  { key: 'talents', href: '/org/discover-talents', Icon: UserSearch },
   { key: 'settings', href: '/org/settings', Icon: Settings },
+];
+
+// Platform Administration tabs (same 4+More pattern): the sidebar's 7
+// destinations cannot fit 390px as icon tabs, so Dashboard, Volunteers,
+// Organizations, and Reports stay visible while Verifications,
+// Opportunities, and Settings fold into More. Icons and hrefs match the
+// admin sidebar exactly; labels come from the adminWorkspace catalog.
+const ADMIN_PRIMARY_TABS: Tab[] = [
+  { key: 'dashboard', href: '/admin/dashboard', Icon: LayoutDashboard },
+  { key: 'volunteers', href: '/admin/volunteers', Icon: Users },
+  { key: 'organizations', href: '/admin/organizations', Icon: Building2 },
+  { key: 'reports', href: '/admin/reports', Icon: Flag },
+];
+
+const ADMIN_MORE_TABS: Tab[] = [
+  { key: 'verifications', href: '/admin/verifications', Icon: BadgeCheck },
+  { key: 'opportunities', href: '/admin/opportunities', Icon: Megaphone },
+  { key: 'settings', href: '/admin/settings', Icon: Settings },
 ];
 
 const TAB_CLASS =
@@ -81,6 +104,7 @@ const TAB_CLASS =
 export function BottomNav() {
   const t = useTranslations('common');
   const tOrg = useTranslations('orgWorkspace');
+  const tAdmin = useTranslations('adminWorkspace');
   const pathname = usePathname();
   const session = useSessionQuery();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -111,8 +135,9 @@ export function BottomNav() {
 
   const isVolunteer = session.data?.role === 'volunteer';
   const isOrg = session.data?.role === 'organization';
+  const isAdmin = session.data?.role === 'admin';
 
-  if (!isVolunteer && !isOrg) {
+  if (!isVolunteer && !isOrg && !isAdmin) {
     return (
       <nav
         data-testid="shell-bottomnav"
@@ -128,10 +153,11 @@ export function BottomNav() {
     );
   }
 
-  const primaryTabs = isOrg ? ORG_PRIMARY_TABS : PRIMARY_TABS;
-  const moreTabs = isOrg ? ORG_MORE_TABS : MORE_TABS;
-  const tabLabel = (key: string) => (isOrg ? tOrg(`nav.${key}`) : t(`nav.${key}`));
-  const menuLabel = isOrg ? tOrg('nav.menu') : t('nav.menu');
+  const primaryTabs = isAdmin ? ADMIN_PRIMARY_TABS : isOrg ? ORG_PRIMARY_TABS : PRIMARY_TABS;
+  const moreTabs = isAdmin ? ADMIN_MORE_TABS : isOrg ? ORG_MORE_TABS : MORE_TABS;
+  const tabLabel = (key: string) =>
+    isAdmin ? tAdmin(`nav.${key}`) : isOrg ? tOrg(`nav.${key}`) : t(`nav.${key}`);
+  const menuLabel = isAdmin ? tAdmin('nav.menu') : isOrg ? tOrg('nav.menu') : t('nav.menu');
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   const moreActive = moreTabs.some((tab) => isActive(tab.href));

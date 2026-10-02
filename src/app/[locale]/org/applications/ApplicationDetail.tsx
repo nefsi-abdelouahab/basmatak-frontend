@@ -200,7 +200,7 @@ export function ApplicationDetailCard({
             ) : null}
             {usernameKey !== '' ? (
               <Link
-                href={`/volunteers/${encodeURIComponent(usernameKey)}`}
+                href={`/org/volunteers/${encodeURIComponent(usernameKey)}`}
                 data-testid={`${testIdPrefix}-public-profile`}
                 className="mt-1.5 inline-flex min-w-0 items-center gap-0.5 text-sm font-medium text-primary hover:underline"
               >

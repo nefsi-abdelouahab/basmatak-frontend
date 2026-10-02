@@ -4,8 +4,10 @@ import { useTranslations } from 'next-intl';
 import {
   Award,
   BadgeCheck,
+  Building2,
   ClipboardList,
   Compass,
+  Flag,
   Hourglass,
   Images,
   Inbox,
@@ -55,9 +57,12 @@ const DISCOVER: SpaceLink[] = [
 ];
 
 // Organization Workspace rail mirrors code.html's left rail (MAIN +
-// DISCOVER + ACCOUNT groups). Discover Talents stays here as the org's
-// single desktop path to browse volunteers (public talent directory) —
-// the top navbar carries no browse links, so this is not duplication.
+// DISCOVER + ACCOUNT groups). Discover Talents lives here as the org's
+// single desktop path to browse volunteers — now the internal
+// /org/discover-talents route (org Shell, same volunteer-space content),
+// not the public /talents directory, so the sidebar never leaves the
+// workspace. The top navbar carries no browse links, so this is not
+// duplication.
 // Icons are lucide maps of the design's Material Symbols (dashboard,
 // campaign→Megaphone, inbox, groups→Users, hourglass_top→Hourglass,
 // verified→BadgeCheck, person_search→UserSearch, tune→Settings).
@@ -76,7 +81,7 @@ const ORG_MAIN: OrgLink[] = [
   { key: 'experiences', href: '/org/experiences', Icon: BadgeCheck },
 ];
 
-const ORG_DISCOVER: OrgLink[] = [{ key: 'talents', href: '/talents', Icon: UserSearch }];
+const ORG_DISCOVER: OrgLink[] = [{ key: 'talents', href: '/org/discover-talents', Icon: UserSearch }];
 
 // Neutral verification note: renders ONLY when the API proves verification
 // (verificationStatus === 'verified'). No charter/audit/registry copy.
@@ -183,6 +188,96 @@ function OrgSidebar({ pathname }: { pathname: string }) {
   );
 }
 
+// Platform Administration rail mirrors the admin code.html left rail
+// (OVERVIEW + MANAGEMENT + MODERATION + SYSTEM groups). Verifications has no
+// code.html sidebar entry but is a real route, so it rides under Management
+// instead of stranding outside navigation. Icons are lucide maps of the
+// design's Material Symbols (dashboard→LayoutDashboard, group→Users,
+// apartment→Building2, verified→BadgeCheck, flag→Flag, settings→Settings).
+interface AdminLink {
+  key: string;
+  href: string;
+  Icon: LucideIcon;
+}
+
+const ADMIN_OVERVIEW: AdminLink[] = [{ key: 'dashboard', href: '/admin/dashboard', Icon: LayoutDashboard }];
+
+const ADMIN_MANAGEMENT: AdminLink[] = [
+  { key: 'volunteers', href: '/admin/volunteers', Icon: Users },
+  { key: 'organizations', href: '/admin/organizations', Icon: Building2 },
+  { key: 'verifications', href: '/admin/verifications', Icon: BadgeCheck },
+  { key: 'opportunities', href: '/admin/opportunities', Icon: Megaphone },
+];
+
+const ADMIN_MODERATION: AdminLink[] = [{ key: 'reports', href: '/admin/reports', Icon: Flag }];
+
+function AdminSidebar({ pathname }: { pathname: string }) {
+  const t = useTranslations('adminWorkspace');
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const groups: { label: string; links: AdminLink[]; testPrefix: string }[] = [
+    { label: t('nav.overview'), links: ADMIN_OVERVIEW, testPrefix: 'overview' },
+    { label: t('nav.management'), links: ADMIN_MANAGEMENT, testPrefix: 'management' },
+    { label: t('nav.moderation'), links: ADMIN_MODERATION, testPrefix: 'moderation' },
+  ];
+  return (
+    <aside
+      data-testid="shell-sidebar"
+      className="hidden w-64 shrink-0 rounded-lg border border-border bg-surface p-2 shadow-sm lg:sticky lg:top-20 lg:block lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
+    >
+      <div className="space-y-4">
+        {groups.map((group) => (
+          <div key={group.testPrefix}>
+            <p className="mb-1 px-3 text-label-xs font-semibold uppercase tracking-wider text-ink-muted">
+              {group.label}
+            </p>
+            <nav aria-label={group.label} className="space-y-0.5">
+              {group.links.map(({ key, href, Icon }) => {
+                const active = isActive(href);
+                return (
+                  <Link
+                    key={key}
+                    href={href}
+                    data-testid={`sidebar-link-admin-${key}`}
+                    aria-current={active ? 'page' : undefined}
+                    className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+                      active
+                        ? 'bg-primary-tint font-medium text-primary'
+                        : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
+                    }`}
+                  >
+                    <Icon size={20} aria-hidden="true" className="shrink-0" />
+                    <span className="min-w-0 flex-1 truncate">{t(`nav.${key}`)}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        ))}
+        <div className="border-t border-border-muted pt-2">
+          <p className="mb-1 px-3 text-label-xs font-semibold uppercase tracking-wider text-ink-muted">
+            {t('nav.system')}
+          </p>
+          <nav aria-label={t('nav.system')} className="space-y-0.5">
+            <Link
+              href="/admin/settings"
+              data-testid="sidebar-link-admin-settings"
+              aria-current={isActive('/admin/settings') ? 'page' : undefined}
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+                isActive('/admin/settings')
+                  ? 'bg-primary-tint font-medium text-primary'
+                  : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
+              }`}
+            >
+              <Settings size={20} aria-hidden="true" className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate">{t('nav.settings')}</span>
+            </Link>
+          </nav>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
 function SidebarLink({
   href,
   label,
@@ -229,6 +324,7 @@ export function Sidebar() {
   const session = useSessionQuery();
   const isVolunteer = session.data?.role === 'volunteer';
   const isOrg = session.data?.role === 'organization';
+  const isAdmin = session.data?.role === 'admin';
 
   // Badge totals read the real list endpoints with limit=1 (only the
   // cursor `total` is used). Zero totals render no badge — never invented.
@@ -237,6 +333,10 @@ export function Sidebar() {
 
   if (isOrg) {
     return <OrgSidebar pathname={pathname} />;
+  }
+
+  if (isAdmin) {
+    return <AdminSidebar pathname={pathname} />;
   }
 
   if (!isVolunteer) {

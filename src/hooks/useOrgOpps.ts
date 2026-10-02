@@ -27,6 +27,8 @@ export function orgOppKeys() {
     list: (filters: OwnOpportunityFilters) => queryKeys.list(DOMAIN, { ...filters }),
     detail: (id: string) => queryKeys.detail(DOMAIN, id),
     categories: queryKeys.list(DOMAIN, { scope: 'skill-categories' }),
+    skills: (categoryId?: string) =>
+      queryKeys.list(DOMAIN, { scope: 'skills', categoryId: categoryId ?? 'all' }),
     wilayas: queryKeys.list(DOMAIN, { scope: 'wilayas' }),
     municipalities: (wilayaId: string) =>
       queryKeys.list(DOMAIN, { scope: 'municipalities', wilayaId }),
@@ -172,6 +174,15 @@ export function useOppSkillCategoriesQuery() {
   return useQuery({
     queryKey: orgOppKeys().categories,
     queryFn: () => orgOppsApi.listSkillCategories(api),
+    staleTime: 5 * 60_000,
+    retry: false,
+  });
+}
+
+export function useOppSkillsQuery(categoryId?: string) {
+  return useQuery({
+    queryKey: orgOppKeys().skills(categoryId),
+    queryFn: () => orgOppsApi.listSkills(api, categoryId ? { categoryId } : undefined),
     staleTime: 5 * 60_000,
     retry: false,
   });

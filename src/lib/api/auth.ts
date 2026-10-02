@@ -12,6 +12,15 @@ export const emailSchema = z.string().email();
 export const passwordSchema = z.string().min(8).max(72);
 export const phoneSchema = z.string().regex(/^\+?[0-9]{8,15}$/);
 
+// Human-formatted numbers ("+213 555 12 34", "(0) 49-90-12-34") are rejected
+// by phoneSchema and by the backend's identical rule (UpdateMeDto), so forms
+// normalize before validating or submitting: strip spaces, dashes, dots,
+// and parentheses, keep a leading + and digits. Letters are never stripped
+// (they stay invalid).
+export function normalizePhoneNumber(value: string): string {
+  return value.replace(/[\s\-.()]/g, '');
+}
+
 export const AuthTokensSchema = z
   .object({
     accessToken: z.string(),

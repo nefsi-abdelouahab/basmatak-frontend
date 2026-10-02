@@ -221,6 +221,13 @@ function skillPills(
 // The header options control from the design has no backend action and stays
 // out; the integrity footnote from the design carries excluded copy and the
 // perks family of fields were cut upstream, so neither renders here.
+//
+// `interactive` (default true) keeps the volunteer-feed behavior. The Create
+// Opportunity live preview reuses this same component with
+// `interactive={false}` so the unpublished draft renders through the real
+// card markup: the title is plain text and the Save / Share / View footer
+// (all meaningless pre-publish — no id exists to favorite, share, or open)
+// is omitted instead of being faked with a separate hardcoded preview.
 export function OpportunityCard({
   item,
   locale,
@@ -228,6 +235,7 @@ export function OpportunityCard({
   next,
   saveTestIdPrefix = 'save-opp',
   detailsBasePath = '/volunteer/opportunities',
+  interactive = true,
 }: {
   item: OpportunityCardData;
   locale: string;
@@ -238,6 +246,7 @@ export function OpportunityCard({
   next: string;
   saveTestIdPrefix?: string;
   detailsBasePath?: string;
+  interactive?: boolean;
 }) {
   const t = useTranslations('volunteerHome');
   const id = item.id ?? item._id ?? '';
@@ -294,12 +303,18 @@ export function OpportunityCard({
       </div>
 
       <div className="flex min-w-0 flex-col gap-1.5">
-        <Link
-          href={detailHref}
-          className="text-title-lg font-semibold tracking-tight text-ink transition-colors hover:text-primary"
-        >
-          {title}
-        </Link>
+        {interactive ? (
+          <Link
+            href={detailHref}
+            className="text-title-lg font-semibold tracking-tight text-ink transition-colors hover:text-primary"
+          >
+            {title}
+          </Link>
+        ) : (
+          <p data-testid="opportunity-title-preview" className="text-title-lg font-semibold tracking-tight text-ink">
+            {title}
+          </p>
+        )}
         {item.description ? (
           <p className="text-body-md leading-relaxed text-ink-muted">{item.description}</p>
         ) : null}
@@ -409,21 +424,23 @@ export function OpportunityCard({
         </p>
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
-        <div className="flex flex-wrap items-center gap-2">
-          {id !== '' ? (
-            <SaveOpportunityButton id={id} favorited={favorited} next={next} testId={`${saveTestIdPrefix}-${id}`} />
-          ) : null}
-          <ShareOpportunityButton title={title} detailHref={detailHref} />
+      {interactive ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {id !== '' ? (
+              <SaveOpportunityButton id={id} favorited={favorited} next={next} testId={`${saveTestIdPrefix}-${id}`} />
+            ) : null}
+            <ShareOpportunityButton title={title} detailHref={detailHref} />
+          </div>
+          <Link
+            href={detailHref}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-label-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
+          >
+            <span>{t('opportunities.viewOpportunity')}</span>
+            <ArrowRight size={16} aria-hidden="true" className="rtl:rotate-180" />
+          </Link>
         </div>
-        <Link
-          href={detailHref}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-label-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
-        >
-          <span>{t('opportunities.viewOpportunity')}</span>
-          <ArrowRight size={16} aria-hidden="true" className="rtl:rotate-180" />
-        </Link>
-      </div>
+      ) : null}
     </article>
   );
 }

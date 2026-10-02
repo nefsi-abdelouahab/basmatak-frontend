@@ -7,8 +7,10 @@ import { Loader } from '@/components/ui/Loader';
 import { useOrgAccountQuery, usePatchOrgAccountMutation } from '@/hooks/useOrgAccount';
 import { SectionError, Toggle } from './components';
 
-// Neutral org visibility: publicProfile.enabled only. Orgs are not in the
-// talent directory, so no directory wording appears here.
+// Privacy & visibility (code.html §4, cleaned): neutral
+// publicProfile.enabled only. The design's other three toggles (public
+// contact info, public verified activity, Discover Talents indexing) map to
+// no real org-visibility field — reported as gaps and omitted, never built.
 export function VisibilitySection() {
   const t = useTranslations('orgAccount');
   const orgQuery = useOrgAccountQuery();
@@ -43,16 +45,17 @@ export function VisibilitySection() {
 
   return (
     <Card title={t('settings.visibilityTitle')}>
-      <div data-testid="settings-visibility" className="flex flex-col gap-3">
-        <p className="text-sm text-ink-muted">{t('settings.visibilityHint')}</p>
-        <div className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2">
-          <span className="text-sm text-ink">
-            {enabled ? t('settings.visibilityOn') : t('settings.visibilityOff')}
-          </span>
+      <div data-testid="settings-visibility" className="flex flex-col gap-2">
+        <p className="mb-2 text-sm text-ink-muted">{t('settings.visibilityHint')}</p>
+        <div className="flex items-start justify-between gap-6 py-4">
+          <div className="min-w-0 flex-1 pe-4">
+            <p className="text-sm font-medium text-ink">{t('settings.visibilityPublicTitle')}</p>
+            <p className="mt-0.5 text-sm text-ink-muted">{t('settings.visibilityPublicDesc')}</p>
+          </div>
           <Toggle
             checked={enabled}
             onChange={onToggle}
-            label={t('settings.visibilityTitle')}
+            label={t('settings.visibilityPublicTitle')}
             testId="visibility-toggle"
           />
         </div>

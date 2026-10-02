@@ -18,11 +18,21 @@ function leaves(value: Json): string[] {
   return Object.values(value).flatMap(leaves);
 }
 
-// V2 §B#18 copy discipline for the admin dashboard: the civic-sync and
-// compliance framing is dropped, not renamed. The queue stays a neutral
-// "Needs review" list with no sanction or enforcement vocabulary.
+// Copy discipline for the admin dashboard rebuild: the civic-sync and
+// compliance framing is dropped, not renamed, and every fabricated design
+// token is gone. The queue stays a neutral icon-led list with no pill
+// badges and no sanction or enforcement vocabulary. `registryId` (the real
+// VOL-/ORG-/OPP-/EXP- display format) is explicitly NOT banned — only its
+// fabricated cousins and civic-ledger verbs are.
 const FORBIDDEN_COPY = [
-  /DZ-NAT-REG/i,
+  /12-06/,
+  /DZ-NAT/,
+  /DZ-VOL/,
+  /civil registry/i,
+  /registry sync/i,
+  /anchored/i,
+  /minted/i,
+  /statute/i,
   /compliance\s*%/i,
   /statutory/i,
   /sanction/i,
@@ -81,8 +91,16 @@ describe('admin-overview catalog parity (en/ar)', () => {
     expect((adminOverviewEn as Json) as Record<string, Json>).toBeTruthy();
     const en = adminOverviewEn as unknown as { queue: { title: string } };
     const ar = adminOverviewAr as unknown as { queue: { title: string } };
-    expect(en.queue.title).toBe('Needs review');
+    expect(en.queue.title).toBe('Requires attention');
     expect(ar.queue.title.length).toBeGreaterThan(0);
+  });
+
+  it('carries no badge or pill vocabulary in queue copy', () => {
+    const en = adminOverviewEn as unknown as { queue: Record<string, string> };
+    for (const leaf of Object.values(en.queue)) {
+      expect(leaf).not.toMatch(/badge/i);
+      expect(leaf).not.toMatch(/pill/i);
+    }
   });
 });
 
@@ -90,6 +108,9 @@ describe('admin-overview source copy discipline', () => {
   const sources = [
     '../app/[locale]/admin/dashboard/AdminDashboardPage.tsx',
     '../app/[locale]/admin/dashboard/page.tsx',
+    '../components/shell/Sidebar.tsx',
+    '../components/shell/BottomNav.tsx',
+    '../components/shell/Navbar.tsx',
     '../lib/api/adminAnalytics.ts',
     '../hooks/useAdminAnalytics.ts',
   ];

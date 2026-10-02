@@ -158,7 +158,7 @@ export interface ResolutionConfirmation {
 
 // Consequence assertion via re-read (never the mutation echo): the report
 // list is re-fetched and the row must read `resolved`; the report history
-// (`entityType=reports`) must carry the `resolution` as reason; where the
+// (`entityType=report`) must carry the `resolution` as reason; where the
 // target has a history surface (opportunity/user/organization) its history
 // must carry the `resolution` as reason too. History reads never throw —
 // an unreadable history counts as unconfirmed, not as confirmed.
@@ -173,7 +173,7 @@ export async function confirmReportResolution(input: {
   const row = reports.items.find((item) => adminModerationApi.reportIdOf(item) === reportId);
   const reportResolved = row?.status === 'resolved';
   const reportHistories = await adminModerationApi
-    .readStatusHistories(api, { entityType: 'reports', entityId: reportId })
+    .readStatusHistories(api, { entityType: 'report', entityId: reportId })
     .catch(() => []);
   const reportHistoryConfirmed = reportHistories.some((entry) => entry.reason === resolution);
   const historyEntity = targetHistoryEntityOf(targetType);

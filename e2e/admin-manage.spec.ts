@@ -135,6 +135,54 @@ const histories = [
   { from: 'active', to: 'suspended', reason: 'policy breach', notes: 'see report 7' },
 ];
 
+const oppVerificationStatus = {
+  items: [
+    {
+      participantId: '64f0000000000000000000p1',
+      volunteerName: 'Amina Benali',
+      username: 'amina',
+      volunteerRegistryId: 'VOL-000001',
+      positionTitle: 'Sweeper',
+      participationStatus: 'completed',
+      submissionStatus: 'approved',
+      submissionTitle: 'Festival coverage',
+      verificationCode: 'ABCDEFGH',
+      experienceRegistryId: 'EXP-000001',
+      verifiedAt: '2026-09-05T12:00:00.000Z',
+    },
+  ],
+};
+
+const analyticsOverview = {
+  totals: {
+    users: { current: 10, previous: 8, deltaPercent: 25 },
+    organizations: { current: 3, previous: 3, deltaPercent: 0 },
+    opportunities: { current: 5, previous: 4, deltaPercent: 25 },
+    applications: { current: 20, previous: 10, deltaPercent: 100 },
+    submissions: { current: 6, previous: 2, deltaPercent: 200 },
+  },
+  activeParticipants: 4,
+  perStatus: {
+    users: { active: 10 },
+    organizations: { byStatus: { active: 3 }, byVerificationStatus: { verified: 2 } },
+    opportunities: { published: 3, in_progress: 1, completed: 1 },
+    applications: { pending: 2, under_review: 1 },
+    submissions: { approved: 2 },
+  },
+  verificationReady: { total: 1, byOrganization: [] },
+  gateFreezes: 0,
+  medianDecisionHours: null,
+};
+
+const openOppReports = {
+  items: [],
+  nextCursor: null,
+  limit: 1,
+  total: 2,
+  page: 1,
+  pages: 1,
+};
+
 interface Captured {
   path: string;
   method: string;
@@ -225,6 +273,14 @@ function baseHandlers(): Record<string, Handler> {
       status: 200,
       body: { id: '64f0000000000000000000011', status: (body as { status: string }).status },
     }),
+    '/admin/opportunities/64f0000000000000000000011/verification-status': {
+      status: 200,
+      body: oppVerificationStatus,
+    },
+    '/admin/analytics/overview': { status: 200, body: analyticsOverview },
+    '/admin/reports': { status: 200, body: openOppReports },
+    '/skill-categories': { status: 200, body: [] },
+    '/skills': { status: 200, body: [] },
   };
 }
 
@@ -422,10 +478,12 @@ for (const width of [1440, 1100, 390]) {
       await mockApi(page, baseHandlers(), captured);
       await page.goto('/en/admin/opportunities');
       await expect(page.getByTestId('admin-opportunities-count')).toContainText('1');
+      await expect(page.getByTestId('admin-opportunities-stat-flagged')).toContainText('2');
       await page.getByTestId('admin-opportunity-open-64f0000000000000000000011').click();
       await expect(page.getByTestId('admin-opportunity-detail')).toContainText('OPP-000001');
+      await expect(page.getByTestId('admin-opportunity-detail')).toContainText('ABCDEFGH');
+      await expect(page.getByTestId('admin-opportunity-detail')).toContainText('VOL-000001');
       await page.getByTestId('admin-opportunity-force-close-open').click();
-      await page.locator('#admin-opportunity-close-status').selectOption('closed');
       await page.locator('#admin-opportunity-reason').fill('abusive content');
       await page.getByTestId('admin-opportunity-force-close-confirm').click();
       await expect

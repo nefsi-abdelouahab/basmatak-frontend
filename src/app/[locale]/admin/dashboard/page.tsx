@@ -5,9 +5,10 @@ interface AdminDashboardRouteProps {
   params: { locale: string };
 }
 
-// F14 owns `admin/dashboard` only. No `admin/layout.tsx` is created by this
-// session: F15 and F16 add sibling admin routes in the same parallel slate and a
-// shared layout would be the one file all three would have to write.
+// Admin dashboard route: code.html-layout rebuild (header + six-stat row +
+// activity chart + attention queue + activity feed + health + shortcuts).
+// Workspace chrome (sidebar, navbar, tab bar) lives in the shared Shell;
+// `admin/layout.tsx` wraps this route with it.
 export default function AdminDashboardRoute({ params: { locale } }: AdminDashboardRouteProps) {
   setRequestLocale(locale);
   return <AdminDashboardPage locale={locale} />;

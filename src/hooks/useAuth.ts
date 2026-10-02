@@ -5,6 +5,7 @@ import { useRouter } from '@/i18n/navigation';
 import { api } from '../lib/api';
 import { defaultTokenHooks } from '../lib/auth/storage';
 import { getMe, logout, type SessionUser } from '../lib/api/session';
+import { ApiError } from '../lib/api/errors';
 import { queryKeys } from '../lib/query/keys';
 import * as authApi from '../lib/api/auth';
 import type { LoginInput, RegisterInput } from '../lib/api/auth';
@@ -23,6 +24,37 @@ export const ROLE_HOME: Record<AuthRole, string> = {
 };
 
 export const VERIFY_EMAIL_PATH = '/verify-email';
+
+export const ALREADY_AUTHENTICATED_CODE = 'ALREADY_AUTHENTICATED';
+
+// Active-session guard (auth layer): a live session must never be silently
+// replaced by a second login/register. Fast-path guests (no stored access
+// token) with zero network calls so the normal sign-in/register flow is
+// untouched; only when tokens exist do we confirm via GET /auth/me (which
+// also honors the refresh path — an expired-but-refreshable session is still
+// active and must not be overwritten).
+export async function getActiveSession(): Promise<SessionUser | null> {
+  if (!defaultTokenHooks.getAccessToken()) return null;
+  try {
+    return await getMe(api);
+  } catch {
+    return null;
+  }
+}
+
+async function throwIfAlreadyAuthenticated(router: {
+  replace: (href: string) => void;
+}): Promise<void> {
+  const active = await getActiveSession();
+  if (active) {
+    router.replace(ROLE_HOME[active.role]);
+    throw new ApiError({
+      statusCode: 409,
+      code: ALREADY_AUTHENTICATED_CODE,
+      message: 'Already signed in. Sign out first to switch accounts.',
+    });
+  }
+}
 
 // Decision-10 guest-continue guard: only same-origin relative paths survive;
 // absolute URLs and protocol-relative URLs fall back to the role default.
@@ -56,11 +88,15 @@ export function useLoginMutation() {
 // Full sign-in flow: login → store → GET /auth/me → role redirect.
 // Unverified emails land on verify-email with a resend CTA (and the original
 // destination preserved as `next` when one was requested).
+// An already-authenticated session is bounced to its role home and the login
+// POST never fires, so an Org session cannot be silently switched to a
+// Volunteer (or vice versa) without signing out first.
 export function useLoginRedirect() {
   const router = useRouter();
   const mutation = useLoginMutation();
 
   const login = async (input: LoginInput, opts?: { next?: string | null }) => {
+    await throwIfAlreadyAuthenticated(router);
     await mutation.mutateAsync(input);
     const me = await getMe(api);
     if (!me.emailVerifiedAt) {
@@ -81,8 +117,12 @@ export function useLoginRedirect() {
 
 export function useRegisterVolunteerMutation() {
   const queryClient = useQueryClient();
+  const router = useRouter();
   return useMutation({
-    mutationFn: (input: RegisterInput) => authApi.registerVolunteer(api, input),
+    mutationFn: async (input: RegisterInput) => {
+      await throwIfAlreadyAuthenticated(router);
+      return authApi.registerVolunteer(api, input);
+    },
     onSuccess: (tokens) => {
       storeTokens(tokens);
       queryClient.invalidateQueries({ queryKey: queryKeys.domain('session') });
@@ -92,8 +132,12 @@ export function useRegisterVolunteerMutation() {
 
 export function useRegisterOrganizationMutation() {
   const queryClient = useQueryClient();
+  const router = useRouter();
   return useMutation({
-    mutationFn: (input: RegisterInput) => authApi.registerOrganization(api, input),
+    mutationFn: async (input: RegisterInput) => {
+      await throwIfAlreadyAuthenticated(router);
+      return authApi.registerOrganization(api, input);
+    },
     onSuccess: (tokens) => {
       storeTokens(tokens);
       queryClient.invalidateQueries({ queryKey: queryKeys.domain('session') });

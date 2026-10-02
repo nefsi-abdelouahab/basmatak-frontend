@@ -331,6 +331,55 @@ export const LocationRowSchema = z
 
 export type LocationRow = z.infer<typeof LocationRowSchema>;
 
+// Scoped skill reader for the position required-skills picker (D1 pattern:
+// module-local, no sibling-session imports). Mirrors GET /skills (public,
+// active only, optional categoryId filter, ordered by order then nameFr;
+// verified in backend/src/skills + openspec/specs/skills/spec.md).
+export const SkillOptionSchema = z
+  .object({
+    id: z.string().optional(),
+    _id: z.string().optional(),
+    nameFr: z.string().optional(),
+    nameAr: z.string().optional(),
+    name: z.string().optional(),
+  })
+  .passthrough();
+
+export type SkillOption = z.infer<typeof SkillOptionSchema>;
+
+export function skillIdOf(s: SkillOption): string {
+  return (s.id ?? s._id ?? '') as string;
+}
+
+export function skillLabelOf(s: SkillOption, locale: string): string {
+  if (locale === 'ar') return s.nameAr ?? s.nameFr ?? s.name ?? '';
+  return s.nameFr ?? s.nameAr ?? s.name ?? '';
+}
+
+// Server position rows may carry requiredSkills as plain ObjectId strings or
+// as populated { skillId } / { id } / { _id } objects — normalize to ids so
+// the editor draft and the preview label lookup share one shape.
+export function skillIdsOfSkills(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const out: string[] = [];
+  for (const entry of value) {
+    if (typeof entry === 'string') {
+      if (OBJECT_ID.test(entry)) out.push(entry);
+      continue;
+    }
+    if (entry && typeof entry === 'object') {
+      const row = entry as { skillId?: unknown; id?: unknown; _id?: unknown };
+      for (const candidate of [row.skillId, row.id, row._id]) {
+        if (typeof candidate === 'string' && OBJECT_ID.test(candidate)) {
+          out.push(candidate);
+          break;
+        }
+      }
+    }
+  }
+  return [...new Set(out)];
+}
+
 export const PendingOpportunitySchema = z
   .object({
     id: z.string(),
@@ -524,6 +573,14 @@ export async function duplicateOpportunity(
 export async function listSkillCategories(client: HttpClient): Promise<SkillCategory[]> {
   const { data } = await client.get('/skill-categories');
   return z.array(SkillCategorySchema).parse(data);
+}
+
+export async function listSkills(
+  client: HttpClient,
+  params?: { categoryId?: string },
+): Promise<SkillOption[]> {
+  const { data } = await client.get('/skills', { params });
+  return z.array(SkillOptionSchema).parse(data);
 }
 
 export async function listWilayas(client: HttpClient): Promise<LocationRow[]> {

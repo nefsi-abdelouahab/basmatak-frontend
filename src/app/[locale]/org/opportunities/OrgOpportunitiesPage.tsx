@@ -473,19 +473,21 @@ function OppCard({
       setConfirmingPublish(false);
       onChanged(t('list.published'));
     } catch (err) {
-      if (isOrgNotVerifiedError(err)) setActionError(t('editor.notVerifiedError'));
-      else if (isPublishGateLockedError(err)) setActionError(t('editor.gateLockedError'));
-      else if (isPublishingDisabledError(err)) setActionError(t('editor.publishingDisabledError'));
+      if (isOrgNotVerifiedError(err)) setActionError(t('create.notVerifiedError'));
+      else if (isPublishGateLockedError(err)) setActionError(t('create.gateLockedError'));
+      else if (isPublishingDisabledError(err)) setActionError(t('create.publishingDisabledError'));
       else setActionError(t('list.genericError'));
       setConfirmingPublish(false);
     }
   };
 
-  const editorHref = `/${locale}/org/opportunities/${id}`;
+  // LOCALE-LESS: Link from @/i18n/navigation auto-prefixes the locale, so
+  // hrefs must not embed `/${locale}/` (that rendered /en/en/... -> 404).
+  const editorHref = `/org/opportunities/${id}`;
   const publicHref =
     typeof opp.slug === 'string' && opp.slug !== ''
-      ? `/${locale}/opportunities/${opp.slug}`
-      : `/${locale}/opportunities/${id}`;
+      ? `/opportunities/${opp.slug}`
+      : `/opportunities/${id}`;
 
   const openSeats = isPublished ? openSeatsOf(opp) : null;
   const subStatus = isPublished
@@ -636,7 +638,7 @@ function OppCard({
           ) : (
             <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-body-sm">
               <Link
-                href={`/${locale}/org/applications`}
+                href="/org/applications"
                 data-testid={`apps-opp-${id}`}
                 className="group inline-flex items-center gap-1.5"
               >
@@ -652,7 +654,7 @@ function OppCard({
                 ·
               </span>
               <Link
-                href={`/${locale}/org/participants`}
+                href="/org/participants"
                 data-testid={`parts-opp-${id}`}
                 className="group inline-flex items-center gap-1.5"
               >
@@ -735,7 +737,7 @@ function OppCard({
                       disabled={lifecycleMutation.isPending}
                       onClick={() => void runPublish()}
                     >
-                      {lifecycleMutation.isPending ? t('list.publishing') : t('editor.confirmAction')}
+                      {lifecycleMutation.isPending ? t('list.publishing') : t('create.confirmAction')}
                     </Button>
                     <Button
                       type="button"
@@ -743,7 +745,7 @@ function OppCard({
                       size="sm"
                       onClick={() => setConfirmingPublish(false)}
                     >
-                      {t('editor.cancelAction')}
+                      {t('create.cancelAction')}
                     </Button>
                   </span>
                 ) : availability.canPublish ? (
@@ -855,11 +857,28 @@ function pageWindow(current: number, totalPages: number): (number | 'gap')[] {
   return out;
 }
 
-export function OrgOpportunitiesPage({ locale }: { locale: string }) {
+function initialQueryOf(
+  initialSearch: Record<string, string | string[] | undefined> | undefined,
+): string {
+  const raw = initialSearch?.q;
+  const first = Array.isArray(raw) ? raw[0] : raw;
+  return typeof first === 'string' ? first.trim() : '';
+}
+
+export function OrgOpportunitiesPage({
+  locale,
+  initialSearch,
+}: {
+  locale: string;
+  initialSearch?: Record<string, string | string[] | undefined>;
+}) {
   const t = useTranslations('orgOpportunities');
   const [tab, setTab] = useState<TabKey>('all');
-  const [draftQ, setDraftQ] = useState('');
-  const [appliedQ, setAppliedQ] = useState('');
+  // Seeded from ?q= so the navbar search lands here (mirrors the volunteer
+  // opportunities page's initialSearch wiring); the in-page search box owns
+  // subsequent edits via draftQ/apply.
+  const [draftQ, setDraftQ] = useState(() => initialQueryOf(initialSearch));
+  const [appliedQ, setAppliedQ] = useState(() => initialQueryOf(initialSearch));
   const [sort, setSort] = useState('');
   const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
   const [pageIdx, setPageIdx] = useState(0);
@@ -992,7 +1011,7 @@ export function OrgOpportunitiesPage({ locale }: { locale: string }) {
           <div className="flex shrink-0 items-center gap-2">
             <Link
               data-testid="create-opportunity-link"
-              href={`/${locale}/org/opportunities/new`}
+              href="/org/opportunities/new"
               className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-title-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
             >
               <Plus size={18} aria-hidden="true" className="shrink-0" />
@@ -1117,7 +1136,7 @@ export function OrgOpportunitiesPage({ locale }: { locale: string }) {
               description={t('list.emptyDescription')}
               action={
                 <Link
-                  href={`/${locale}/org/opportunities/new`}
+                  href="/org/opportunities/new"
                   className="text-sm font-medium text-primary hover:underline"
                 >
                   {t('list.createCta')}

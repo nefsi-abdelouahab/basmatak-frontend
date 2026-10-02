@@ -123,7 +123,13 @@ function OppRow({
   const seats = openSeatsOf(card);
   const idOrSlug = oppSlugOf(card);
   const orgSlug = orgSlugOf(card.organization);
-  const applyHref = session.data ? `/volunteer/opportunities/${idOrSlug}` : getLoginHref(next);
+  // Only volunteers apply: org/admin sessions must not be sent into the
+  // volunteer space (RequireVolunteer would bounce them). Guests go to login
+  // with next; authed non-volunteers fall through to login, where
+  // RequireGuest redirects them to their own workspace home.
+  const role = session.data?.role;
+  const applyHref =
+    role === 'volunteer' ? `/volunteer/opportunities/${idOrSlug}` : getLoginHref(next);
 
   return (
     <div data-testid="opp-card" className="rounded-lg border border-border bg-surface p-6 shadow-sm">

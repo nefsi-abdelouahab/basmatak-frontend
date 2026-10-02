@@ -448,10 +448,19 @@ export function coerceSettingValue(key: string, raw: unknown): unknown {
 
 type HttpClient = Pick<AxiosInstance, 'get' | 'patch' | 'post' | 'put'>;
 
+export interface AdminReportPage {
+  items: AdminReport[];
+  nextCursor?: string | null;
+  limit?: number;
+  total: number;
+  page?: number;
+  pages?: number;
+}
+
 export async function listAdminReports(
   client: HttpClient,
   filters: AdminReportFilters = {},
-): Promise<{ items: AdminReport[]; nextCursor?: string | null; total: number }> {
+): Promise<AdminReportPage> {
   const { data } = await client.get('/admin/reports', {
     params: buildReportListParams(filters),
   });

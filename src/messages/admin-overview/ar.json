@@ -5,70 +5,71 @@
     "empty": "لا يوجد شيء بعد."
   },
   "header": {
-    "title": "لوحة تحكم المشرف",
-    "subtitle": "نشاط المنصة والعناصر التي تحتاج إلى مراجعة."
+    "title": "لوحة التحكم",
+    "subtitle": "نظرة عامة على نشاط المنصة والإشراف.",
+    "rangeLabel": "النطاق الزمني",
+    "rangeDays": "{count} أيام",
+    "refresh": "تحديث",
+    "refreshing": "جارٍ التحديث…"
   },
-  "overview": {
-    "title": "نظرة عامة على النشاط",
-    "subtitle": "أعداد آخر 30 يومًا مقارنةً بالـ 30 يومًا السابقة.",
-    "currentLabel": "آخر 30 يومًا",
-    "previousLabel": "الـ 30 يومًا السابقة",
-    "noComparison": "لا تتوفر مقارنة",
-    "daysAgo": "آخر 30 يومًا"
-  },
-  "totals": {
-    "users": "المستخدمون",
-    "organizations": "المنظمات",
-    "opportunities": "الفرص",
-    "applications": "الطلبات",
-    "submissions": "المساهمات"
-  },
-  "metrics": {
-    "title": "أرقام أساسية",
-    "activeParticipants": "مشاركون نشطون (30 يومًا)",
-    "verificationReady": "مساهمات بانتظار التحقق",
-    "gateFreezes": "منظمة متوقفة النشر",
-    "turnaround": "متوسط زمن القرار",
-    "turnaroundUnavailable": "بيانات غير كافية",
-    "turnaroundUnit": "ساعة",
-    "fromAnalytics": "من تحليلات النشاط",
-    "fromStats": "من إحصاءات المنصة"
-  },
-  "perStatus": {
-    "title": "الأعداد حسب الحالة",
-    "users": "المستخدمون",
-    "organizations": "المنظمات",
-    "organizationsVerification": "التحقق من المنظمة",
-    "opportunities": "الفرص",
-    "applications": "الطلبات",
-    "submissions": "المساهمات"
+  "stats": {
+    "label": "مقاييس المنصة الأساسية",
+    "totalVolunteers": "إجمالي المتطوعين",
+    "volunteersCaption": "حسابات متطوعين مسجلة",
+    "verifiedOrganizations": "المنظمات الموثقة",
+    "verifiedOrgsCaption": "موثقة حاليًا",
+    "publishedOpportunities": "الفرص المنشورة",
+    "publishedCaptionDelta": "{value} مقارنةً بالـ 30 يومًا السابقة",
+    "publishedCaptionNeutral": "منشورة حاليًا",
+    "activeParticipants": "المشاركون النشطون",
+    "activeCaption": "نشطون خلال 30 يومًا",
+    "pendingVerifications": "تحققات معلقة",
+    "pendingCaption": "بانتظار المراجعة",
+    "openReports": "بلاغات مفتوحة",
+    "reportsCaption": "بانتظار الإشراف",
+    "noComparison": "لا تتوفر مقارنة"
   },
   "series": {
-    "title": "النشاط اليومي",
-    "subtitle": "التسجيلات والطلبات وقرارات التحقق في كل يوم.",
-    "signups": "التسجيلات",
+    "title": "نشاط المنصة",
+    "subtitle": "حجم التسجيلات والطلبات وقرارات التحقق عبر الزمن.",
+    "signups": "متطوعون جدد",
     "applications": "الطلبات",
     "verifications": "قرارات التحقق",
     "windowLabel": "المدى",
     "daysUnit": "أيام",
     "empty": "لا يوجد نشاط مسجّل في هذا المدى.",
-    "pointLabel": "{date}: {signups} تسجيلات، {applications} طلبات، {verifications} قرار تحقق"
+    "pointLabel": "{date}: {signups} تسجيلات، {applications} طلبات، {verifications} قرار تحقق",
+    "peakLabel": "الذروة: {value}"
   },
   "queue": {
-    "title": "بحاجة إلى مراجعة",
-    "subtitle": "عناصر في انتظار الانتباه. الأعداد مصدرها قائمة تحليلات الانتباه.",
+    "title": "تتطلب الانتباه",
+    "subtitle": "عناصر تحتاج إلى تحقق المشرف أو مراجعة الإشراف ({count} معلقة)",
     "pendingVerifications": "تحققات المنظمات",
     "openReports": "بلاغات مفتوحة",
     "underReviewSubmissions": "مساهمات قيد المراجعة",
     "suspendedUsers": "حسابات مستخدمين موقوفة",
     "suspendedOrganizations": "منظمات موقوفة",
-    "viewManage": "فتح شاشة الإدارة",
+    "viewQueue": "عرض القائمة ({count})",
+    "review": "مراجعة",
+    "itemVerification": "التحقق من منظمة",
+    "itemReportOpportunity": "فرصة مبلغ عنها",
+    "itemReportUser": "حساب متطوع مبلغ عنه",
+    "itemReportOrganization": "منظمة مبلغ عنها",
+    "itemReportReview": "تقييم مبلغ عنه",
+    "itemReportSubmission": "مساهمة مبلغ عنها",
+    "submittedOn": "قُدّم في {date}",
+    "documentsCount": "{count} وثائق",
+    "reportedOn": "أُبلغ في {date}",
+    "priorityHigh": "أولوية عالية",
+    "priorityNormal": "أولوية عادية",
+    "priorityLow": "أولوية منخفضة",
     "maintenanceOn": "وضع الصيانة مُفعّل",
-    "maintenanceOff": "وضع الصيانة مُعطّل"
+    "maintenanceOff": "وضع الصيانة مُعطّل",
+    "empty": "لا توجد عناصر بانتظار المراجعة."
   },
   "audit": {
-    "title": "آخر نشاطات الإدارة",
-    "subtitle": "أحدث الإدخالات من سجل التدقيق.",
+    "title": "النشاط الأخير",
+    "subtitle": "سجل تدقيق المنصة بترتيب زمني.",
     "actorLabel": "المنفّذ",
     "targetLabel": "الهدف",
     "actionLabel": "الإجراء",
@@ -77,17 +78,34 @@
     "timeLabel": "الوقت",
     "nameUnavailable": "غير متوفر",
     "valueUnavailable": "غير مسجل",
-    "empty": "لا توجد إدخالات تدقيق بعد."
+    "empty": "لا توجد إدخالات تدقيق بعد.",
+    "viewAll": "عرض سجلات التدقيق الكاملة",
+    "live": "مباشر"
   },
   "system": {
-    "title": "حالة النظام",
-    "statusLabel": "الحالة",
+    "title": "صحة المنصة",
+    "statusLabel": "حالة الخدمة",
+    "operational": "تعمل",
     "versionLabel": "الإصدار",
     "uptimeLabel": "مدة التشغيل",
     "maintenanceLabel": "الصيانة",
+    "turnaroundLabel": "مدة التحقق",
+    "turnaroundHint": "متوسط زمن القرار",
+    "turnaroundUnit": "ساعة",
     "daysUnit": "ي",
     "hoursUnit": "س",
     "minutesUnit": "د",
     "unavailable": "غير متوفر"
+  },
+  "shortcuts": {
+    "title": "اختصارات إدارية",
+    "subtitle": "توجيه مباشر إلى وحدات الإدارة وقوائم الانتظار.",
+    "reviewOrgs": "مراجعة المنظمات",
+    "reviewReports": "مراجعة البلاغات",
+    "manageVolunteers": "إدارة المتطوعين",
+    "manageOpportunities": "إدارة الفرص",
+    "auditLogs": "سجلات تدقيق المنصة",
+    "pendingCount": "{count} معلقة",
+    "openCount": "{count} مفتوحة"
   }
 }

@@ -4,15 +4,18 @@ import { describe, expect, it, vi } from 'vitest';
 vi.mock('@/i18n/navigation', () => ({
   Link: ({ href, children }: { href: string; children: ReactNode }) => ({ href, children }),
   usePathname: () => '/',
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
 }));
 
 import {
+  ALREADY_AUTHENTICATED_CODE,
   ROLE_HOME,
   VERIFY_EMAIL_PATH,
+  getActiveSession,
   isSafeNextPath,
   resolvePostLoginTarget,
 } from './useAuth';
+import { defaultTokenHooks } from '../lib/auth/storage';
 
 describe('guest-continue guard', () => {
   it('accepts same-origin relative paths', () => {
@@ -56,5 +59,16 @@ describe('post-login redirect targets', () => {
 
   it('exposes the verify-email gate path', () => {
     expect(VERIFY_EMAIL_PATH).toBe('/verify-email');
+  });
+});
+
+describe('active-session guard', () => {
+  it('exposes the already-authenticated code', () => {
+    expect(ALREADY_AUTHENTICATED_CODE).toBe('ALREADY_AUTHENTICATED');
+  });
+
+  it('treats a token-less visitor as guest without network', async () => {
+    defaultTokenHooks.clearTokens();
+    await expect(getActiveSession()).resolves.toBeNull();
   });
 });

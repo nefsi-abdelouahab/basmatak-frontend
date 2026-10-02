@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { z } from 'zod';
 import type { AxiosInstance } from 'axios';
-import { emailSchema, phoneSchema } from './auth';
+import { emailSchema, normalizePhoneNumber, phoneSchema } from './auth';
+import { ApiError } from './errors';
 
 // F13 org-account module: one typed function per profile/settings backend
 // endpoint owned by this session (base `/api/v1`). Verified read-only against
@@ -162,6 +163,96 @@ export const UpdateAccountUserSchema = z.object({
 });
 
 export type UpdateAccountUser = z.infer<typeof UpdateAccountUserSchema>;
+
+export type AccountFormField = 'nameAr' | 'nameFr' | 'email' | 'phone' | 'website';
+
+export interface AccountFormStored {
+  nameAr?: string | null;
+  nameFr?: string | null;
+  website?: string | null;
+  email: string;
+  phone?: string | null;
+}
+
+export interface AccountFormValues {
+  nameAr: string;
+  nameFr: string;
+  email: string;
+  phone: string;
+  website: string;
+}
+
+export interface AccountFormDiff {
+  orgInput: { nameAr?: string; nameFr?: string; website?: string };
+  userInput: { email?: string; phone?: string };
+  invalid: AccountFormField[];
+  dirty: boolean;
+}
+
+// Pure validate + diff for the settings account form. Both PATCH endpoints
+// are partial (optional DTO fields), so only genuinely changed, valid fields
+// are returned — an untouched field can never fail the submit. Phone is
+// normalized (spaces/dashes/parens stripped) before both validation and
+// comparison, so human-formatted input matching the stored digits counts as
+// unchanged. Empty phone/website are never sent: the backend treats '' as a
+// no-op (users) or rejects it (organizations IsUrl), so clearing those two
+// fields is unsupported here.
+export function diffAccountForm(stored: AccountFormStored, values: AccountFormValues): AccountFormDiff {
+  const invalid: AccountFormField[] = [];
+  if (values.nameAr.length > 200) invalid.push('nameAr');
+  if (values.nameFr.length > 200) invalid.push('nameFr');
+  const email = values.email.trim();
+  if (!emailSchema.safeParse(email).success) invalid.push('email');
+  const phone = normalizePhoneNumber(values.phone.trim());
+  if (phone !== '' && !phoneSchema.safeParse(phone).success) invalid.push('phone');
+  const website = values.website.trim();
+  if (website !== '' && !ORG_ACCOUNT_WEBSITE_PATTERN.test(website)) invalid.push('website');
+
+  const ok = (field: AccountFormField): boolean => !invalid.includes(field);
+  const orgInput: AccountFormDiff['orgInput'] = {};
+  if (ok('nameAr') && values.nameAr !== (stored.nameAr ?? '')) orgInput.nameAr = values.nameAr;
+  if (ok('nameFr') && values.nameFr !== (stored.nameFr ?? '')) orgInput.nameFr = values.nameFr;
+  if (ok('website') && website !== '' && website !== (stored.website ?? '').trim())
+    orgInput.website = website;
+  const userInput: AccountFormDiff['userInput'] = {};
+  if (ok('email') && email !== stored.email) userInput.email = email;
+  const storedPhone = normalizePhoneNumber(stored.phone ?? '');
+  if (ok('phone') && phone !== '' && phone !== storedPhone) userInput.phone = phone;
+  const dirty = Object.keys(orgInput).length + Object.keys(userInput).length > 0;
+  return { orgInput, userInput, invalid, dirty };
+}
+
+// Maps a failed account-save mutation to the form field it belongs to, so
+// the UI can show the real server cause instead of a generic error. The
+// backend envelope carries UPPER_SNAKE codes (ApiError.code):
+// - CONTACT_CONFLICT (409, "email or phone already used"): attributed to the
+//   single contact field this save sent; ambiguous when both were sent.
+// - VALIDATION_ERROR (400) with details [{field, errors}]: attributed to the
+//   named field (phone/email/website).
+// Anything else (401/403/429/5xx, network, parse throws) returns null and
+// the caller keeps the generic fallback.
+export function accountSaveFieldError(
+  err: unknown,
+  sent: { email: boolean; phone: boolean },
+): AccountFormField | null {
+  if (!(err instanceof ApiError)) return null;
+  if (err.code === 'CONTACT_CONFLICT') {
+    if (sent.phone && !sent.email) return 'phone';
+    if (sent.email && !sent.phone) return 'email';
+    return null;
+  }
+  if (err.code === 'VALIDATION_ERROR' || err.statusCode === 400) {
+    const fields = Array.isArray(err.details)
+      ? err.details
+          .map((entry) => (entry as { field?: unknown }).field)
+          .filter((field): field is string => typeof field === 'string')
+      : [];
+    if (fields.includes('phone')) return 'phone';
+    if (fields.includes('email')) return 'email';
+    if (fields.includes('website')) return 'website';
+  }
+  return null;
+}
 
 export const AccountSessionDeviceSchema = z
   .object({

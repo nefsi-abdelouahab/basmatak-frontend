@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { Shell } from './Shell';
 import commonEn from '@/messages/common/en.json';
+import adminWorkspaceEn from '@/messages/admin-workspace/en.json';
 import orgWorkspaceEn from '@/messages/org-workspace/en.json';
 import publicOrgsEn from '@/messages/public-orgs/en.json';
 
@@ -43,6 +44,7 @@ describe('Shell', () => {
         locale="en"
         messages={{
           common: commonEn,
+          adminWorkspace: adminWorkspaceEn as unknown as AbstractIntlMessages,
           orgWorkspace: orgWorkspaceEn as unknown as AbstractIntlMessages,
           publicOrgs: publicOrgsEn as unknown as AbstractIntlMessages,
         }}

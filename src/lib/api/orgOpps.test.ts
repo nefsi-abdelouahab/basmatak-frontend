@@ -15,6 +15,7 @@ import {
   listMunicipalities,
   listOwnOpportunities,
   listSkillCategories,
+  listSkills,
   listWilayas,
   opportunityIdOf,
   opportunityRefOf,
@@ -26,6 +27,9 @@ import {
   runLifecycleAction,
   skillCategoryIdOf,
   skillCategoryLabelOf,
+  skillIdOf,
+  skillIdsOfSkills,
+  skillLabelOf,
   validateCoverFile,
 } from './orgOpps';
 
@@ -308,5 +312,30 @@ describe('typed endpoint functions', () => {
       '/organizations/me/publish-gate',
       '/organizations/me',
     ]);
+  });
+
+  it('reads skills with an optional category filter and normalizes skill ids', async () => {
+    const { client, get } = stubClient({
+      get: () => [{ _id: '64f0000000000000000000e1', nameFr: 'Photo', nameAr: 'تصوير' }],
+    });
+    await expect(listSkills(client)).resolves.toHaveLength(1);
+    await expect(listSkills(client, { categoryId: 'c1' })).resolves.toHaveLength(1);
+    expect(get.mock.calls.map((c) => c[0])).toEqual(['/skills', '/skills']);
+    const [, config] = get.mock.calls[1] as [string, { params: Record<string, unknown> }];
+    expect(config.params.categoryId).toBe('c1');
+    expect(skillIdOf({ _id: '64f0000000000000000000e1', nameFr: 'Photo' })).toBe(
+      '64f0000000000000000000e1',
+    );
+    expect(skillLabelOf({ nameFr: 'Photo', nameAr: 'تصوير' }, 'ar')).toBe('تصوير');
+    expect(
+      skillIdsOfSkills([
+        '64f0000000000000000000e1',
+        'not-an-id',
+        { skillId: '64f0000000000000000000e2' },
+        { _id: '64f0000000000000000000e1' },
+        42,
+      ]),
+    ).toEqual(['64f0000000000000000000e1', '64f0000000000000000000e2']);
+    expect(skillIdsOfSkills(undefined)).toEqual([]);
   });
 });

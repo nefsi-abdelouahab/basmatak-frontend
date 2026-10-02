@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "menu": "Admin menu",
+    "overview": "Overview",
+    "dashboard": "Dashboard",
+    "management": "Management",
+    "volunteers": "Volunteers",
+    "organizations": "Organizations",
+    "verifications": "Verifications",
+    "opportunities": "Opportunities",
+    "moderation": "Moderation",
+    "reports": "Reports",
+    "system": "System",
+    "settings": "Settings",
+    "more": "More"
+  },
+  "identity": {
+    "role": "Platform administrator"
+  },
+  "search": {
+    "label": "Search volunteers",
+    "placeholder": "Search volunteers…"
+  }
+}

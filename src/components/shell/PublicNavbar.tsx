@@ -83,7 +83,7 @@ export function PublicNavbar() {
       : role === 'organization'
         ? '/org/dashboard'
         : role === 'admin'
-          ? '/admin'
+          ? '/admin/dashboard'
           : null;
   const dashboardLabel =
     role === 'volunteer'

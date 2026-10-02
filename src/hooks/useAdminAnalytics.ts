@@ -6,6 +6,8 @@ import { ApiError, errorStateFor } from '../lib/api/errors';
 import { getHealth, getSystemStatus } from '../lib/api/system';
 import { queryKeys } from '../lib/query/keys';
 import * as adminAnalyticsApi from '../lib/api/adminAnalytics';
+import { listAdminVerifications } from '../lib/api/adminLists';
+import { listAdminReports } from '../lib/api/adminModeration';
 
 // F14 admin-overview hook file (this session's single hook file per
 // CONVENTIONS.md). Read-only dashboard: stats overview, analytics overview,
@@ -85,6 +87,35 @@ export function useAdminAnalyticsQueueQuery(enabled = true) {
   return useQuery({
     queryKey: queryKeys.detail(DOMAIN, 'queue'),
     queryFn: () => adminAnalyticsApi.getAdminAnalyticsQueue(api),
+    enabled,
+    staleTime: READ_STALE_MS,
+    retry: false,
+  });
+}
+
+// Item-level triage reads behind the dashboard "Requires attention" rows.
+// The analytics queue endpoint carries counts only, so the rows themselves
+// come from the real manage endpoints: oldest-first pending verification
+// dossiers (GET /admin/organizations/verifications?status=pending) and
+// newest-first open reports (GET /admin/reports?status=open). Small limits:
+// the dashboard shows a preview, the manage screens own the full queues.
+export function useAdminPendingVerificationsQuery(limit: number, enabled = true) {
+  const bounded = Math.min(50, Math.max(1, Math.floor(limit) || 1));
+  return useQuery({
+    queryKey: queryKeys.list(DOMAIN, { scope: 'verification-queue', limit: bounded }),
+    queryFn: () => listAdminVerifications(api, { status: 'pending', limit: bounded }),
+    enabled,
+    staleTime: READ_STALE_MS,
+    retry: false,
+  });
+}
+
+export function useAdminOpenReportsQuery(limit: number, enabled = true) {
+  const bounded = Math.min(50, Math.max(1, Math.floor(limit) || 1));
+  return useQuery({
+    queryKey: queryKeys.list(DOMAIN, { scope: 'open-reports', limit: bounded }),
+    queryFn: () =>
+      listAdminReports(api, { status: 'open', sort: 'newest', limit: bounded }),
     enabled,
     staleTime: READ_STALE_MS,
     retry: false,

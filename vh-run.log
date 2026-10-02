@@ -1,0 +1,629 @@
+﻿
+Running 54 tests using 4 workers
+
+[1/54] e2e\volunteer-home.spec.ts:286:11 ÔÇ║ viewport 1440 ÔÇ║ dashboard renders header, stats, latest, feed, rail (en)
+[2/54] e2e\volunteer-home.spec.ts:362:11 ÔÇ║ viewport 1440 ÔÇ║ talents renders banner and cards (en)
+[3/54] e2e\volunteer-home.spec.ts:286:11 ÔÇ║ viewport 1440 ÔÇ║ dashboard renders header, stats, latest, feed, rail (ar)
+[4/54] e2e\volunteer-home.spec.ts:346:11 ÔÇ║ viewport 1440 ÔÇ║ opportunities renders banner, embeds, recommended (en)
+[5/54] e2e\volunteer-home.spec.ts:346:11 ÔÇ║ viewport 1440 ÔÇ║ opportunities renders banner, embeds, recommended (ar)
+[6/54] e2e\volunteer-home.spec.ts:373:9 ÔÇ║ viewport 1440 ÔÇ║ shell: navbar bell+avatar, sidebar with Discover, bottomnav (1440)
+[7/54] e2e\volunteer-home.spec.ts:455:9 ÔÇ║ viewport 1440 ÔÇ║ desktop center column scrolls without moving the rails (1440)
+[8/54] e2e\volunteer-home.spec.ts:362:11 ÔÇ║ viewport 1440 ÔÇ║ talents renders banner and cards (ar)
+[9/54] e2e\volunteer-home.spec.ts:493:9 ÔÇ║ viewport 1440 ÔÇ║ filter apply serializes to URL and persists across reload
+[10/54] e2e\volunteer-home.spec.ts:511:9 ÔÇ║ viewport 1440 ÔÇ║ pagination sends cursor and pages back
+[11/54] e2e\volunteer-home.spec.ts:535:9 ÔÇ║ viewport 1440 ÔÇ║ empty feed shows clear-filters action
+[12/54] e2e\volunteer-home.spec.ts:545:9 ÔÇ║ viewport 1440 ÔÇ║ opportunity favorite toggle persists via POST then lookup
+[13/54] e2e\volunteer-home.spec.ts:574:9 ÔÇ║ viewport 1440 ÔÇ║ guest Save redirects to login with next
+[14/54] e2e\volunteer-home.spec.ts:583:9 ÔÇ║ viewport 1440 ÔÇ║ talents filters serialize multi-value params
+[15/54] e2e\volunteer-home.spec.ts:606:9 ÔÇ║ viewport 1440 ÔÇ║ talent cards render real portfolio preview and availability from the public profile
+[16/54] e2e\volunteer-home.spec.ts:629:9 ÔÇ║ viewport 1440 ÔÇ║ weekend window fills Fri-Sat bounds (Algeria)
+[17/54] e2e\volunteer-home.spec.ts:286:11 ÔÇ║ viewport 1100 ÔÇ║ dashboard renders header, stats, latest, feed, rail (en)
+[18/54] e2e\volunteer-home.spec.ts:346:11 ÔÇ║ viewport 1100 ÔÇ║ opportunities renders banner, embeds, recommended (en)
+  1) e2e\volunteer-home.spec.ts:493:9 ÔÇ║ viewport 1440 ÔÇ║ filter apply serializes to URL and persists across reload 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByTestId('feed-count')
+    Expected substring: "2"
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" getByTestId('feed-count') with timeout 5000ms
+      - waiting for getByTestId('feed-count')
+      - Test timeout of 30000ms exceeded.
+
+
+      506 |       await page.reload();
+      507 |       await expect(page.locator('#opp-q')).toHaveValue('food');
+    > 508 |       await expect(page.getByTestId('feed-count')).toContainText('2');
+          |                                                    ^
+      509 |     });
+      510 |
+      511 |     test('pagination sends cursor and pages back', async ({ page }) => {
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:508:52
+
+    Error Context: test-results\volunteer-home-viewport-14-1fd78--and-persists-across-reload\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-viewport-14-1fd78--and-persists-across-reload\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-viewport-14-1fd78--and-persists-across-reload\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+[19/54] e2e\volunteer-home.spec.ts:286:11 ÔÇ║ viewport 1100 ÔÇ║ dashboard renders header, stats, latest, feed, rail (ar)
+[20/54] e2e\volunteer-home.spec.ts:362:11 ÔÇ║ viewport 1100 ÔÇ║ talents renders banner and cards (en)
+[21/54] e2e\volunteer-home.spec.ts:346:11 ÔÇ║ viewport 1100 ÔÇ║ opportunities renders banner, embeds, recommended (ar)
+[22/54] e2e\volunteer-home.spec.ts:362:11 ÔÇ║ viewport 1100 ÔÇ║ talents renders banner and cards (ar)
+  2) e2e\volunteer-home.spec.ts:606:9 ÔÇ║ viewport 1440 ÔÇ║ talent cards render real portfolio preview and availability from the public profile 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('talent-card').nth(1).getByText('sarab')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByTestId('talent-card').nth(1).getByText('sarab') with timeout 5000ms
+      - waiting for getByTestId('talent-card').nth(1).getByText('sarab')
+
+
+      624 |       const second = page.getByTestId('talent-card').nth(1);
+      625 |       await expect(second.getByText(/Public portfolio/)).toHaveCount(0);
+    > 626 |       await expect(second.getByText('sarab')).toBeVisible();
+          |                                               ^
+      627 |     });
+      628 |
+      629 |     test('weekend window fills Fri-Sat bounds (Algeria)', async ({ page }) => {
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:626:47
+
+    Error Context: test-results\volunteer-home-viewport-14-6a515-ity-from-the-public-profile\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-viewport-14-6a515-ity-from-the-public-profile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-viewport-14-6a515-ity-from-the-public-profile\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+[23/54] e2e\volunteer-home.spec.ts:455:9 ÔÇ║ viewport 1100 ÔÇ║ desktop center column scrolls without moving the rails (1100)
+[24/54] e2e\volunteer-home.spec.ts:493:9 ÔÇ║ viewport 1100 ÔÇ║ filter apply serializes to URL and persists across reload
+[25/54] e2e\volunteer-home.spec.ts:373:9 ÔÇ║ viewport 1100 ÔÇ║ shell: navbar bell+avatar, sidebar with Discover, bottomnav (1100)
+[26/54] e2e\volunteer-home.spec.ts:511:9 ÔÇ║ viewport 1100 ÔÇ║ pagination sends cursor and pages back
+[27/54] e2e\volunteer-home.spec.ts:535:9 ÔÇ║ viewport 1100 ÔÇ║ empty feed shows clear-filters action
+[28/54] e2e\volunteer-home.spec.ts:545:9 ÔÇ║ viewport 1100 ÔÇ║ opportunity favorite toggle persists via POST then lookup
+[29/54] e2e\volunteer-home.spec.ts:574:9 ÔÇ║ viewport 1100 ÔÇ║ guest Save redirects to login with next
+[30/54] e2e\volunteer-home.spec.ts:583:9 ÔÇ║ viewport 1100 ÔÇ║ talents filters serialize multi-value params
+[31/54] e2e\volunteer-home.spec.ts:606:9 ÔÇ║ viewport 1100 ÔÇ║ talent cards render real portfolio preview and availability from the public profile
+[32/54] e2e\volunteer-home.spec.ts:629:9 ÔÇ║ viewport 1100 ÔÇ║ weekend window fills Fri-Sat bounds (Algeria)
+  3) e2e\volunteer-home.spec.ts:629:9 ÔÇ║ viewport 1440 ÔÇ║ weekend window fills Fri-Sat bounds (Algeria) 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.check: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByLabel('Weekend')
+        - locator resolved to <input type="radio" class="sr-only" value="weekend" name="opp-window"/>
+      - attempting click action
+        2 ├ù waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <span>Weekend</span> intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <span>Weekend</span> intercepts pointer events
+      2 ├ù retrying click action
+          - waiting 100ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div class="mx-auto w-full max-w-7xl px-4 md:px-6 flex h-16 items-center justify-between gap-4">ÔÇª</div> from <header data-testid="shell-navbar" class="sticky top-0 z-40 border-b border-border bg-surface">ÔÇª</header> subtree intercepts pointer events
+      12 ├ù retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span>Weekend</span> intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span>Weekend</span> intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div class="mx-auto w-full max-w-7xl px-4 md:px-6 flex h-16 items-center justify-between gap-4">ÔÇª</div> from <header data-testid="shell-navbar" class="sticky top-0 z-40 border-b border-border bg-surface">ÔÇª</header> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div class="mx-auto w-full max-w-7xl px-4 md:px-6 flex h-16 items-center justify-between gap-4">ÔÇª</div> from <header data-testid="shell-navbar" class="sticky top-0 z-40 border-b border-border bg-surface">ÔÇª</header> subtree intercepts pointer events
+      2 ├ù retrying click action
+          - waiting 500ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <span>Weekend</span> intercepts pointer events
+      - retrying click action
+        - waiting 500ms
+
+
+      631 |       await mockHomeApi(page, baseHandlers(), captured);
+      632 |       await page.goto('/en/volunteer/opportunities');
+    > 633 |       await page.getByLabel(en.opportunities.windowWeekend).check();
+          |                                                             ^
+      634 |       await page.getByTestId('opportunities-filters').getByRole('button', { name: en.opportunities.applyFilters }).click();
+      635 |       await expect.poll(() => page.url()).toContain('from=');
+      636 |       const feedCall = captured.filter((c) => c.path === '/opportunities').pop();
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:633:61
+
+    Error Context: test-results\volunteer-home-viewport-14-0ca92-lls-Fri-Sat-bounds-Algeria-\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-viewport-14-0ca92-lls-Fri-Sat-bounds-Algeria-\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-viewport-14-0ca92-lls-Fri-Sat-bounds-Algeria-\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+  4) e2e\volunteer-home.spec.ts:583:9 ÔÇ║ viewport 1100 ÔÇ║ talents filters serialize multi-value params 
+
+    Error: locator.check: Error: strict mode violation: getByLabel('Secourisme') resolved to 2 elements:
+        1) <input type="checkbox" class="h-4 w-4 shrink-0 rounded accent-primary"/> aka locator('section').filter({ hasText: 'Refine talentsClear allQuick' }).getByLabel('Secourisme')
+        2) <input type="checkbox" class="h-4 w-4 shrink-0 rounded accent-primary"/> aka getByRole('checkbox', { name: 'Secourisme' })
+
+    Call log:
+      - waiting for getByLabel('Secourisme')
+
+
+      592 |         await expect(page.getByTestId('talents-filters-drawer')).toBeVisible();
+      593 |       }
+    > 594 |       await page.getByLabel('Secourisme').check();
+          |                                           ^
+      595 |       await page.getByLabel(en.talents.verificationExperienced).check();
+      596 |       await page.getByLabel(en.talents.hasAvailability).check();
+      597 |       await page.locator('#talent-sort').selectOption('newest');
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:594:43
+
+    Error Context: test-results\volunteer-home-viewport-11-88155-erialize-multi-value-params\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-viewport-11-88155-erialize-multi-value-params\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-viewport-11-88155-erialize-multi-value-params\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+[33/54] e2e\volunteer-home.spec.ts:286:11 ÔÇ║ viewport 390 ÔÇ║ dashboard renders header, stats, latest, feed, rail (en)
+[34/54] e2e\volunteer-home.spec.ts:346:11 ÔÇ║ viewport 390 ÔÇ║ opportunities renders banner, embeds, recommended (en)
+[35/54] e2e\volunteer-home.spec.ts:362:11 ÔÇ║ viewport 390 ÔÇ║ talents renders banner and cards (en)
+[36/54] e2e\volunteer-home.spec.ts:286:11 ÔÇ║ viewport 390 ÔÇ║ dashboard renders header, stats, latest, feed, rail (ar)
+[37/54] e2e\volunteer-home.spec.ts:346:11 ÔÇ║ viewport 390 ÔÇ║ opportunities renders banner, embeds, recommended (ar)
+[38/54] e2e\volunteer-home.spec.ts:362:11 ÔÇ║ viewport 390 ÔÇ║ talents renders banner and cards (ar)
+[39/54] e2e\volunteer-home.spec.ts:373:9 ÔÇ║ viewport 390 ÔÇ║ shell: navbar bell+avatar, sidebar with Discover, bottomnav (390)
+[40/54] e2e\volunteer-home.spec.ts:455:9 ÔÇ║ viewport 390 ÔÇ║ desktop center column scrolls without moving the rails (390)
+[41/54] e2e\volunteer-home.spec.ts:493:9 ÔÇ║ viewport 390 ÔÇ║ filter apply serializes to URL and persists across reload
+  5) e2e\volunteer-home.spec.ts:606:9 ÔÇ║ viewport 1100 ÔÇ║ talent cards render real portfolio preview and availability from the public profile 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('talent-card').nth(1).getByText('sarab')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByTestId('talent-card').nth(1).getByText('sarab') with timeout 5000ms
+      - waiting for getByTestId('talent-card').nth(1).getByText('sarab')
+
+
+      624 |       const second = page.getByTestId('talent-card').nth(1);
+      625 |       await expect(second.getByText(/Public portfolio/)).toHaveCount(0);
+    > 626 |       await expect(second.getByText('sarab')).toBeVisible();
+          |                                               ^
+      627 |     });
+      628 |
+      629 |     test('weekend window fills Fri-Sat bounds (Algeria)', async ({ page }) => {
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:626:47
+
+    Error Context: test-results\volunteer-home-viewport-11-5a094-ity-from-the-public-profile\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-viewport-11-5a094-ity-from-the-public-profile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-viewport-11-5a094-ity-from-the-public-profile\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+[42/54] e2e\volunteer-home.spec.ts:535:9 ÔÇ║ viewport 390 ÔÇ║ empty feed shows clear-filters action
+[43/54] e2e\volunteer-home.spec.ts:511:9 ÔÇ║ viewport 390 ÔÇ║ pagination sends cursor and pages back
+[44/54] e2e\volunteer-home.spec.ts:545:9 ÔÇ║ viewport 390 ÔÇ║ opportunity favorite toggle persists via POST then lookup
+[45/54] e2e\volunteer-home.spec.ts:574:9 ÔÇ║ viewport 390 ÔÇ║ guest Save redirects to login with next
+[46/54] e2e\volunteer-home.spec.ts:583:9 ÔÇ║ viewport 390 ÔÇ║ talents filters serialize multi-value params
+[47/54] e2e\volunteer-home.spec.ts:606:9 ÔÇ║ viewport 390 ÔÇ║ talent cards render real portfolio preview and availability from the public profile
+[48/54] e2e\volunteer-home.spec.ts:629:9 ÔÇ║ viewport 390 ÔÇ║ weekend window fills Fri-Sat bounds (Algeria)
+  6) e2e\volunteer-home.spec.ts:583:9 ÔÇ║ viewport 390 ÔÇ║ talents filters serialize multi-value params 
+
+    Error: locator.check: Error: strict mode violation: getByLabel('Secourisme') resolved to 2 elements:
+        1) <input type="checkbox" class="h-4 w-4 shrink-0 rounded accent-primary"/> aka locator('section').filter({ hasText: 'Refine talentsClear allQuick' }).getByLabel('Secourisme')
+        2) <input type="checkbox" class="h-4 w-4 shrink-0 rounded accent-primary"/> aka getByRole('checkbox', { name: 'Secourisme' })
+
+    Call log:
+      - waiting for getByLabel('Secourisme')
+
+
+      592 |         await expect(page.getByTestId('talents-filters-drawer')).toBeVisible();
+      593 |       }
+    > 594 |       await page.getByLabel('Secourisme').check();
+          |                                           ^
+      595 |       await page.getByLabel(en.talents.verificationExperienced).check();
+      596 |       await page.getByLabel(en.talents.hasAvailability).check();
+      597 |       await page.locator('#talent-sort').selectOption('newest');
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:594:43
+
+    Error Context: test-results\volunteer-home-viewport-39-cedbe-erialize-multi-value-params\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-viewport-39-cedbe-erialize-multi-value-params\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-viewport-39-cedbe-erialize-multi-value-params\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+  7) e2e\volunteer-home.spec.ts:629:9 ÔÇ║ viewport 1100 ÔÇ║ weekend window fills Fri-Sat bounds (Algeria) 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.check: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByLabel('Weekend')
+        - locator resolved to <input type="radio" class="sr-only" value="weekend" name="opp-window"/>
+      - attempting click action
+        2 ├ù waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <span>Weekend</span> intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <span>Weekend</span> intercepts pointer events
+      2 ├ù retrying click action
+          - waiting 100ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div class="mx-auto w-full max-w-7xl px-4 md:px-6 flex h-16 items-center justify-between gap-4">ÔÇª</div> from <header data-testid="shell-navbar" class="sticky top-0 z-40 border-b border-border bg-surface">ÔÇª</header> subtree intercepts pointer events
+      11 ├ù retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span>Weekend</span> intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span>Weekend</span> intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div class="mx-auto w-full max-w-7xl px-4 md:px-6 flex h-16 items-center justify-between gap-4">ÔÇª</div> from <header data-testid="shell-navbar" class="sticky top-0 z-40 border-b border-border bg-surface">ÔÇª</header> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div class="mx-auto w-full max-w-7xl px-4 md:px-6 flex h-16 items-center justify-between gap-4">ÔÇª</div> from <header data-testid="shell-navbar" class="sticky top-0 z-40 border-b border-border bg-surface">ÔÇª</header> subtree intercepts pointer events
+      - retrying click action
+        - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <span>Weekend</span> intercepts pointer events
+      - retrying click action
+        - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      631 |       await mockHomeApi(page, baseHandlers(), captured);
+      632 |       await page.goto('/en/volunteer/opportunities');
+    > 633 |       await page.getByLabel(en.opportunities.windowWeekend).check();
+          |                                                             ^
+      634 |       await page.getByTestId('opportunities-filters').getByRole('button', { name: en.opportunities.applyFilters }).click();
+      635 |       await expect.poll(() => page.url()).toContain('from=');
+      636 |       const feedCall = captured.filter((c) => c.path === '/opportunities').pop();
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:633:61
+
+    Error Context: test-results\volunteer-home-viewport-11-96ea9-lls-Fri-Sat-bounds-Algeria-\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-viewport-11-96ea9-lls-Fri-Sat-bounds-Algeria-\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-viewport-11-96ea9-lls-Fri-Sat-bounds-Algeria-\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+[49/54] e2e\volunteer-home.spec.ts:649:7 ÔÇ║ viewport 768 (tablet bottom tab bar) ÔÇ║ sidebar hidden, bottomnav tab bar visible with More menu
+[50/54] e2e\volunteer-home.spec.ts:681:7 ÔÇ║ viewport 390 RTL mobile notifications ÔÇ║ ar notifications panel fits the viewport without overflow
+[51/54] e2e\volunteer-home.spec.ts:705:9 ÔÇ║ public details navigation (EN+AR) ÔÇ║ dashboard card ÔåÆ public details ÔåÆ Back returns (en)
+[52/54] e2e\volunteer-home.spec.ts:722:9 ÔÇ║ public details navigation (EN+AR) ÔÇ║ direct public details entry ÔåÆ Back falls back to listing (en)
+  8) e2e\volunteer-home.spec.ts:606:9 ÔÇ║ viewport 390 ÔÇ║ talent cards render real portfolio preview and availability from the public profile 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('talent-card').nth(1).getByText('sarab')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByTestId('talent-card').nth(1).getByText('sarab') with timeout 5000ms
+      - waiting for getByTestId('talent-card').nth(1).getByText('sarab')
+
+
+      624 |       const second = page.getByTestId('talent-card').nth(1);
+      625 |       await expect(second.getByText(/Public portfolio/)).toHaveCount(0);
+    > 626 |       await expect(second.getByText('sarab')).toBeVisible();
+          |                                               ^
+      627 |     });
+      628 |
+      629 |     test('weekend window fills Fri-Sat bounds (Algeria)', async ({ page }) => {
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:626:47
+
+    Error Context: test-results\volunteer-home-viewport-39-12e2a-ity-from-the-public-profile\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-viewport-39-12e2a-ity-from-the-public-profile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-viewport-39-12e2a-ity-from-the-public-profile\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+[53/54] e2e\volunteer-home.spec.ts:705:9 ÔÇ║ public details navigation (EN+AR) ÔÇ║ dashboard card ÔåÆ public details ÔåÆ Back returns (ar)
+[54/54] e2e\volunteer-home.spec.ts:722:9 ÔÇ║ public details navigation (EN+AR) ÔÇ║ direct public details entry ÔåÆ Back falls back to listing (ar)
+  9) e2e\volunteer-home.spec.ts:705:9 ÔÇ║ public details navigation (EN+AR) ÔÇ║ dashboard card ÔåÆ public details ÔåÆ Back returns (en) 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/en\/opportunities\/64f000000000000000000001/
+    Received string:  "http://127.0.0.1:3100/en/volunteer/dashboard"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        13 ├ù locator resolved to <html lang="en" dir="ltr" class="__variable_f367f3 __variable_632b9a">ÔÇª</html>
+           - unexpected value "http://127.0.0.1:3100/en/volunteer/dashboard"
+
+
+      712 |         .getByRole('link', { name: 'Food drive' })
+      713 |         .click();
+    > 714 |       await expect(page).toHaveURL(new RegExp(`/${locale}/opportunities/64f000000000000000000001`));
+          |                          ^
+      715 |       await expect(page.getByTestId('public-opp-details')).toBeVisible();
+      716 |       await expect(page.getByTestId('detail-header')).toContainText('Food drive');
+      717 |       await page.getByTestId('opp-back').click();
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:714:26
+
+    Error Context: test-results\volunteer-home-public-deta-e3efb--details-ÔåÆ-Back-returns-en-\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-public-deta-e3efb--details-ÔåÆ-Back-returns-en-\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-public-deta-e3efb--details-ÔåÆ-Back-returns-en-\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+  10) e2e\volunteer-home.spec.ts:722:9 ÔÇ║ public details navigation (EN+AR) ÔÇ║ direct public details entry ÔåÆ Back falls back to listing (en) 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/en\/opportunities\/?$/
+    Received string:  "http://127.0.0.1:3100/en/opportunities/64f000000000000000000001"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        13 ├ù locator resolved to <html lang="en" dir="ltr" class="__variable_f367f3 __variable_632b9a">ÔÇª</html>
+           - unexpected value "http://127.0.0.1:3100/en/opportunities/64f000000000000000000001"
+
+
+      734 |       await expect(page.getByTestId('public-opp-details')).toBeVisible();
+      735 |       await page.getByTestId('opp-back').click();
+    > 736 |       await expect(page).toHaveURL(new RegExp(`/${locale}/opportunities/?$`));
+          |                          ^
+      737 |     });
+      738 |   }
+      739 | });
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:736:26
+
+    Error Context: test-results\volunteer-home-public-deta-9eff3-k-falls-back-to-listing-en-\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-public-deta-9eff3-k-falls-back-to-listing-en-\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-public-deta-9eff3-k-falls-back-to-listing-en-\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+  11) e2e\volunteer-home.spec.ts:629:9 ÔÇ║ viewport 390 ÔÇ║ weekend window fills Fri-Sat bounds (Algeria) 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.check: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByLabel('Weekend')
+        - locator resolved to <input type="radio" class="sr-only" value="weekend" name="opp-window"/>
+      - attempting click action
+        2 ├ù waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <span>Weekend</span> intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <span>Weekend</span> intercepts pointer events
+      2 ├ù retrying click action
+          - waiting 100ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - element is outside of the viewport
+      11 ├ù retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span>Weekend</span> intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span>Weekend</span> intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - element is outside of the viewport
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - element is outside of the viewport
+      - retrying click action
+        - waiting 500ms
+
+
+      631 |       await mockHomeApi(page, baseHandlers(), captured);
+      632 |       await page.goto('/en/volunteer/opportunities');
+    > 633 |       await page.getByLabel(en.opportunities.windowWeekend).check();
+          |                                                             ^
+      634 |       await page.getByTestId('opportunities-filters').getByRole('button', { name: en.opportunities.applyFilters }).click();
+      635 |       await expect.poll(() => page.url()).toContain('from=');
+      636 |       const feedCall = captured.filter((c) => c.path === '/opportunities').pop();
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:633:61
+
+    Error Context: test-results\volunteer-home-viewport-39-9ac38-lls-Fri-Sat-bounds-Algeria-\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-viewport-39-9ac38-lls-Fri-Sat-bounds-Algeria-\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-viewport-39-9ac38-lls-Fri-Sat-bounds-Algeria-\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+  12) e2e\volunteer-home.spec.ts:722:9 ÔÇ║ public details navigation (EN+AR) ÔÇ║ direct public details entry ÔåÆ Back falls back to listing (ar) 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/ar\/opportunities\/?$/
+    Received string:  "http://127.0.0.1:3100/ar/volunteer/opportunities"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        5 ├ù locator resolved to <html lang="ar" dir="rtl" class="__variable_f367f3 __variable_632b9a">ÔÇª</html>
+          - unexpected value "http://127.0.0.1:3100/ar/opportunities/64f000000000000000000001"
+        7 ├ù locator resolved to <html lang="ar" dir="rtl" class="__variable_f367f3 __variable_632b9a">ÔÇª</html>
+          - unexpected value "http://127.0.0.1:3100/ar/volunteer/opportunities"
+
+
+      734 |       await expect(page.getByTestId('public-opp-details')).toBeVisible();
+      735 |       await page.getByTestId('opp-back').click();
+    > 736 |       await expect(page).toHaveURL(new RegExp(`/${locale}/opportunities/?$`));
+          |                          ^
+      737 |     });
+      738 |   }
+      739 | });
+        at C:\Users\Failasouf\Desktop\projects\basmatck\frontend\e2e\volunteer-home.spec.ts:736:26
+
+    Error Context: test-results\volunteer-home-public-deta-43fd3-k-falls-back-to-listing-ar-\error-context.md
+
+    attachment #2: trace (application/zip) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    test-results\volunteer-home-public-deta-43fd3-k-falls-back-to-listing-ar-\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\volunteer-home-public-deta-43fd3-k-falls-back-to-listing-ar-\trace.zip
+
+    ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+
+  12 failed
+    e2e\volunteer-home.spec.ts:493:9 ÔÇ║ viewport 1440 ÔÇ║ filter apply serializes to URL and persists across reload 
+    e2e\volunteer-home.spec.ts:606:9 ÔÇ║ viewport 1440 ÔÇ║ talent cards render real portfolio preview and availability from the public profile 
+    e2e\volunteer-home.spec.ts:629:9 ÔÇ║ viewport 1440 ÔÇ║ weekend window fills Fri-Sat bounds (Algeria) 
+    e2e\volunteer-home.spec.ts:583:9 ÔÇ║ viewport 1100 ÔÇ║ talents filters serialize multi-value params 
+    e2e\volunteer-home.spec.ts:606:9 ÔÇ║ viewport 1100 ÔÇ║ talent cards render real portfolio preview and availability from the public profile 
+    e2e\volunteer-home.spec.ts:629:9 ÔÇ║ viewport 1100 ÔÇ║ weekend window fills Fri-Sat bounds (Algeria) 
+    e2e\volunteer-home.spec.ts:583:9 ÔÇ║ viewport 390 ÔÇ║ talents filters serialize multi-value params ÔöÇ
+    e2e\volunteer-home.spec.ts:606:9 ÔÇ║ viewport 390 ÔÇ║ talent cards render real portfolio preview and availability from the public profile 
+    e2e\volunteer-home.spec.ts:629:9 ÔÇ║ viewport 390 ÔÇ║ weekend window fills Fri-Sat bounds (Algeria) 
+    e2e\volunteer-home.spec.ts:705:9 ÔÇ║ public details navigation (EN+AR) ÔÇ║ dashboard card ÔåÆ public details ÔåÆ Back returns (en) 
+    e2e\volunteer-home.spec.ts:722:9 ÔÇ║ public details navigation (EN+AR) ÔÇ║ direct public details entry ÔåÆ Back falls back to listing (en) 
+    e2e\volunteer-home.spec.ts:722:9 ÔÇ║ public details navigation (EN+AR) ÔÇ║ direct public details entry ÔåÆ Back falls back to listing (ar) 
+  2 skipped
+  40 passed (3.5m)

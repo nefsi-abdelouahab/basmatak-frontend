@@ -8,7 +8,11 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { errorStateFor, mapToApiError } from '@/lib/api/errors';
 import { emailSchema } from '@/lib/api/auth';
-import { useLoginRedirect, useResendVerificationMutation } from '@/hooks/useAuth';
+import {
+  ALREADY_AUTHENTICATED_CODE,
+  useLoginRedirect,
+  useResendVerificationMutation,
+} from '@/hooks/useAuth';
 import { AuthError, AuthSuccess } from '../components';
 import { AuthSplit } from '../AuthSplit';
 import { PasswordInput } from '../PasswordInput';
@@ -45,6 +49,10 @@ export function LoginForm({ next, status }: { next?: string; status?: string }) 
       await login({ email, password }, { next });
     } catch (err) {
       const apiError = mapToApiError(err);
+      // Active session: the auth layer already bounced to the role home and
+      // no login POST fired — stay quiet and let the redirect land instead
+      // of flashing a generic error on the form being left behind.
+      if (apiError.code === ALREADY_AUTHENTICATED_CODE) return;
       if (apiError.code === 'INVALID_CREDENTIALS') setFormStatus({ kind: 'invalid' });
       else if (apiError.code === 'EMAIL_NOT_VERIFIED') setFormStatus({ kind: 'unverified' });
       else if (apiError.code === 'ACCOUNT_SUSPENDED' || apiError.code === 'ACCOUNT_INACCESSIBLE')

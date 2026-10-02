@@ -184,6 +184,25 @@ export function useAdminOpportunitiesCsvMutation() {
   });
 }
 
+export function useAdminOpportunityVerificationStatusQuery(
+  opportunityId: string | undefined,
+) {
+  return useQuery({
+    queryKey: queryKeys.detail(
+      `${DOMAIN}-opportunity-verification`,
+      opportunityId ?? 'none',
+    ),
+    queryFn: () =>
+      adminListsApi.getAdminOpportunityVerificationStatus(
+        api,
+        opportunityId as string,
+      ),
+    enabled: typeof opportunityId === 'string' && opportunityId !== '',
+    staleTime: 30_000,
+    retry: false,
+  });
+}
+
 export function useAdminOpportunityStatusMutation() {
   return useMutation({
     mutationFn: ({

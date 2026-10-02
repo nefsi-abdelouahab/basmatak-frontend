@@ -94,6 +94,16 @@ export function isAdminVerificationQueueStatus(
   return (ADMIN_VERIFICATION_QUEUE_STATUSES as readonly string[]).includes(value);
 }
 
+export const AdminVolunteerStatsSchema = z
+  .object({
+    completedTasks: z.number().nullable().optional(),
+    verifiedExperiences: z.number().nullable().optional(),
+    volunteerHours: z.number().nullable().optional(),
+  })
+  .passthrough();
+
+export type AdminVolunteerStats = z.infer<typeof AdminVolunteerStatsSchema>;
+
 export const AdminVolunteerRowSchema = z
   .object({
     id: z.string().optional(),
@@ -102,6 +112,7 @@ export const AdminVolunteerRowSchema = z
     userId: z.string().nullable().optional(),
     username: z.string().nullable().optional(),
     email: z.string().nullable().optional(),
+    phone: z.string().nullable().optional(),
     firstName: z.string().nullable().optional(),
     lastName: z.string().nullable().optional(),
     registryId: z.string().nullable().optional(),
@@ -112,10 +123,105 @@ export const AdminVolunteerRowSchema = z
     municipalityName: z.string().nullable().optional(),
     lastActivityAt: z.string().nullable().optional(),
     emailVerifiedAt: z.string().nullable().optional(),
+    createdAt: z.string().nullable().optional(),
+    avatar: z.string().nullable().optional(),
+    stats: AdminVolunteerStatsSchema.nullable().optional(),
   })
   .passthrough();
 
 export type AdminVolunteerRow = z.infer<typeof AdminVolunteerRowSchema>;
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === 'object' && value !== null
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function nonEmptyString(value: unknown): string | undefined {
+  return typeof value === 'string' && value !== '' ? value : undefined;
+}
+
+function idString(value: unknown): string | undefined {
+  if (typeof value === 'string' && value !== '') return value;
+  // Mongoose ObjectIds survive `lean()` as objects until JSON serialization;
+  // String() them instead of dropping the reference.
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    try {
+      const text = String(value);
+      return text !== '' && text !== '[object Object]' ? text : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+  return undefined;
+}
+
+// The backend list returns NESTED rows `{ profile, user, skillNames,
+// wilayaName, municipalityName }` (see backend e2e `admin-lists`: 
+// `row.profile.username`, `row.user.email`). Flatten to the stable flat row
+// shape every consumer already reads, so no caller branches on the wire
+// shape. Flat input (unit stubs) passes through untouched.
+export function flattenAdminVolunteerRow(raw: unknown): AdminVolunteerRow {
+  const rec = asRecord(raw);
+  if (!rec) return AdminVolunteerRowSchema.parse(raw);
+  const profile = asRecord(rec.profile);
+  const user = asRecord(rec.user);
+  if (!profile && !user) return AdminVolunteerRowSchema.parse(raw);
+  const merged: Record<string, unknown> = { ...rec };
+  const profileId = idString(profile?.['_id']) ?? idString(profile?.id);
+  const userId = idString(user?.['_id']) ?? idString(user?.id);
+  if (merged.id === undefined && profileId !== undefined) merged.id = profileId;
+  if (merged.userId === undefined) {
+    merged.userId = userId ?? idString(profile?.userId);
+  }
+  for (const key of [
+    'username',
+    'firstName',
+    'lastName',
+    'registryId',
+    'createdAt',
+  ] as const) {
+    if (merged[key] === undefined || merged[key] === null) {
+      const value = nonEmptyString(profile?.[key]);
+      if (value !== undefined) merged[key] = value;
+    }
+  }
+  if (merged.avatar === undefined || merged.avatar === null) {
+    const avatar = idString(profile?.avatar);
+    if (avatar !== undefined) merged.avatar = avatar;
+  }
+  if (merged.email === undefined) {
+    const value = nonEmptyString(user?.email);
+    if (value !== undefined) merged.email = value;
+  }
+  if (merged.phone === undefined) {
+    const value = nonEmptyString(user?.phone);
+    if (value !== undefined) merged.phone = value;
+  }
+  if (merged.status === undefined) {
+    const value = nonEmptyString(user?.status);
+    if (value !== undefined) merged.status = value;
+  }
+  if (merged.lastActivityAt === undefined) {
+    const value = nonEmptyString(user?.lastActivityAt);
+    if (value !== undefined) merged.lastActivityAt = value;
+  }
+  if (merged.emailVerifiedAt === undefined) {
+    const value = nonEmptyString(user?.emailVerifiedAt);
+    if (value !== undefined) merged.emailVerifiedAt = value;
+  }
+  if (
+    (merged.createdAt === undefined || merged.createdAt === null) &&
+    user?.createdAt
+  ) {
+    const value = nonEmptyString(user.createdAt);
+    if (value !== undefined) merged.createdAt = value;
+  }
+  if (merged.stats === undefined && asRecord(profile?.stats)) {
+    merged.stats = profile?.stats;
+  }
+  return AdminVolunteerRowSchema.parse(merged);
+}
 
 export const AdminUserSchema = z
   .object({
@@ -189,9 +295,23 @@ export const AdminOpportunityRowSchema = z
     registryId: z.string().nullable().optional(),
     status: z.string().nullable().optional(),
     organizationId: z.string().nullable().optional(),
+    categoryId: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    mode: z.string().nullable().optional(),
+    startDate: z.string().nullable().optional(),
+    endDate: z.string().nullable().optional(),
+    durationMinutes: z.number().nullable().optional(),
+    applicationDeadline: z.string().nullable().optional(),
+    prerequisites: z.array(z.string()).nullable().optional(),
+    location: z.unknown().nullable().optional(),
     positions: z.array(z.unknown()).nullable().optional(),
     applicationCount: z.number().nullable().optional(),
     applicationCounts: z.unknown().nullable().optional(),
+    organizationName: z.string().nullable().optional(),
+    positionsCount: z.number().nullable().optional(),
+    capacity: z.number().nullable().optional(),
+    filled: z.number().nullable().optional(),
+    locationName: z.string().nullable().optional(),
     wilayaName: z.string().nullable().optional(),
     municipalityName: z.string().nullable().optional(),
     assignedNames: z.array(z.string()).nullable().optional(),
@@ -199,6 +319,66 @@ export const AdminOpportunityRowSchema = z
   .passthrough();
 
 export type AdminOpportunityRow = z.infer<typeof AdminOpportunityRowSchema>;
+
+// The backend list returns NESTED rows `{ opportunity, organizationName,
+// positionsCount, capacity, filled, applicationCount, locationName,
+// assignedNames }` (AdminOpportunitiesService.enrich). Flatten the embedded
+// opportunity fields to the stable flat row shape every consumer already
+// reads, so no caller branches on the wire shape. Flat input (unit stubs,
+// e2e mocks) passes through untouched.
+export function flattenAdminOpportunityRow(raw: unknown): AdminOpportunityRow {
+  const rec = asRecord(raw);
+  if (!rec) return AdminOpportunityRowSchema.parse(raw);
+  const opportunity = asRecord(rec.opportunity);
+  if (!opportunity) return AdminOpportunityRowSchema.parse(raw);
+  const merged: Record<string, unknown> = { ...rec };
+  const oppId =
+    idString(opportunity._id) ?? idString(opportunity.id) ?? idString(rec.id);
+  if (oppId !== undefined) merged.id = oppId;
+  for (const key of [
+    'title',
+    'slug',
+    'registryId',
+    'status',
+    'organizationId',
+    'categoryId',
+    'description',
+    'mode',
+    'startDate',
+    'endDate',
+    'durationMinutes',
+    'applicationDeadline',
+    'prerequisites',
+    'location',
+    'positions',
+  ] as const) {
+    if (merged[key] === undefined || merged[key] === null) {
+      const value = opportunity[key];
+      if (value !== undefined) merged[key] = value;
+    }
+  }
+  return AdminOpportunityRowSchema.parse(merged);
+}
+
+export const AdminOpportunityVerificationRowSchema = z
+  .object({
+    participantId: z.string(),
+    volunteerName: z.string().nullable(),
+    username: z.string().nullable(),
+    volunteerRegistryId: z.string().nullable(),
+    positionTitle: z.string().nullable(),
+    participationStatus: z.string(),
+    submissionStatus: z.string().nullable(),
+    submissionTitle: z.string().nullable(),
+    verificationCode: z.string().nullable(),
+    experienceRegistryId: z.string().nullable(),
+    verifiedAt: z.string().nullable(),
+  })
+  .passthrough();
+
+export type AdminOpportunityVerificationRow = z.infer<
+  typeof AdminOpportunityVerificationRowSchema
+>;
 
 export const AdminStatusHistoryRowSchema = z
   .object({
@@ -339,7 +519,9 @@ export async function listAdminVolunteers(
   const { data } = await client.get('/admin/volunteers', {
     params: buildAdminListQuery(filters),
   });
-  return CursorPageSchema(AdminVolunteerRowSchema).parse(data);
+  const page = CursorPageSchema(AdminVolunteerRowSchema).parse(data);
+  // Normalize the nested backend rows once, at the boundary.
+  return { ...page, items: page.items.map(flattenAdminVolunteerRow) };
 }
 
 export async function getAdminVolunteerExperiences(
@@ -485,7 +667,23 @@ export async function listAdminOpportunities(
   const { data } = await client.get('/admin/opportunities', {
     params: buildAdminListQuery(filters),
   });
-  return CursorPageSchema(AdminOpportunityRowSchema).parse(data);
+  const page = CursorPageSchema(AdminOpportunityRowSchema).parse(data);
+  // Normalize the nested backend rows once, at the boundary.
+  return { ...page, items: page.items.map(flattenAdminOpportunityRow) };
+}
+
+export async function getAdminOpportunityVerificationStatus(
+  client: HttpClient,
+  opportunityId: string,
+): Promise<AdminOpportunityVerificationRow[]> {
+  const { data } = await client.get(
+    `/admin/opportunities/${opportunityId}/verification-status`,
+  );
+  if (Array.isArray(data))
+    return z.array(AdminOpportunityVerificationRowSchema).parse(data);
+  return z
+    .object({ items: z.array(AdminOpportunityVerificationRowSchema) })
+    .parse(data).items;
 }
 
 export async function setAdminOpportunityStatus(

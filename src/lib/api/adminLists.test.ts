@@ -9,7 +9,10 @@ import {
   exportAdminOpportunitiesCsv,
   exportAdminOrganizationsCsv,
   exportAdminVolunteersCsv,
+  flattenAdminOpportunityRow,
+  flattenAdminVolunteerRow,
   getAdminLatestDossier,
+  getAdminOpportunityVerificationStatus,
   getAdminStatusHistories,
   getAdminUser,
   getAdminVolunteerExperiences,
@@ -210,6 +213,66 @@ describe('admin volunteer endpoints', () => {
   });
 });
 
+describe('admin volunteer nested-row normalizer', () => {
+  const nestedRow = {
+    profile: {
+      _id: '64f0000000000000000000a1',
+      userId: '64f0000000000000000000b2',
+      username: 'amina',
+      firstName: 'Amina',
+      lastName: 'Cherif',
+      registryId: 'VOL-000123',
+      createdAt: '2026-07-04T00:00:00.000Z',
+      avatar: '64f0000000000000000000c3',
+      stats: { completedTasks: 6, verifiedExperiences: 2, volunteerHours: 180 },
+    },
+    user: {
+      _id: '64f0000000000000000000b2',
+      email: 'amina@example.com',
+      phone: '+213555123456',
+      status: 'active',
+      lastActivityAt: '2026-09-01T00:00:00.000Z',
+      emailVerifiedAt: '2026-01-01T00:00:00.000Z',
+    },
+    skillNames: ['First aid'],
+    wilayaName: 'Alger',
+    municipalityName: null,
+  };
+
+  it('flattens backend nested rows to the stable flat shape', () => {
+    const flat = flattenAdminVolunteerRow(nestedRow);
+    expect(flat.id).toBe('64f0000000000000000000a1');
+    expect(flat.userId).toBe('64f0000000000000000000b2');
+    expect(flat.username).toBe('amina');
+    expect(flat.firstName).toBe('Amina');
+    expect(flat.registryId).toBe('VOL-000123');
+    expect(flat.email).toBe('amina@example.com');
+    expect(flat.phone).toBe('+213555123456');
+    expect(flat.status).toBe('active');
+    expect(flat.avatar).toBe('64f0000000000000000000c3');
+    expect(flat.stats).toMatchObject({
+      completedTasks: 6,
+      verifiedExperiences: 2,
+      volunteerHours: 180,
+    });
+  });
+
+  it('normalizes list items through listAdminVolunteers', async () => {
+    const { client } = stubClient({
+      get: () => ({ items: [nestedRow], nextCursor: null, total: 1 }),
+    });
+    const page = await listAdminVolunteers(client, {});
+    expect(page.items[0]?.username).toBe('amina');
+    expect(page.items[0]?.status).toBe('active');
+  });
+
+  it('passes already-flat rows through untouched', () => {
+    const flat = flattenAdminVolunteerRow(volunteerPage.items[0]);
+    expect(flat.username).toBe('amina');
+    expect(flat.status).toBe('active');
+  });
+});
+
 describe('admin organization and verification endpoints', () => {
   it('lists organizations with combined filters', async () => {
     const { client, get } = stubClient({
@@ -329,6 +392,97 @@ describe('admin opportunity and history endpoints', () => {
       reason: 'abusive content',
     });
     expect(post).not.toHaveBeenCalled();
+  });
+
+  it('flattens nested opportunity rows to the stable flat shape', () => {
+    const nested = {
+      opportunity: {
+        _id: '64f0000000000000000000011',
+        title: 'Beach cleanup drive',
+        slug: 'beach-cleanup-drive',
+        registryId: 'OPP-000001',
+        status: 'published',
+        organizationId: '64f0000000000000000000d1',
+        categoryId: '64f0000000000000000000c1',
+        positions: [{ title: 'Sweeper', requiredCount: 4, filledCount: 1 }],
+      },
+      organizationName: 'Association El-Amel',
+      positionsCount: 1,
+      capacity: 4,
+      filled: 1,
+      applicationCount: 6,
+      locationName: 'Alger',
+      assignedNames: ['Amina Benali'],
+    };
+    const flat = flattenAdminOpportunityRow(nested);
+    expect(flat.id).toBe('64f0000000000000000000011');
+    expect(flat.title).toBe('Beach cleanup drive');
+    expect(flat.registryId).toBe('OPP-000001');
+    expect(flat.status).toBe('published');
+    expect(flat.categoryId).toBe('64f0000000000000000000c1');
+    expect(flat.organizationName).toBe('Association El-Amel');
+    expect(flat.capacity).toBe(4);
+    expect(flat.filled).toBe(1);
+    expect(flat.applicationCount).toBe(6);
+    expect(flat.assignedNames).toEqual(['Amina Benali']);
+    expect(flat.positions).toHaveLength(1);
+  });
+
+  it('normalizes nested list items through listAdminOpportunities', async () => {
+    const nested = {
+      opportunity: {
+        _id: '64f0000000000000000000011',
+        title: 'Beach cleanup drive',
+        status: 'published',
+      },
+      organizationName: 'Association El-Amel',
+      applicationCount: 6,
+      assignedNames: [],
+    };
+    const { client } = stubClient({
+      get: () => ({ items: [nested], nextCursor: null, total: 1 }),
+    });
+    const page = await listAdminOpportunities(client, {});
+    expect(page.items[0]?.title).toBe('Beach cleanup drive');
+    expect(page.items[0]?.organizationName).toBe('Association El-Amel');
+  });
+
+  it('passes already-flat opportunity rows through untouched', () => {
+    const flatRow = {
+      id: '64f0000000000000000000011',
+      title: 'Beach cleanup drive',
+      status: 'published',
+      registryId: 'OPP-000001',
+    };
+    const flat = flattenAdminOpportunityRow(flatRow);
+    expect(flat.id).toBe('64f0000000000000000000011');
+    expect(flat.title).toBe('Beach cleanup drive');
+  });
+
+  it('reads per-opportunity verification status rows', async () => {
+    const { client, get } = stubClient({
+      get: () => ({
+        items: [
+          {
+            participantId: 'p1',
+            volunteerName: 'Amina Benali',
+            username: 'amina',
+            volunteerRegistryId: 'VOL-000001',
+            positionTitle: 'Sweeper',
+            participationStatus: 'completed',
+            submissionStatus: 'approved',
+            submissionTitle: 'Coverage',
+            verificationCode: 'ABCDEFGH',
+            experienceRegistryId: 'EXP-000001',
+            verifiedAt: '2026-09-05T12:00:00.000Z',
+          },
+        ],
+      }),
+    });
+    const rows = await getAdminOpportunityVerificationStatus(client, 'op1');
+    expect(get).toHaveBeenCalledWith('/admin/opportunities/op1/verification-status');
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.verificationCode).toBe('ABCDEFGH');
   });
 
   it('reads status histories with both required params', async () => {

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { ApiError } from './errors';
 import {
   ACCOUNT_DOC_MIMES,
   ACCOUNT_IMAGE_MIMES,
@@ -8,10 +9,12 @@ import {
   OrgAccountSchema,
   UpdateOrgAccountInputSchema,
   accountMediaUrlOf,
+  accountSaveFieldError,
   completionView,
   deleteOrgAccount,
   getAccountMedia,
   getAccountPrefs,
+  diffAccountForm,
   getAccountUser,
   getOrgAccount,
   getOrgAccountCompletion,
@@ -295,5 +298,107 @@ describe('uploadAccountMedia', () => {
     ).rejects.toThrow('INVALID_FILE_TYPE');
     expect(client.post).not.toHaveBeenCalled();
     expect(putBytes).not.toHaveBeenCalled();
+  });
+});
+
+describe('diffAccountForm', () => {
+  const stored = {
+    nameAr: 'جمعية الأمل',
+    nameFr: 'Association El-Amel',
+    website: 'https://el-amel.example.org',
+    email: 'org@example.com',
+    phone: '+213555123456',
+  };
+  const values = {
+    nameAr: 'جمعية الأمل',
+    nameFr: 'Association El-Amel',
+    website: 'https://el-amel.example.org',
+    email: 'org@example.com',
+    phone: '+213555123456',
+  };
+
+  it('returns an empty, clean diff when nothing changed', () => {
+    expect(diffAccountForm(stored, values)).toEqual({
+      orgInput: {},
+      userInput: {},
+      invalid: [],
+      dirty: false,
+    });
+  });
+
+  it('phone-only edit with human formatting normalizes and sends just the phone', () => {
+    // Regression: spaced/dashed input used to fail validation with no
+    // request sent; it now normalizes to the backend-accepted form.
+    const diff = diffAccountForm(stored, { ...values, phone: '+213 555 98 76 54' });
+    expect(diff.invalid).toEqual([]);
+    expect(diff.orgInput).toEqual({});
+    expect(diff.userInput).toEqual({ phone: '+213555987654' });
+    expect(diff.dirty).toBe(true);
+  });
+
+  it('re-typed but identical phone digits are not dirty', () => {
+    const diff = diffAccountForm(stored, { ...values, phone: '+213 555 12 34 56' });
+    expect(diff.invalid).toEqual([]);
+    expect(diff.userInput).toEqual({});
+    expect(diff.dirty).toBe(false);
+  });
+
+  it('flags letters in phone without sending anything for that field', () => {
+    const diff = diffAccountForm(stored, { ...values, phone: '+213abc1234' });
+    expect(diff.invalid).toEqual(['phone']);
+    expect(diff.userInput).toEqual({});
+    expect(diff.dirty).toBe(false);
+  });
+
+  it('never includes untouched fields, so one field cannot fail on another', () => {
+    const diff = diffAccountForm(stored, { ...values, nameFr: 'Association El-Amel 2' });
+    expect(diff.invalid).toEqual([]);
+    expect(diff.orgInput).toEqual({ nameFr: 'Association El-Amel 2' });
+    expect(diff.userInput).toEqual({});
+  });
+});
+
+describe('accountSaveFieldError', () => {
+  const conflict = (message = 'The email or phone is already used by another account') =>
+    new ApiError({ statusCode: 409, code: 'CONTACT_CONFLICT', message });
+
+  it('attributes a taken-number 409 to the phone field on a phone-only save', () => {
+    // Exact reported failure: PATCH /users/me {phone} rejected 409 used to
+    // render only the generic error; it now maps to the phone field.
+    expect(accountSaveFieldError(conflict(), { email: false, phone: true })).toBe('phone');
+  });
+
+  it('attributes a taken-email 409 to the email field on an email-only save', () => {
+    expect(accountSaveFieldError(conflict(), { email: true, phone: false })).toBe('email');
+  });
+
+  it('stays generic when both contact fields were sent with a 409', () => {
+    expect(accountSaveFieldError(conflict(), { email: true, phone: true })).toBeNull();
+  });
+
+  it('maps backend validation details to their field', () => {
+    const phoneError = new ApiError({
+      statusCode: 400,
+      code: 'VALIDATION_ERROR',
+      message: 'Request validation failed',
+      details: [{ field: 'phone', errors: ['phone must be a valid phone number'] }],
+    });
+    expect(accountSaveFieldError(phoneError, { email: false, phone: true })).toBe('phone');
+    const unknownField = new ApiError({
+      statusCode: 400,
+      code: 'VALIDATION_ERROR',
+      message: 'Request validation failed',
+      details: [{ field: 'mystery', errors: ['bad'] }],
+    });
+    expect(accountSaveFieldError(unknownField, { email: false, phone: true })).toBeNull();
+  });
+
+  it('keeps the generic fallback for server, session, and network failures', () => {
+    const server = new ApiError({ statusCode: 500, code: 'INTERNAL_ERROR', message: 'boom' });
+    expect(accountSaveFieldError(server, { email: false, phone: true })).toBeNull();
+    const expired = new ApiError({ statusCode: 401, code: 'UNAUTHORIZED', message: 'expired' });
+    expect(accountSaveFieldError(expired, { email: false, phone: true })).toBeNull();
+    expect(accountSaveFieldError(new Error('down'), { email: false, phone: true })).toBeNull();
+    expect(accountSaveFieldError(null, { email: false, phone: true })).toBeNull();
   });
 });

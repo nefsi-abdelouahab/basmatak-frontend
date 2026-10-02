@@ -123,7 +123,7 @@ describe('RequireGuest', () => {
     expect(container.textContent).toBe('');
   });
 
-  it('does not redirect a guest who signs in during the visit', () => {
+  it('redirects a guest who signs in during the visit (no lingering on guest-only routes)', () => {
     sessionState = { status: 'guest' };
     mockPathname = '/talents';
     replace.mockClear();
@@ -133,8 +133,12 @@ describe('RequireGuest', () => {
       </RequireGuest>,
     );
     expect(screen.getByText('guest content')).toBeDefined();
-    // Session transitions guest -> authenticated (login/register landing);
-    // the flow's own navigation owns the next step, not the guard.
+    // Session transitions guest -> authenticated (login/register in place):
+    // staying on the guest-only route would let an active session linger on
+    // /login and switch accounts without signing out, so the guard bounces
+    // on the CURRENT session. The login/register flow's own navigation also
+    // leaves the page — both targets land inside the authenticated
+    // experience.
     sessionState = { status: 'volunteer' };
     view.rerender(
       <NextIntlClientProvider locale="en" messages={{ common: commonEn }}>
@@ -143,8 +147,8 @@ describe('RequireGuest', () => {
         </RequireGuest>
       </NextIntlClientProvider>,
     );
-    expect(screen.getByText('guest content')).toBeDefined();
-    expect(replace).not.toHaveBeenCalled();
+    expect(screen.queryByText('guest content')).toBeNull();
+    expect(replace).toHaveBeenCalledWith('/volunteer/talents');
   });
 
   it('redirects a verified session away from verify-email to the role home', () => {

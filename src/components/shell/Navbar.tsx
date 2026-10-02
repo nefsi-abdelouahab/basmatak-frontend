@@ -57,6 +57,41 @@ function OrgSearch() {
   );
 }
 
+// Platform Administration search: scoped to the volunteers manage table
+// (the only admin list with free-text ?q= behind this navbar). The code.html
+// global "records, entities, logs" search has no backing endpoint, so the
+// placeholder stays honest about the real scope instead of promising one.
+function AdminSearch() {
+  const t = useTranslations('adminWorkspace');
+  const router = useRouter();
+  const [value, setValue] = useState('');
+
+  function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    const q = value.trim();
+    router.push(q === '' ? '/admin/volunteers' : `/admin/volunteers?q=${encodeURIComponent(q)}`);
+  }
+
+  return (
+    <form role="search" onSubmit={onSubmit} className="relative hidden items-center md:flex">
+      <Search
+        size={18}
+        aria-hidden="true"
+        className="pointer-events-none absolute start-3 text-ink-muted"
+      />
+      <input
+        type="search"
+        data-testid="navbar-search"
+        aria-label={t('search.label')}
+        placeholder={t('search.placeholder')}
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        className="w-56 rounded-md border border-border bg-surface-muted py-1.5 pe-3 ps-9 text-body-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none lg:w-72"
+      />
+    </form>
+  );
+}
+
 function VolunteerSearch() {
   const t = useTranslations('common');
   const router = useRouter();
@@ -429,6 +464,68 @@ function OrgIdentity({ open, onToggle }: { open: boolean; onToggle: () => void }
   );
 }
 
+// Platform Administration identity: role label + the admin's real account
+// email with the shared person avatar fallback (public/user.jpg via
+// AvatarImage's error fallback — never a hidden or empty state). Mounts only
+// for the admin role so its session read never fires elsewhere.
+function AdminIdentity({ open, onToggle }: { open: boolean; onToggle: () => void }) {
+  const t = useTranslations('common');
+  const tAdmin = useTranslations('adminWorkspace');
+  const logout = useLogoutMutation();
+  const session = useSessionQuery();
+  const email = session.data?.role === 'admin' ? (session.data?.email ?? '') : '';
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        data-testid="navbar-avatar"
+        aria-label={t('nav.accountMenu')}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        onClick={onToggle}
+        className="flex items-center gap-2 rounded-md p-1 transition-colors hover:bg-surface-muted"
+      >
+        <span className="hidden text-end sm:block">
+          {email !== '' ? (
+            <span className="block max-w-44 truncate text-title-sm font-medium text-ink">
+              {email}
+            </span>
+          ) : null}
+          <span className="block text-label-xs text-ink-muted">{tAdmin('identity.role')}</span>
+        </span>
+        <AvatarImage src="/user.jpg" size={32} />
+      </button>
+      {open ? (
+        <div
+          role="menu"
+          aria-label={t('nav.accountMenu')}
+          data-testid="navbar-avatar-menu"
+          className="absolute end-0 top-full z-50 mt-2 w-52 rounded-lg border border-border bg-surface p-1 shadow-raised"
+        >
+          <Link
+            href="/admin/settings"
+            role="menuitem"
+            className="block rounded-md px-3 py-2 text-body-md text-ink hover:bg-surface-muted"
+          >
+            {t('nav.settings')}
+          </Link>
+          <button
+            type="button"
+            role="menuitem"
+            data-testid="navbar-logout"
+            disabled={logout.isPending}
+            onClick={() => logout.mutate()}
+            className="block w-full rounded-md px-3 py-2 text-start text-body-md text-ink hover:bg-surface-muted disabled:opacity-50"
+          >
+            {t('nav.logout')}
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function Navbar() {
   const t = useTranslations('common');
   const pathname = usePathname();
@@ -436,6 +533,7 @@ export function Navbar() {
   const [menu, setMenu] = useState<Menu>(null);
   const isVolunteer = session.data?.role === 'volunteer';
   const isOrg = session.data?.role === 'organization';
+  const isAdmin = session.data?.role === 'admin';
   const isAuthed = !!session.data;
 
   useEffect(() => {
@@ -485,6 +583,7 @@ export function Navbar() {
         <div className="flex shrink-0 items-center gap-1 sm:gap-2" data-menu-root="navbar">
           {isVolunteer ? <VolunteerSearch /> : null}
           {isOrg ? <OrgSearch /> : null}
+          {isAdmin ? <AdminSearch /> : null}
           {!isAuthed ? (
             <Link href="/" className="rounded-md px-2 py-2 text-sm text-ink hover:text-primary">
               {t('nav.home')}
@@ -496,6 +595,8 @@ export function Navbar() {
               <NotificationBell open={menu === 'bell'} onToggle={() => setMenu(menu === 'bell' ? null : 'bell')} />
               {isOrg ? (
                 <OrgIdentity open={menu === 'avatar'} onToggle={() => setMenu(menu === 'avatar' ? null : 'avatar')} />
+              ) : isAdmin ? (
+                <AdminIdentity open={menu === 'avatar'} onToggle={() => setMenu(menu === 'avatar' ? null : 'avatar')} />
               ) : (
                 <AvatarMenu open={menu === 'avatar'} onToggle={() => setMenu(menu === 'avatar' ? null : 'avatar')} />
               )}

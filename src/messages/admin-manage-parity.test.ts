@@ -34,7 +34,10 @@ describe('admin-manage catalog parity (en/ar)', () => {
   });
 
   it('no invented admin states in copy', () => {
-    const banned = ['pending-incomplete', 'legal review', 'flagged', 'law 12-06 seal', 'request info'];
+    // 'flagged' is intentionally allowed: the opportunities screen renders a
+    // real count of open reports with targetType=opportunity (Manage
+    // Opportunities session), not an invented status.
+    const banned = ['pending-incomplete', 'legal review', 'law 12-06 seal', 'request info'];
     for (const leaf of leaves(adminManageEn as Json)) {
       for (const word of banned) {
         expect(leaf.toLowerCase()).not.toContain(word);

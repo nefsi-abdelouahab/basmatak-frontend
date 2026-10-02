@@ -445,7 +445,7 @@ function ParticipantDetail({
           </div>
           {username ? (
             <Link
-              href={`/volunteers/${username}`}
+              href={`/org/volunteers/${username}`}
               data-testid={`${testIdPrefix}-public-profile`}
               className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
             >

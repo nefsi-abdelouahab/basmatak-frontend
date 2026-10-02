@@ -27,7 +27,7 @@ const draftOpp = {
   endDate: '2026-10-05T00:00:00.000Z',
   applicationDeadline: '2026-09-28T00:00:00.000Z',
   location: { wilayaId: '16', municipalityId: '1601' },
-  coverMediaId: null,
+  coverMediaId: '64f0000000000000000000f1',
   positions: [
     { _id: '64f0000000000000000000d1', title: 'Helper', requiredCount: 3, filledCount: 0, deliverables: ['Collect bags'] },
   ],
@@ -262,6 +262,13 @@ async function mockApi(
         body: JSON.stringify(categories),
       });
     }
+    if (path.endsWith('/skills')) {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{ _id: '64f0000000000000000000e1', nameFr: 'Photo', nameAr: 'تصوير' }]),
+      });
+    }
     if (path.endsWith('/locations/wilayas')) {
       return route.fulfill({
         status: 200,
@@ -285,6 +292,14 @@ async function mockApi(
     }
     if (/\/media\/[a-f0-9]{24}\/confirm$/.test(path)) {
       return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
+    }
+    const mediaRead = path.match(/\/media\/([a-f0-9]{24})$/);
+    if (mediaRead && route.request().method() === 'GET') {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ url: 'https://cdn.example/cover.png' }),
+      });
     }
     return route.fulfill({ status: 404, body: '{}' });
   });
@@ -361,7 +376,7 @@ for (const width of [1440, 1100, 390]) {
         await page.locator('#opp-title').fill('Ramadan food distribution');
         await page.locator('#opp-description').fill('Help distribute meal boxes in Algiers');
         await page.locator('#opp-category').selectOption('64f0000000000000000000c0');
-        await page.locator('#opp-mode').selectOption('hybrid');
+        await page.getByTestId('mode-hybrid').click();
         await page.locator('#opp-start').fill('2026-10-01');
         await page.locator('#opp-end').fill('2026-10-05');
         await page.locator('#opp-duration').fill('120');
@@ -379,9 +394,10 @@ for (const width of [1440, 1100, 390]) {
         await page.getByTestId('position-add').click();
         await page.locator('#position-title').fill('Distributor');
         await page.locator('#position-seats').fill('3');
+        await page.locator('#position-deliverables').fill('Collect bags');
         await page.getByTestId('position-save').click();
         await expect(page.getByTestId('position-row')).toHaveCount(1);
-        await page.getByTestId('editor-submit').click();
+        await page.getByTestId('editor-save-bottom').click();
         await expect(page).toHaveURL(new RegExp(`/${locale}/org/opportunities/64f0000000000000000000c9`), {
           timeout: 20000,
         });
@@ -389,11 +405,12 @@ for (const width of [1440, 1100, 390]) {
           (c) => c.url.endsWith('/organizations/me/opportunities') && c.method === 'POST',
         );
         expect(createCall).toBeTruthy();
-        await expect(page.getByTestId('lifecycle-publish')).toBeVisible();
-        await page.getByTestId('lifecycle-publish').click();
-        await page.getByTestId('lifecycle-confirm-confirm').click();
+        await expect(page.getByTestId('editor-publish-top')).toBeVisible();
+        await page.getByTestId('editor-publish-top').click();
+        await expect(page.getByTestId('publish-confirm')).toBeVisible();
+        await page.getByTestId('publish-confirm-confirm').click();
         await expect(page.getByTestId('lifecycle-success')).toContainText(
-          catalogs[locale].editor.published,
+          catalogs[locale].create.published,
           { timeout: 20000 },
         );
       });
@@ -403,8 +420,11 @@ for (const width of [1440, 1100, 390]) {
         await mockApi(page, captured, { verificationStatus: 'pending', gateLocked: true });
         await page.goto(`/${locale}/org/opportunities/${draftOpp._id}`);
         await expect(page.getByTestId('opp-editor')).toBeVisible();
-        await expect(page.getByTestId('lifecycle-publish')).toHaveCount(0);
-        await expect(page.getByTestId('publish-locked-unverified')).toBeVisible();
+        await expect(page.getByTestId('publishing-checklist')).toBeVisible();
+        await page.getByTestId('editor-publish-top').click();
+        await expect(page.getByTestId('publish-confirm')).toContainText(
+          catalogs[locale].create.notVerifiedError,
+        );
       });
 
       test(`published opp offers close and locks mode fields (${locale})`, async ({ page }) => {
@@ -413,7 +433,7 @@ for (const width of [1440, 1100, 390]) {
         await page.goto(`/${locale}/org/opportunities/${publishedOpp._id}`);
         await expect(page.getByTestId('opp-editor')).toBeVisible();
         await expect(page.getByTestId('lifecycle-close')).toBeVisible();
-        await expect(page.locator('#opp-mode')).toBeDisabled();
+        await expect(page.getByTestId('mode-hybrid')).toBeDisabled();
         await expect(page.getByTestId('locked-hint-mode')).toBeVisible();
         await page.getByTestId('position-add').click();
         await page.locator('#position-title').fill('Extra hands');
@@ -423,7 +443,7 @@ for (const width of [1440, 1100, 390]) {
         await page.getByTestId('lifecycle-close').click();
         await page.getByTestId('lifecycle-confirm-confirm').click();
         await expect(page.getByTestId('lifecycle-success')).toContainText(
-          catalogs[locale].editor.closed,
+          catalogs[locale].create.closed,
         );
       });
 

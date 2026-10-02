@@ -9,8 +9,12 @@ import { ROLE_HOME, type AuthRole } from '@/hooks/useAuth';
 
 // Route-separation contract (single guest-only guard; no second auth system):
 // - Guest-only routes (public landing + discovery lists, auth screens) render
-//   for logged-out visitors. An authenticated session redirects to the role's
-//   authenticated counterpart instead of rendering.
+//   for logged-out visitors. ANY authenticated session redirects to the role's
+//   authenticated counterpart instead of rendering — regardless of whether the
+//   session was already live at mount or became live during the visit (login /
+//   register in place must navigate away via its own flow; staying on a
+//   guest-only route while authenticated is never allowed, otherwise an
+//   active session could open /login and switch accounts without logging out).
 // - Exception: /verify-email stays reachable for authenticated-but-unverified
 //   sessions (the post-login/post-register `status=unverified` gate and token
 //   links that complete a pending signup). Verified sessions bounce from it
@@ -57,19 +61,15 @@ export function RequireGuest({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Bounce only when the visitor ARRIVED authenticated (direct URL entry,
-  // refresh, or client-side navigation with a live session). A guest who
-  // signs in or registers DURING the visit must keep the flow's own
-  // navigation (role/status routing in useLoginRedirect) — redirecting on
-  // the transition would race it and strand users on the wrong page.
-  const [arrivedAuthed, setArrivedAuthed] = useState<boolean | null>(null);
-  useEffect(() => {
-    if (!session.isPending && arrivedAuthed === null) {
-      setArrivedAuthed(!session.isError && !!session.data);
-    }
-  }, [session.isPending, session.isError, session.data, arrivedAuthed]);
+  // Bounce on the CURRENT session state — never a mount-time snapshot. A
+  // guest who signs in during the visit is now authenticated and must leave
+  // the guest-only route via redirect; the login/register flow's own
+  // navigation (role/status routing in useLoginRedirect) races the same way,
+  // but both targets land inside the authenticated experience, whereas a
+  // snapshot that stays "guest" would let an active session linger on /login
+  // and switch accounts without logging out.
   const target =
-    arrivedAuthed === true &&
+    !session.isPending &&
     !session.isError &&
     session.data &&
     !isUnverifiedVerifyEmailVisit(pathname, session.data.emailVerifiedAt)

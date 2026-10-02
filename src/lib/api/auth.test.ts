@@ -7,6 +7,7 @@ import {
   login,
   logoutAll,
   logoutOthers,
+  normalizePhoneNumber,
   passwordSchema,
   phoneSchema,
   registerOrganization,
@@ -52,6 +53,17 @@ describe('auth validators', () => {
     expect(passwordSchema.safeParse('x'.repeat(73)).success).toBe(false);
     expect(phoneSchema.safeParse('555 123 456').success).toBe(false);
     expect(phoneSchema.safeParse('123').success).toBe(false);
+  });
+
+  it('normalizePhoneNumber strips formatting so human input validates', () => {
+    expect(normalizePhoneNumber('+213 555 12 34 56')).toBe('+213555123456');
+    expect(normalizePhoneNumber('+213 (0) 49 90 12 34')).toBe('+213049901234');
+    expect(normalizePhoneNumber('0555-12-34-56')).toBe('0555123456');
+    expect(phoneSchema.safeParse(normalizePhoneNumber('+213 555 12 34 56')).success).toBe(true);
+    expect(phoneSchema.safeParse(normalizePhoneNumber('+213 (0) 49 90 12 34')).success).toBe(
+      true,
+    );
+    expect(phoneSchema.safeParse(normalizePhoneNumber('+213 abc 1234')).success).toBe(false);
   });
 });
 

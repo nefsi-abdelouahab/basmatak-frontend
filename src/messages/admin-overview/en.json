@@ -5,70 +5,71 @@
     "empty": "Nothing here yet."
   },
   "header": {
-    "title": "Admin dashboard",
-    "subtitle": "Platform activity and items that need review."
+    "title": "Dashboard",
+    "subtitle": "Overview of platform activity and moderation.",
+    "rangeLabel": "Time range",
+    "rangeDays": "{count} days",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing…"
   },
-  "overview": {
-    "title": "Activity overview",
-    "subtitle": "Counts from the last 30 days, compared with the previous 30 days.",
-    "currentLabel": "Last 30 days",
-    "previousLabel": "Previous 30 days",
-    "noComparison": "No comparison available",
-    "daysAgo": "Last 30 days"
-  },
-  "totals": {
-    "users": "Users",
-    "organizations": "Organizations",
-    "opportunities": "Opportunities",
-    "applications": "Applications",
-    "submissions": "Submissions"
-  },
-  "metrics": {
-    "title": "Key figures",
-    "activeParticipants": "Active participants (30 days)",
-    "verificationReady": "Contributions awaiting verification",
-    "gateFreezes": "Organizations with publishing paused",
-    "turnaround": "Median decision time",
-    "turnaroundUnavailable": "Not enough data",
-    "turnaroundUnit": "h",
-    "fromAnalytics": "From activity analytics",
-    "fromStats": "From platform statistics"
-  },
-  "perStatus": {
-    "title": "Counts by status",
-    "users": "Users",
-    "organizations": "Organizations",
-    "organizationsVerification": "Organization verification",
-    "opportunities": "Opportunities",
-    "applications": "Applications",
-    "submissions": "Contributions"
+  "stats": {
+    "label": "Key platform metrics",
+    "totalVolunteers": "Total volunteers",
+    "volunteersCaption": "Registered volunteer accounts",
+    "verifiedOrganizations": "Verified organizations",
+    "verifiedOrgsCaption": "Currently verified",
+    "publishedOpportunities": "Published opportunities",
+    "publishedCaptionDelta": "{value} vs previous 30 days",
+    "publishedCaptionNeutral": "Currently published",
+    "activeParticipants": "Active participants",
+    "activeCaption": "Engaged within 30 days",
+    "pendingVerifications": "Pending verifications",
+    "pendingCaption": "Awaiting review",
+    "openReports": "Open reports",
+    "reportsCaption": "Awaiting moderation",
+    "noComparison": "No comparison available"
   },
   "series": {
-    "title": "Daily activity",
-    "subtitle": "Signups, applications, and verification decisions per day.",
-    "signups": "Signups",
+    "title": "Platform activity",
+    "subtitle": "Registration, application, and verification volume over time.",
+    "signups": "New volunteers",
     "applications": "Applications",
     "verifications": "Verification decisions",
     "windowLabel": "Range",
     "daysUnit": "days",
     "empty": "No activity recorded in this range.",
-    "pointLabel": "{date}: {signups} signups, {applications} applications, {verifications} verification decisions"
+    "pointLabel": "{date}: {signups} signups, {applications} applications, {verifications} verification decisions",
+    "peakLabel": "Peak: {value}"
   },
   "queue": {
-    "title": "Needs review",
-    "subtitle": "Items waiting for attention. Counts come from the analytics queue.",
+    "title": "Requires attention",
+    "subtitle": "Items requiring administrator verification or moderation review ({count} pending)",
     "pendingVerifications": "Organization verifications",
     "openReports": "Open reports",
     "underReviewSubmissions": "Contributions under review",
     "suspendedUsers": "Suspended user accounts",
     "suspendedOrganizations": "Suspended organizations",
-    "viewManage": "Open manage screen",
+    "viewQueue": "View queue ({count})",
+    "review": "Review",
+    "itemVerification": "Organization verification",
+    "itemReportOpportunity": "Reported opportunity",
+    "itemReportUser": "Reported volunteer account",
+    "itemReportOrganization": "Reported organization",
+    "itemReportReview": "Reported review",
+    "itemReportSubmission": "Reported contribution",
+    "submittedOn": "Submitted {date}",
+    "documentsCount": "{count} documents",
+    "reportedOn": "Reported {date}",
+    "priorityHigh": "High priority",
+    "priorityNormal": "Normal priority",
+    "priorityLow": "Low priority",
     "maintenanceOn": "Maintenance mode is on",
-    "maintenanceOff": "Maintenance mode is off"
+    "maintenanceOff": "Maintenance mode is off",
+    "empty": "No items waiting for review."
   },
   "audit": {
-    "title": "Recent admin activity",
-    "subtitle": "Newest entries from the audit trail.",
+    "title": "Recent activity",
+    "subtitle": "Chronological platform audit trail.",
     "actorLabel": "Actor",
     "targetLabel": "Target",
     "actionLabel": "Action",
@@ -77,17 +78,34 @@
     "timeLabel": "Time",
     "nameUnavailable": "Not available",
     "valueUnavailable": "Not recorded",
-    "empty": "No audit entries yet."
+    "empty": "No audit entries yet.",
+    "viewAll": "View full audit logs",
+    "live": "Live"
   },
   "system": {
-    "title": "System status",
-    "statusLabel": "Status",
+    "title": "Platform health",
+    "statusLabel": "Service status",
+    "operational": "Operational",
     "versionLabel": "Version",
     "uptimeLabel": "Uptime",
     "maintenanceLabel": "Maintenance",
+    "turnaroundLabel": "Verification turnaround",
+    "turnaroundHint": "Median decision time",
+    "turnaroundUnit": "h",
     "daysUnit": "d",
     "hoursUnit": "h",
     "minutesUnit": "min",
     "unavailable": "Not available"
+  },
+  "shortcuts": {
+    "title": "Administrative shortcuts",
+    "subtitle": "Direct routing to primary management modules and queues.",
+    "reviewOrgs": "Review organizations",
+    "reviewReports": "Review reports",
+    "manageVolunteers": "Manage volunteers",
+    "manageOpportunities": "Manage opportunities",
+    "auditLogs": "Platform audit logs",
+    "pendingCount": "{count} pending",
+    "openCount": "{count} open"
   }
 }

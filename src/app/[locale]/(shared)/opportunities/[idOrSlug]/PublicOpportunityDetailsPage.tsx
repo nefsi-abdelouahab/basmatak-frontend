@@ -228,7 +228,7 @@ function PositionCard({
           <Button data-testid="apply-cta" disabled>
             {t('oppDetails.apply')}
           </Button>
-        ) : session.data ? (
+        ) : session.data?.role === 'volunteer' ? (
           <Link
             href={`/volunteer/opportunities/${idOrSlug}`}
             data-testid="apply-cta"
@@ -237,6 +237,9 @@ function PositionCard({
             {t('oppDetails.apply')}
           </Link>
         ) : (
+          // Guests AND authed non-volunteers (org/admin must not be sent into
+          // the volunteer space): login bounces authed users to their own
+          // workspace home via RequireGuest.
           <Button data-testid="apply-cta" onClick={() => router.push(getLoginHref(next))}>
             {t('oppDetails.apply')}
           </Button>

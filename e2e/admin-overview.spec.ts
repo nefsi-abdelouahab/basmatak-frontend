@@ -81,6 +81,59 @@ const series = {
   ],
 };
 
+const verificationsQueue = {
+  items: [
+    {
+      _id: '64f0000000000000000000c1',
+      status: 'pending',
+      submittedAt: '2026-09-20T10:15:00.000Z',
+      documents: ['64f0000000000000000000d1', '64f0000000000000000000d2'],
+      organization: {
+        _id: '64f0000000000000000000b1',
+        nameFr: 'Timimoun Cultural Association',
+        verificationStatus: 'pending',
+      },
+    },
+  ],
+  nextCursor: null,
+  limit: 3,
+  total: 4,
+  page: 1,
+  pages: 2,
+};
+
+const openReports = {
+  items: [
+    {
+      _id: '64f0000000000000000000e1',
+      status: 'open',
+      targetType: 'opportunity',
+      title: 'Heritage Restoration Drive',
+      reason: 'Inappropriate content',
+      priority: 'high',
+      createdAt: '2026-09-19T18:40:00.000Z',
+      reporter: { username: 'reporter_one' },
+      target: { type: 'opportunity', title: 'Heritage Restoration Drive' },
+    },
+    {
+      _id: '64f0000000000000000000e2',
+      status: 'open',
+      targetType: 'user',
+      title: null,
+      reason: 'Multiple identity verification mismatch alerts',
+      priority: 'normal',
+      createdAt: '2026-09-18T09:15:00.000Z',
+      reporter: { username: 'reporter_two' },
+      target: { type: 'user', username: 'volunteer_suspect' },
+    },
+  ],
+  nextCursor: null,
+  limit: 3,
+  total: 2,
+  page: 1,
+  pages: 1,
+};
+
 const auditLogs = {
   items: [
     {
@@ -127,7 +180,19 @@ const systemStatus = {
   message: '',
 };
 
-const FORBIDDEN_COPY = [/DZ-NAT-REG/i, /compliance\s*%/i, /statutory/i, /sanction/i, /secretariat/i];
+const FORBIDDEN_COPY = [
+  /DZ-NAT-REG/i,
+  /12-06/,
+  /DZ-VOL/,
+  /civil registry/i,
+  /anchored/i,
+  /minted/i,
+  /statute/i,
+  /compliance\s*%/i,
+  /statutory/i,
+  /sanction/i,
+  /secretariat/i,
+];
 
 interface Captured {
   url: string;
@@ -155,7 +220,7 @@ async function mockApi(page: Page, captured: Captured[], options: MockOptions = 
     totals: options.nullDelta
       ? {
           ...analyticsOverview.totals,
-          organizations: { current: 4, previous: 0, deltaPercent: null },
+          opportunities: { current: 30, previous: 0, deltaPercent: null },
         }
       : analyticsOverview.totals,
     medianDecisionHours: options.nullMedian ? null : analyticsOverview.medianDecisionHours,
@@ -187,6 +252,8 @@ async function mockApi(page: Page, captured: Captured[], options: MockOptions = 
     if (path.endsWith('/admin/analytics/overview')) return json(route, overview);
     if (path.endsWith('/admin/analytics/series')) return json(route, series);
     if (path.endsWith('/admin/analytics/queue')) return json(route, queue);
+    if (path.endsWith('/admin/organizations/verifications')) return json(route, verificationsQueue);
+    if (path.endsWith('/admin/reports')) return json(route, openReports);
     if (path.endsWith('/admin/audit-logs')) return json(route, auditLogs);
     if (path.endsWith('/health')) return json(route, health);
     if (path.endsWith('/system/status')) return json(route, status);
@@ -200,6 +267,8 @@ for (const width of [1440, 1100, 390]) {
     test.use({ viewport: { width, height: 800 } });
 
     for (const locale of ['en', 'ar'] as const satisfies Locale[]) {
+      const fmt = (value: number) => new Intl.NumberFormat(locale).format(value);
+
       test(`dashboard numbers match fixtures (${locale})`, async ({ page }) => {
         const captured: Captured[] = [];
         await mockApi(page, captured);
@@ -211,63 +280,47 @@ for (const width of [1440, 1100, 390]) {
           locale === 'ar' ? 'rtl' : 'ltr',
         );
 
-        // Overview totals come from the response, never from a literal.
-        await expect(page.getByTestId('overview-total-users-value')).toHaveText('12');
-        await expect(page.getByTestId('overview-total-organizations-value')).toHaveText('4');
-        await expect(page.getByTestId('overview-total-opportunities-value')).toHaveText('30');
-        await expect(page.getByTestId('overview-total-applications-value')).toHaveText('60');
-        await expect(page.getByTestId('overview-total-submissions-value')).toHaveText('5');
-        await expect(page.getByTestId('overview-total-users-delta')).toContainText('+50%');
-        await expect(page.getByTestId('overview-total-applications-delta')).toContainText('-20%');
+        // Six-stat row comes from the responses, never from a literal.
+        await expect(page.getByTestId('stat-total-volunteers-value')).toHaveText(fmt(80));
+        await expect(page.getByTestId('stat-verified-organizations-value')).toHaveText(fmt(6));
+        await expect(page.getByTestId('stat-published-opportunities-value')).toHaveText(fmt(20));
+        await expect(page.getByTestId('stat-active-participants-value')).toHaveText(fmt(42));
+        await expect(page.getByTestId('stat-pending-verifications-value')).toHaveText(fmt(4));
+        await expect(page.getByTestId('stat-open-reports-value')).toHaveText(fmt(2));
 
-        await expect(page.getByTestId('metric-active-participants')).toHaveText('42');
-        await expect(page.getByTestId('metric-verification-ready')).toHaveText('5');
-        await expect(page.getByTestId('metric-gate-freezes-analytics')).toHaveText('1');
-        await expect(page.getByTestId('metric-gate-freezes-stats')).toHaveText('2');
-        await expect(page.getByTestId('metric-pending-verifications-stats')).toHaveText('7');
-        await expect(page.getByTestId('metric-turnaround')).toContainText('18.5');
-
-        // Per-status counts.
-        await expect(page.getByTestId('status-users-active')).toHaveText('90');
-        await expect(page.getByTestId('status-users-suspended')).toHaveText('3');
-        await expect(page.getByTestId('status-organizations-verification-pending')).toHaveText('4');
-        await expect(page.getByTestId('status-organizations-verification-verified')).toHaveText('6');
-
-        // Series: one entry per returned point, three series each.
+        // Series totals come from the returned points.
         await expect(page.getByTestId('series-points')).toBeVisible();
-        await expect(page.getByTestId('series-point-2026-09-01-signups')).toHaveText('3');
-        await expect(page.getByTestId('series-point-2026-09-01-applications')).toHaveText('5');
-        await expect(page.getByTestId('series-point-2026-09-01-verifications')).toHaveText('1');
-        await expect(page.getByTestId('series-point-2026-09-02-signups')).toHaveText('7');
-        await expect(page.getByTestId('series-point-2026-09-02-applications')).toHaveText('0');
-        await expect(page.getByTestId('series-total-signups')).toHaveText('10');
-        await expect(page.getByTestId('series-total-applications')).toHaveText('5');
-        await expect(page.getByTestId('series-total-verifications')).toHaveText('3');
+        await expect(page.getByTestId('series-total-signups')).toHaveText(fmt(10));
+        await expect(page.getByTestId('series-total-applications')).toHaveText(fmt(5));
+        await expect(page.getByTestId('series-total-verifications')).toHaveText(fmt(3));
 
         // System status card.
         await expect(page.getByTestId('system-status-panel')).toBeVisible();
-        await expect(page.getByTestId('system-status')).toHaveText('ok');
+        await expect(page.getByTestId('system-status')).toHaveText(catalogs[locale].system.operational);
         await expect(page.getByTestId('system-version')).toHaveText('1.0.0');
         await expect(page.getByTestId('system-uptime')).toContainText('1');
+        await expect(page.getByTestId('system-turnaround')).toContainText(fmt(18.5));
 
-        // Audit strip uses enriched display names.
+        // Audit feed uses enriched display names.
         await expect(page.getByTestId('audit-row')).toHaveCount(2);
         await expect(page.getByTestId('audit-actor').first()).toHaveText('Admin One');
         await expect(page.getByTestId('audit-target').first()).toHaveText('Org A');
 
-        // Every analytics endpoint was actually called.
+        // Every dashboard endpoint was actually called.
         for (const fragment of [
           '/admin/stats/overview',
           '/admin/analytics/overview',
           '/admin/analytics/series',
           '/admin/analytics/queue',
+          '/admin/organizations/verifications',
+          '/admin/reports',
           '/admin/audit-logs',
         ]) {
           expect(captured.some((c) => c.url.includes(fragment))).toBe(true);
         }
       });
 
-      test(`attention queue is neutral and links to the manage screens (${locale})`, async ({
+      test(`attention queue renders real rows and links to the manage screens (${locale})`, async ({
         page,
       }) => {
         const captured: Captured[] = [];
@@ -276,36 +329,66 @@ for (const width of [1440, 1100, 390]) {
 
         const panel = page.getByTestId('queue-panel');
         await expect(panel).toBeVisible();
-        // The neutral "Needs review" wording is the Card heading that wraps the panel.
         await expect(
           page.getByRole('heading', { name: catalogs[locale].queue.title, level: 2 }),
         ).toBeVisible();
 
-        // Counts come from GET /admin/analytics/queue.
-        await expect(page.getByTestId('queue-count-pendingVerifications')).toHaveText('4');
-        await expect(page.getByTestId('queue-count-openReports')).toHaveText('2');
-        await expect(page.getByTestId('queue-count-underReviewSubmissions')).toHaveText('3');
-        await expect(page.getByTestId('queue-count-suspendedUsers')).toHaveText('1');
-        await expect(page.getByTestId('queue-count-suspendedOrganizations')).toHaveText('2');
+        // Real item rows from the pending-verifications and open-reports endpoints.
+        await expect(page.getByTestId('queue-item-verification')).toHaveCount(1);
+        await expect(panel).toContainText('Timimoun Cultural Association');
+        const reportRows = page.getByTestId('queue-item-report');
+        await expect(reportRows).toHaveCount(2);
+        await expect(panel).toContainText('Heritage Restoration Drive');
+        await expect(panel).toContainText('volunteer_suspect');
 
-        // Navigation-only links to the F15/F16 manage routes. Hrefs are asserted
-        // only — those routes are owned by the parallel manage/moderation
-        // sessions and are not stubbed here.
-        await expect(page.getByTestId('queue-link-pendingVerifications')).toHaveAttribute(
-          'href',
-          expect.stringContaining('/admin/verifications'),
-        );
-        await expect(page.getByTestId('queue-link-openReports')).toHaveAttribute(
-          'href',
-          expect.stringContaining('/admin/reports'),
-        );
-        await expect(page.getByTestId('queue-link-suspendedOrganizations')).toHaveAttribute(
-          'href',
-          expect.stringContaining('/admin/organizations'),
-        );
+        // No badge or pill markup inside the queue.
+        await expect(panel.locator('.rounded-full')).toHaveCount(0);
+
+        // Review links target the existing manage screens.
+        await expect(
+          page.getByTestId('queue-view-all'),
+        ).toHaveAttribute('href', expect.stringContaining('/admin/verifications'));
 
         // Read-only: no mutating control inside the queue panel.
         await expect(panel.locator('button')).toHaveCount(0);
+      });
+
+      test(`shortcuts route to the management screens (${locale})`, async ({ page }) => {
+        const captured: Captured[] = [];
+        void captured;
+        await mockApi(page, captured);
+        await page.goto(`/${locale}/admin/dashboard`);
+
+        const row = page.getByTestId('shortcuts-row');
+        await expect(row).toBeVisible();
+        await expect(page.getByTestId('shortcut-review-orgs')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/admin/verifications'),
+        );
+        await expect(page.getByTestId('shortcut-review-reports')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/admin/reports'),
+        );
+        await expect(page.getByTestId('shortcut-manage-volunteers')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/admin/volunteers'),
+        );
+        await expect(page.getByTestId('shortcut-manage-opportunities')).toHaveAttribute(
+          'href',
+          expect.stringContaining('/admin/opportunities'),
+        );
+      });
+
+      test(`time-range switch refetches the series window (${locale})`, async ({ page }) => {
+        const captured: Captured[] = [];
+        await mockApi(page, captured);
+        await page.goto(`/${locale}/admin/dashboard`);
+
+        await expect(page.getByTestId('series-panel')).toBeVisible();
+        await page.getByTestId('dashboard-range-7').click();
+        await expect(
+          captured.some((c) => c.url.includes('/admin/analytics/series') && c.url.includes('days=7')),
+        ).toBe(true);
       });
 
       test(`null delta and null median render explicit states, never zeros (${locale})`, async ({
@@ -316,15 +399,12 @@ for (const width of [1440, 1100, 390]) {
         await mockApi(page, captured, { nullDelta: true, nullMedian: true });
         await page.goto(`/${locale}/admin/dashboard`);
 
-        const orgDelta = page.getByTestId('overview-total-organizations-delta');
-        await expect(orgDelta).toHaveText(catalogs[locale].overview.noComparison);
-        await expect(orgDelta).not.toContainText('0%');
-        await expect(orgDelta).not.toContainText('+0%');
+        const published = page.getByTestId('stat-published-opportunities');
+        await expect(published).toContainText(catalogs[locale].stats.publishedCaptionNeutral);
+        await expect(published).not.toContainText('0%');
+        await expect(published).not.toContainText('+0%');
 
-        await expect(page.getByTestId('metric-turnaround')).toHaveText(
-          catalogs[locale].metrics.turnaroundUnavailable,
-        );
-        await expect(page.getByTestId('metric-turnaround')).not.toContainText('0');
+        await expect(page.getByTestId('system-turnaround')).toHaveCount(0);
       });
 
       test(`audit row without display names uses the neutral placeholder (${locale})`, async ({
@@ -347,7 +427,7 @@ for (const width of [1440, 1100, 390]) {
         await expect(rows.nth(1).getByTestId('audit-actor')).not.toContainText('64f0');
       });
 
-      test(`maintenance on renders the stored message (${locale})`, async ({ page }) => {
+      test(`maintenance on renders the stored state (${locale})`, async ({ page }) => {
         const captured: Captured[] = [];
         void captured;
         await mockApi(page, captured, { maintenance: true });
@@ -355,9 +435,6 @@ for (const width of [1440, 1100, 390]) {
 
         await expect(page.getByTestId('system-maintenance')).toHaveText(
           catalogs[locale].queue.maintenanceOn,
-        );
-        await expect(page.getByTestId('system-maintenance-message')).toHaveText(
-          'Scheduled maintenance window',
         );
       });
 
@@ -375,7 +452,7 @@ for (const width of [1440, 1100, 390]) {
         }
       });
 
-      test(`volunteer sees the forbidden state and no analytics request (${locale})`, async ({
+      test(`volunteer sees the forbidden state and no admin request (${locale})`, async ({
         page,
       }) => {
         const captured: Captured[] = [];
@@ -383,11 +460,11 @@ for (const width of [1440, 1100, 390]) {
         await page.goto(`/${locale}/admin/dashboard`);
 
         await expect(page.getByTestId('admin-dashboard-forbidden')).toBeVisible();
-        await expect(page.getByTestId('overview-panel')).toHaveCount(0);
-        expect(captured.some((c) => c.url.includes('/admin/analytics/'))).toBe(false);
+        await expect(page.getByTestId('stats-row')).toHaveCount(0);
+        expect(captured.some((c) => c.url.includes('/admin/'))).toBe(false);
       });
 
-      test(`organization user sees the forbidden state and no analytics request (${locale})`, async ({
+      test(`organization user sees the forbidden state and no admin request (${locale})`, async ({
         page,
       }) => {
         const captured: Captured[] = [];
@@ -395,7 +472,7 @@ for (const width of [1440, 1100, 390]) {
         await page.goto(`/${locale}/admin/dashboard`);
 
         await expect(page.getByTestId('admin-dashboard-forbidden')).toBeVisible();
-        expect(captured.some((c) => c.url.includes('/admin/analytics/'))).toBe(false);
+        expect(captured.some((c) => c.url.includes('/admin/'))).toBe(false);
       });
 
       test(`guest is redirected to sign in (${locale})`, async ({ page }) => {
@@ -415,7 +492,7 @@ for (const width of [1440, 1100, 390]) {
         await page.goto(`/${locale}/admin/dashboard`);
 
         await expect(page.getByTestId('admin-dashboard-forbidden')).toBeVisible();
-        await expect(page.getByTestId('overview-panel')).toHaveCount(0);
+        await expect(page.getByTestId('stats-row')).toHaveCount(0);
       });
     }
   });

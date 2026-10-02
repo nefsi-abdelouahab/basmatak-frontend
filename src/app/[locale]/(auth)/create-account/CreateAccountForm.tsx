@@ -8,7 +8,11 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { errorStateFor, mapToApiError } from '@/lib/api/errors';
 import { RegisterInputSchema } from '@/lib/api/auth';
-import { useRegisterOrganizationMutation, useRegisterVolunteerMutation } from '@/hooks/useAuth';
+import {
+  ALREADY_AUTHENTICATED_CODE,
+  useRegisterOrganizationMutation,
+  useRegisterVolunteerMutation,
+} from '@/hooks/useAuth';
 import { AuthError, AuthSuccess } from '../components';
 import { AuthSplit } from '../AuthSplit';
 import { PasswordInput } from '../PasswordInput';
@@ -69,6 +73,9 @@ export function CreateAccountForm({ initialType }: { initialType: AccountType })
       setDone(true);
     } catch (err) {
       const apiError = mapToApiError(err);
+      // Active session: the auth layer already bounced to the role home and
+      // no register POST fired — stay quiet and let the redirect land.
+      if (apiError.code === ALREADY_AUTHENTICATED_CODE) return;
       if (apiError.code === 'EMAIL_ALREADY_REGISTERED')
         setFormError(t(`${copy}.emailTaken`));
       else if (apiError.code === 'PHONE_ALREADY_USED') setFormError(t(`${copy}.phoneUsed`));

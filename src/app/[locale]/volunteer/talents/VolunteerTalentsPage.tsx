@@ -492,9 +492,20 @@ function FilterDrawer({
 export function VolunteerTalentsPage({
   locale,
   initialSearch,
+  // Shell-agnostic overrides (org workspace reuse — same content, only the
+  // wrapping shell/route differs). Defaults preserve the volunteer route
+  // exactly: profile links stay under `/volunteer/talents`, and the "Near"
+  // chip resolves from the volunteer's own wilaya.
+  // - `profileBase`: base path for talent-card profile links.
+  // - `nearbyWilayaId`: when defined, replaces the volunteer-me lookup as the
+  //   "Near {place}" source (the org workspace passes its own wilaya id).
+  profileBase = '/volunteer/talents',
+  nearbyWilayaId,
 }: {
   locale: string;
   initialSearch: Record<string, string | string[] | undefined>;
+  profileBase?: string;
+  nearbyWilayaId?: string | null;
 }) {
   const t = useTranslations('volunteerHome');
   const router = useRouter();
@@ -596,11 +607,15 @@ export function VolunteerTalentsPage({
   }, [wilayasQuery.data, wilayaCounts, locale]);
   const visibleWilayas = locationsExpanded ? wilayaOptions : wilayaOptions.slice(0, 8);
 
-  // "Near {place}" resolves to a real wilaya id: the volunteer's own wilaya
-  // first, falling back to a Timimoun/Adrar name match over the loaded
+  // "Near {place}" resolves to a real wilaya id: the viewer's own wilaya
+  // first (volunteer-me by default, org wilaya when `nearbyWilayaId` is
+  // passed), falling back to a Timimoun/Adrar name match over the loaded
   // catalog (no hardcoded codes). Hidden when unresolvable.
   const nearby = useMemo(() => {
-    const ownId = meQuery.data?.location?.wilayaId;
+    const ownId =
+      nearbyWilayaId !== undefined
+        ? nearbyWilayaId
+        : meQuery.data?.location?.wilayaId;
     if (typeof ownId === 'string' && ownId !== '') {
       const label = wilayaNameOf.get(ownId);
       if (label) return { ids: [ownId], label };
@@ -616,7 +631,7 @@ export function VolunteerTalentsPage({
     if (ids.length === 0) return null;
     const label = ids.map((id) => wilayaNameOf.get(id)).filter(Boolean).join(' & ');
     return { ids, label: label !== '' ? label : null };
-  }, [meQuery.data?.location?.wilayaId, wilayaNameOf, wilayasQuery.data]);
+  }, [nearbyWilayaId, meQuery.data?.location?.wilayaId, wilayaNameOf, wilayasQuery.data]);
 
   const nearbyActive =
     nearby !== null &&
@@ -785,6 +800,7 @@ export function VolunteerTalentsPage({
                       item={item}
                       locale={locale}
                       wilayaLabel={wilayaId ? (wilayaNameOf.get(wilayaId) ?? null) : null}
+                      profileBase={profileBase}
                     />
                   );
                 })}

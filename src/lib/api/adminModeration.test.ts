@@ -265,6 +265,22 @@ describe('typed functions', () => {
     expect(get).toHaveBeenCalledWith('/admin/reports', { params: { q: 'spam' } });
   });
 
+  it('listAdminReports keeps the cursor page/page/pages contract', async () => {
+    const { client } = stubClient({
+      get: () => ({
+        ...reportPage([reportRow()]),
+        nextCursor: 'cur2',
+        limit: 1,
+        page: 2,
+        pages: 9,
+      }),
+    });
+    const result = await listAdminReports(client, { limit: 1 });
+    expect(result.nextCursor).toBe('cur2');
+    expect(result.page).toBe(2);
+    expect(result.pages).toBe(9);
+  });
+
   it('resolveAdminReport posts status + resolution + action', async () => {
     const { client, patch } = stubClient({
       patch: () => reportRow({ status: 'resolved', resolution: 'Confirmed' }),
