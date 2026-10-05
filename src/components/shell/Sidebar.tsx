@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   ListChecks,
   Megaphone,
+  ScrollText,
   Settings,
   UserSearch,
   Users,
@@ -270,6 +271,19 @@ function AdminSidebar({ pathname }: { pathname: string }) {
             >
               <Settings size={20} aria-hidden="true" className="shrink-0" />
               <span className="min-w-0 flex-1 truncate">{t('nav.settings')}</span>
+            </Link>
+            <Link
+              href="/admin/audit-logs"
+              data-testid="sidebar-link-admin-audit-logs"
+              aria-current={isActive('/admin/audit-logs') ? 'page' : undefined}
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+                isActive('/admin/audit-logs')
+                  ? 'bg-primary-tint font-medium text-primary'
+                  : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
+              }`}
+            >
+              <ScrollText size={20} aria-hidden="true" className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate">{t('nav.auditLogs')}</span>
             </Link>
           </nav>
         </div>

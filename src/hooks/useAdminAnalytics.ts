@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { ApiError, errorStateFor } from '../lib/api/errors';
 import { getHealth, getSystemStatus } from '../lib/api/system';
@@ -129,6 +129,30 @@ export function useAdminAuditLogsQuery(enabled = true) {
     enabled,
     staleTime: READ_STALE_MS,
     retry: false,
+  });
+}
+
+// Full audit-log browser reads (filterable, cursor-paginated). Same
+// `/admin/audit-logs` endpoint as the dashboard strip, with the caller's
+// filters in the query key so each filter set caches independently.
+export function useAdminAuditBrowserQuery(
+  filters: adminAnalyticsApi.AdminAuditFilters = {},
+  enabled = true,
+) {
+  const params = adminAnalyticsApi.buildAuditParams(filters);
+  return useQuery({
+    queryKey: queryKeys.list(DOMAIN, { scope: 'audit-browser', ...params }),
+    queryFn: () => adminAnalyticsApi.listAdminAuditLogs(api, filters),
+    enabled,
+    staleTime: READ_STALE_MS,
+    retry: false,
+  });
+}
+
+export function useAdminAuditLogsCsvExportMutation() {
+  return useMutation({
+    mutationFn: (filters: adminAnalyticsApi.AdminAuditFilters = {}) =>
+      adminAnalyticsApi.exportAdminAuditLogsCsv(api, filters),
   });
 }
 

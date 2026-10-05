@@ -12,6 +12,7 @@
     "reports": "Reports",
     "system": "System",
     "settings": "Settings",
+    "auditLogs": "Audit logs",
     "more": "More"
   },
   "identity": {

@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import type { AxiosInstance } from 'axios';
+import type { AxiosInstance, AxiosResponse } from 'axios';
+import { downloadBlob } from './download';
 
 // F14 admin-overview module: one typed function per admin dashboard endpoint
 // (base `/api/v1`). Verified read-only against backend/src (no edits):
@@ -459,4 +460,39 @@ export async function listAdminAuditLogs(
     });
   }
   return cursorPage(AdminAuditRowSchema).parse(data);
+}
+
+// CSV export params: the active filters plus format=csv (the export streams
+// the filtered set server-side as a `text/csv` attachment, same window rule
+// as the other admin CSV exports).
+export function buildAuditCsvParams(filters: AdminAuditFilters = {}): Record<string, unknown> {
+  return { ...buildAuditParams(filters), format: 'csv' };
+}
+
+// CSV streams through the single shared blob-download path
+// (Content-Disposition filename, triggered save — never navigation).
+// Header names are normalized to lowercase (F6 tasks.ts pattern).
+export async function exportAdminAuditLogsCsv(
+  client: HttpClient,
+  filters: AdminAuditFilters = {},
+): Promise<string> {
+  return downloadBlob(async (url, config) => {
+    const response = (await client.get(url, {
+      params: config.params,
+      responseType: 'blob',
+    })) as AxiosResponse<Blob>;
+    const raw = response.headers as unknown as {
+      toJSON?: () => Record<string, unknown>;
+      [key: string]: unknown;
+    };
+    const source: Record<string, unknown> =
+      typeof raw?.toJSON === 'function' ? raw.toJSON() : { ...(raw as object) };
+    const headers: Record<string, string | string[] | undefined> = {};
+    for (const [key, value] of Object.entries(source)) {
+      if (typeof value === 'string' || Array.isArray(value)) {
+        headers[key.toLowerCase()] = value as string | string[];
+      }
+    }
+    return { data: response.data, headers };
+  }, '/admin/audit-logs', buildAuditCsvParams(filters));
 }

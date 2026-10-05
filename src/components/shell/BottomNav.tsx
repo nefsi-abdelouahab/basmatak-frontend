@@ -16,6 +16,7 @@ import {
   ListChecks,
   Megaphone,
   Menu,
+  ScrollText,
   Settings,
   UserSearch,
   Users,
@@ -80,11 +81,11 @@ const ORG_MORE_TABS: Tab[] = [
   { key: 'settings', href: '/org/settings', Icon: Settings },
 ];
 
-// Platform Administration tabs (same 4+More pattern): the sidebar's 7
+// Platform Administration tabs (same 4+More pattern): the sidebar's 8
 // destinations cannot fit 390px as icon tabs, so Dashboard, Volunteers,
 // Organizations, and Reports stay visible while Verifications,
-// Opportunities, and Settings fold into More. Icons and hrefs match the
-// admin sidebar exactly; labels come from the adminWorkspace catalog.
+// Opportunities, Settings, and Audit logs fold into More. Icons and hrefs
+// match the admin sidebar exactly; labels come from the adminWorkspace catalog.
 const ADMIN_PRIMARY_TABS: Tab[] = [
   { key: 'dashboard', href: '/admin/dashboard', Icon: LayoutDashboard },
   { key: 'volunteers', href: '/admin/volunteers', Icon: Users },
@@ -96,6 +97,7 @@ const ADMIN_MORE_TABS: Tab[] = [
   { key: 'verifications', href: '/admin/verifications', Icon: BadgeCheck },
   { key: 'opportunities', href: '/admin/opportunities', Icon: Megaphone },
   { key: 'settings', href: '/admin/settings', Icon: Settings },
+  { key: 'auditLogs', href: '/admin/audit-logs', Icon: ScrollText },
 ];
 
 const TAB_CLASS =

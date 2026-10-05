@@ -694,10 +694,25 @@ function VolunteerDetail({
 // municipality/skill/from/to/sort, cursor limit/total/page/pages, CSV).
 // No status filter exists on the endpoint, so none renders. Stat cards read
 // the list response only: the platform total plus on-page window counts.
-export function AdminVolunteersPage() {
+function initialQueryOf(
+  initialSearch: Record<string, string | string[] | undefined> | undefined,
+): string {
+  const raw = initialSearch?.q;
+  const first = Array.isArray(raw) ? raw[0] : raw;
+  return typeof first === 'string' ? first.trim() : '';
+}
+
+export function AdminVolunteersPage({
+  initialSearch,
+}: {
+  initialSearch?: Record<string, string | string[] | undefined>;
+}) {
   const t = useTranslations('adminManage');
   const locale = useLocale();
-  const [q, setQ] = useState('');
+  // Seeded from ?q= so the navbar admin search lands here (mirrors the
+  // opportunities pages' initialSearch wiring); the header search box owns
+  // subsequent edits.
+  const [q, setQ] = useState(() => initialQueryOf(initialSearch));
   const [wilayaId, setWilayaId] = useState('');
   const [municipalityId, setMunicipalityId] = useState('');
   const [skillId, setSkillId] = useState('');

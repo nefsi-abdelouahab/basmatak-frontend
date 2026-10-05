@@ -15,6 +15,7 @@ import {
   TOTAL_KEYS,
   attentionItems,
   auditRows,
+  buildAuditCsvParams,
   buildAuditParams,
   clampSeriesDays,
   cursorPage,
@@ -298,6 +299,15 @@ describe('audit display names', () => {
       sort: 'oldest',
     });
     expect(buildAuditParams({ q: ' org ' })).toMatchObject({ q: 'org' });
+  });
+
+  it('builds audit CSV params from filters plus format=csv', () => {
+    expect(buildAuditCsvParams({ q: 'org', sort: 'oldest' })).toEqual({
+      limit: AUDIT_STRIP_LIMIT,
+      q: 'org',
+      sort: 'oldest',
+      format: 'csv',
+    });
   });
 });
 
