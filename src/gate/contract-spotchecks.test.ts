@@ -115,9 +115,13 @@ describe('F19 gate (6): contract spot-checks (static)', () => {
   });
 
   it('no chat/messaging component files', () => {
+    // The AI agent is a sanctioned feature (AI_AGENT_ROADMAP.md); its state
+    // hook is the one approved exception to this F19 messaging guard.
+    const allowedAiAgentFiles = new Set(['hooks/useAiChat.ts']);
     const offenders = allCodeFiles()
       .filter((file) => /chat/i.test(path.basename(file)))
-      .map((file) => path.relative(SRC, file));
+      .map((file) => path.relative(SRC, file).split(path.sep).join('/'))
+      .filter((file) => !allowedAiAgentFiles.has(file));
     expect(offenders).toEqual([]);
   });
 

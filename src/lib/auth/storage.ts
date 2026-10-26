@@ -63,11 +63,38 @@ function createBrowserStore(): TokenStore | null {
 
 export const defaultTokenStore: TokenStore = createBrowserStore() ?? createMemoryStore();
 
+// Auth-cleared pub/sub: logout and refresh-failure both call clearTokens().
+// Chat history must be cleared in both cases without coupling the chat hook to
+// useAuth (and without editing another session's hook).
+export type AuthClearedListener = () => void;
+
+const authClearedListeners = new Set<AuthClearedListener>();
+
+export function subscribeAuthCleared(listener: AuthClearedListener): () => void {
+  authClearedListeners.add(listener);
+  return () => {
+    authClearedListeners.delete(listener);
+  };
+}
+
+export function notifyAuthCleared(): void {
+  for (const listener of authClearedListeners) {
+    try {
+      listener();
+    } catch {
+      // A failing listener must not break other subscribers or token clearing.
+    }
+  }
+}
+
 export const defaultTokenHooks: TokenHooks = {
   getAccessToken: () => defaultTokenStore.get()?.accessToken ?? null,
   getRefreshToken: () => defaultTokenStore.get()?.refreshToken ?? null,
   setTokens: (pair) => defaultTokenStore.set(pair),
-  clearTokens: () => defaultTokenStore.clear(),
+  clearTokens: () => {
+    defaultTokenStore.clear();
+    notifyAuthCleared();
+  },
 };
 
 // Session-expired pub/sub: the API client notifies; the shell redirects to sign-in.
