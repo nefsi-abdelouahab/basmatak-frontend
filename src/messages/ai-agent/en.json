@@ -1,0 +1,114 @@
+{
+  "branding": {
+    "name": "Basmatak Assistant",
+    "logoAlt": "Basmatak logo"
+  },
+  "launcher": {
+    "open": "Open Basmatak assistant",
+    "close": "Close Basmatak assistant"
+  },
+  "panel": {
+    "title": "Basmatak Assistant",
+    "subtitle": "Answers about opportunities, organizations, and volunteering on Basmatak.",
+    "close": "Close assistant",
+    "newChat": "New chat",
+    "messagesLabel": "Assistant conversation",
+    "statusLabel": "Assistant availability"
+  },
+  "status": {
+    "online": "Online",
+    "waking": "Waking up",
+    "limited": "Limited mode",
+    "offline": "Offline"
+  },
+  "empty": {
+    "title": "How can I help?",
+    "body": "Ask about volunteering, opportunities, or organizations on Basmatak.",
+    "suggestionsLabel": "Suggested questions",
+    "suggestion1": "What is Basmatak?",
+    "suggestion2": "Show me volunteer opportunities",
+    "suggestion3": "How do I find verified organizations?",
+    "suggestion4": "How does volunteering work?"
+  },
+  "composer": {
+    "label": "Message the assistant",
+    "placeholder": "Ask a question…",
+    "send": "Send message",
+    "stop": "Stop answer",
+    "hint": "Press Enter to send and Shift+Enter for a new line.",
+    "charCount": "{count} of {max} characters",
+    "overLimit": "Your message is too long. Shorten it to send.",
+    "continuePrompt": "Please continue."
+  },
+  "message": {
+    "you": "You",
+    "assistant": "Assistant",
+    "stopped": "Stopped",
+    "shortened": "Shortened",
+    "retry": "Retry",
+    "continue": "Continue",
+    "liveReady": "The assistant has finished answering.",
+    "liveError": "The assistant could not finish the answer.",
+    "liveStopped": "The answer was stopped.",
+    "liveLabel": "Assistant announcements",
+    "errorTitle": "The assistant could not answer.",
+    "failed": "This answer did not complete.",
+    "typing": {
+      "connecting": "Connecting…",
+      "searching": "Searching Basmatak…",
+      "thinking": "Thinking…",
+      "answering": "Writing the answer…",
+      "tool": "Looking up details…",
+      "default": "Answering…"
+    }
+  },
+  "sources": {
+    "title": "Sources",
+    "listLabel": "Answer sources",
+    "knowledge": "Knowledge",
+    "opportunity": "Opportunity",
+    "organization": "Organization",
+    "reference": "Reference",
+    "stats": "Platform statistics"
+  },
+  "banners": {
+    "waking": {
+      "title": "Waking up the assistant",
+      "body": "The assistant is starting. This can take a moment."
+    },
+    "offline": {
+      "title": "Assistant unavailable",
+      "body": "The assistant is offline right now. Please try again later."
+    },
+    "limited": {
+      "title": "Limited mode",
+      "body": "Some live data may be unavailable, but you can still ask questions."
+    },
+    "quota": {
+      "title": "Usage limit reached",
+      "body": "The assistant has reached its usage limit for now.",
+      "resetSeconds": "The limit resets in {count, plural, one {# second} other {# seconds}}.",
+      "resetMinutes": "The limit resets in {count, plural, one {# minute} other {# minutes}}.",
+      "resetHours": "The limit resets in {count, plural, one {# hour} other {# hours}}."
+    },
+    "retry": "Check again"
+  },
+  "errors": {
+    "disabled": "The assistant is temporarily unavailable. Please try again shortly.",
+    "invalidInput": "Please check the message length and try again.",
+    "rateLimited": "Too many messages. Please wait a moment and try again.",
+    "busy": "The assistant is busy right now. Please retry shortly.",
+    "quota": "The assistant has reached its usage limit. Please try again later.",
+    "providerUnavailable": "The assistant is temporarily unavailable. Please retry.",
+    "timeout": "The assistant took too long to answer. Please retry.",
+    "network": "Could not reach the server. Please check your connection and try again.",
+    "interrupted": "The answer stopped unexpectedly. Please retry.",
+    "invalidResponse": "The assistant returned an unexpected response. Please retry.",
+    "internal": "The assistant could not complete the response. Please try again.",
+    "generic": "The assistant could not complete the response. Please try again.",
+    "retryInSeconds": "Try again in {count, plural, one {# second} other {# seconds}}.",
+    "retryInMinutes": "Try again in {count, plural, one {# minute} other {# minutes}}.",
+    "retryInHours": "Try again in {count, plural, one {# hour} other {# hours}}."
+  },
+  "disclaimer": "Answers are generated from public Basmatak data and may be incomplete."
+}

@@ -6,6 +6,8 @@ import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { isLocale, routing } from '@/i18n/routing';
 import { QueryProvider } from '@/lib/query/provider';
+import { AiAgentErrorBoundary } from '@/components/ai-agent/AiAgentErrorBoundary';
+import { AiAgentWidget } from '@/components/ai-agent/AiAgentWidget';
 import '../globals.css';
 
 // Font variables back the Tailwind sans stack. Weight governance per DESIGN.md:
@@ -51,7 +53,12 @@ export default async function LocaleLayout({
     >
       <body className="font-sans">
         <NextIntlClientProvider messages={messages}>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            {children}
+            <AiAgentErrorBoundary>
+              <AiAgentWidget />
+            </AiAgentErrorBoundary>
+          </QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>
