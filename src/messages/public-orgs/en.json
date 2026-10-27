@@ -294,7 +294,7 @@
     "privacy": {
       "label": "Privacy Policy",
       "title": "Privacy Policy",
-      "updated": "Last updated: September 2026",
+      "updated": "Last updated: October 2026",
       "intro": "At Basmatak Tatatoua, we respect your privacy and strive to protect the information you provide when using the platform.",
       "sections": [
         {
@@ -369,7 +369,17 @@
           ]
         },
         {
-          "h": "10. Contact",
+          "h": "10. AI Assistant",
+          "ps": [
+            "The platform may offer an optional AI assistant that answers questions about volunteering, opportunities, organizations, and public platform information.",
+            "The assistant relies only on reviewed public platform content and public data, such as published opportunities and verified organization profiles. It does not access your account, applications, private profile, or other users' personal data, and it is not intended to provide general answers from outside the platform.",
+            "When you use the assistant, your message and any recent conversation you choose to include may be processed by a third-party AI provider. On the provider's free tier, content may be used to improve the provider's products and may be reviewed; do not include personal, confidential, or sensitive information in your messages.",
+            "The platform does not store your assistant conversation on its servers. The current conversation is kept in your browser's session storage for the open tab and is cleared when you start a new chat, sign out, your session expires, or you close the tab.",
+            "The assistant is optional, and you can continue using the rest of the platform without it."
+          ]
+        },
+        {
+          "h": "11. Contact",
           "ps": [
             "If you have questions about your privacy or how your information is processed, you can contact the Basmatak Tatatoua team through the official contact channels."
           ]
