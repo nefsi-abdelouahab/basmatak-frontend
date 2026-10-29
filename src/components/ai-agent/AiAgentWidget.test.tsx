@@ -124,7 +124,7 @@ describe('AiAgentWidget', () => {
     expect(mockedStatus).toHaveBeenCalledTimes(2);
   });
 
-  it('runs the real chat hook against the streamed answer and sources', async () => {
+  it('runs the real chat hook against a streamed answer with an internal link', async () => {
     mockedStream.mockImplementation(async (_input, options) => {
       options?.onEvent?.({
         event: 'meta',
@@ -151,14 +151,14 @@ describe('AiAgentWidget', () => {
       });
       options?.onEvent?.({
         event: 'token',
-        data: { delta: 'You can help ' },
+        data: { delta: 'You can help at the ' },
       });
       options?.onEvent?.({
         event: 'token',
-        data: { delta: 'at the food drive.' },
+        data: { delta: '[food drive](/en/opportunities/food-drive).' },
       });
       return {
-        text: 'You can help at the food drive.',
+        text: 'You can help at the [food drive](/en/opportunities/food-drive).',
         done: { finishReason: 'stop' },
         aborted: false,
       };
@@ -181,12 +181,15 @@ describe('AiAgentWidget', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('You can help at the food drive.'),
+        screen.getByRole('link', { name: 'food drive' }),
       ).toBeDefined();
     });
     expect(
-      screen.getByRole('link', { name: /Food drive/ }).getAttribute('href'),
-    ).toBe('/opportunities/food-drive');
+      screen
+        .getByRole('link', { name: 'food drive' })
+        .getAttribute('href'),
+    ).toBe('/en/opportunities/food-drive');
+    expect(screen.queryByText(aiAgentEn.sources.title)).toBeNull();
     expect(getInput().value).toBe('');
   });
 

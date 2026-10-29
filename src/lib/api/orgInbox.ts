@@ -228,6 +228,8 @@ export const VerificationReadSchema = z
     status: z.string().optional(),
     submissionId: z.string().nullable().optional(),
     verificationCode: z.string().nullable().optional(),
+    /** Organization's private notes on a verified submission. */
+    notes: z.string().nullable().optional(),
     createdAt: z.string().optional(),
   })
   .passthrough();

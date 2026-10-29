@@ -60,6 +60,7 @@
     "audioUnsupported": "Your browser cannot play this recording.",
     "skillsLabel": "Skills",
     "reviewLabel": "Organization review",
+    "organizationNotesLabel": "Organization notes",
     "reviewsTitle": "Reviews received",
     "reviewsSubtitle": "What organizations said about your work.",
     "reviewsEmpty": "No reviews received yet.",

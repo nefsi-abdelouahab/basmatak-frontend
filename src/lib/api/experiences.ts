@@ -52,6 +52,8 @@ export const EnrichedExperienceSchema = z
     verifiedAt: z.string(),
     verificationCode: z.string(),
     publicVisibility: z.enum(['public', 'private']),
+    /** Owner-only pointer used to read the organization's private notes. */
+    verificationId: z.string().nullable().optional(),
     review: ExperienceReviewSchema.nullable().optional(),
   })
   .passthrough();

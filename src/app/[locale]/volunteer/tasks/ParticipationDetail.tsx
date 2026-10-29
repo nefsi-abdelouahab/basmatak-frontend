@@ -24,26 +24,38 @@ import {
   joinName,
 } from '../applications/components';
 
-function formatSchedule(schedule: unknown, opportunity: unknown, locale: string): string {
+// Backend participation rows carry `schedule: { startDate, endDate }` and a
+// position-level `startAt` (the opportunity embed has no dates). Read the
+// schedule first, then fall back to the position start, keeping the legacy
+// schedule/opportunity spellings tolerated by older fixtures.
+export function formatSchedule(
+  schedule: unknown,
+  opportunity: unknown,
+  locale: string,
+  position?: unknown,
+): string {
   if (typeof schedule === 'string' && schedule.trim() !== '') return schedule;
-  if (schedule !== null && typeof schedule === 'object') {
-    const record = schedule as Record<string, unknown>;
-    const start = typeof record.startAt === 'string' ? record.startAt : null;
-    const end = typeof record.endAt === 'string' ? record.endAt : null;
-    if (start ?? end) {
-      const fmt = (iso: string | null) =>
-        iso ? new Date(iso).toLocaleDateString(locale) : '…';
-      return `${fmt(start)} – ${fmt(end)}`;
-    }
-  }
+  const record =
+    schedule !== null && typeof schedule === 'object'
+      ? (schedule as Record<string, unknown>)
+      : null;
   const opp = opportunity as Record<string, unknown> | null | undefined;
-  const start = typeof opp?.startDate === 'string' ? (opp.startDate as string) : null;
-  const end = typeof opp?.endDate === 'string' ? (opp.endDate as string) : null;
-  if (start ?? end) {
-    const fmt = (iso: string | null) =>
-      iso ? new Date(iso).toLocaleDateString(locale) : '…';
-    return `${fmt(start)} – ${fmt(end)}`;
-  }
+  const pos = position as Record<string, unknown> | null | undefined;
+  const asIso = (value: unknown): string | null =>
+    typeof value === 'string' && value.trim() !== '' ? value : null;
+
+  const start =
+    asIso(record?.startDate) ??
+    asIso(record?.startAt) ??
+    asIso(pos?.startAt) ??
+    asIso(opp?.startDate);
+  const end =
+    asIso(record?.endDate) ?? asIso(record?.endAt) ?? asIso(opp?.endDate);
+
+  const fmt = (iso: string) => new Date(iso).toLocaleDateString(locale);
+  if (start && end) return `${fmt(start)} – ${fmt(end)}`;
+  if (start) return fmt(start);
+  if (end) return fmt(end);
   return '—';
 }
 
@@ -161,7 +173,7 @@ export function ParticipationDetail({
           <div>
             <dt className="text-ink-muted">{t('participations.scheduleLabel')}</dt>
             <dd className="font-medium text-ink">
-              {formatSchedule(row.schedule, row.opportunity, locale)}
+              {formatSchedule(row.schedule, row.opportunity, locale, row.position)}
             </dd>
           </div>
           <div>

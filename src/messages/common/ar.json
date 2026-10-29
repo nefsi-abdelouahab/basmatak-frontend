@@ -26,6 +26,23 @@
     "unreadCount": "{count} غير مقروءة",
     "markRead": "تعيين كمقروء",
     "markAllRead": "تعيين الكل كمقروء",
+    "notificationTitles": {
+      "applicationCreated": "تم استلام طلب جديد",
+      "applicationAccepted": "تم قبول الطلب",
+      "applicationRejected": "تم رفض الطلب",
+      "applicationWithdrawn": "تم سحب الطلب",
+      "submissionSubmitted": "تم استلام مساهمة جديدة",
+      "submissionVerified": "تم التحقق من المساهمة",
+      "submissionRejected": "تم رفض المساهمة",
+      "participationWithdrawn": "تم سحب المشاركة",
+      "participationRemoved": "تمت إزالة المشاركة",
+      "opportunityCancelled": "تم إلغاء الفرصة",
+      "opportunityStarted": "بدأت الفرصة",
+      "orgVerificationUpdated": "تم تحديث التحقق من المنظمة",
+      "publishGateLocked": "تم قفل النشر",
+      "adminNotice": "إشعار من الإدارة",
+      "generic": "إشعار جديد"
+    },
     "accountMenu": "الحساب",
     "viewProfile": "عرض الملف",
     "logout": "تسجيل الخروج"

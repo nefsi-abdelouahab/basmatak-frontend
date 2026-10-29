@@ -1,12 +1,17 @@
 'use client';
 
+import { Fragment } from 'react';
 import { ArrowDown, RotateCcw } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import type { AiAgentError } from '@/lib/api/aiAgent';
 import type { AiChatMessage } from '@/hooks/useAiChat';
-import { SourceChips } from './SourceChips';
 import { TypingIndicator, type TypingPhase } from './TypingIndicator';
-import { errorMessageKey, retryAfterDescriptor } from './aiAgentUi';
+import {
+  errorMessageKey,
+  parseChatContent,
+  retryAfterDescriptor,
+} from './aiAgentUi';
 
 export interface MessageBubbleProps {
   message: AiChatMessage;
@@ -21,6 +26,9 @@ export interface MessageBubbleProps {
 const ACTION_CLASSES =
   'inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-label-sm font-medium text-ink transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
 
+const LINK_CLASSES =
+  'underline underline-offset-2 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
+
 export function MessageBubble({
   message,
   error = null,
@@ -31,8 +39,10 @@ export function MessageBubble({
   onContinue,
 }: MessageBubbleProps) {
   const t = useTranslations('aiAgent');
+  const locale = useLocale() === 'ar' ? 'ar' : 'en';
   const isUser = message.role === 'user';
   const retryAfter = retryAfterDescriptor(error?.retryAfterSeconds);
+  const segments = parseChatContent(message.content, locale);
 
   return (
     <article
@@ -57,7 +67,19 @@ export function MessageBubble({
               dir="auto"
               className="whitespace-pre-wrap break-words text-start text-body-md"
             >
-              {message.content}
+              {segments.map((segment, index) =>
+                segment.type === 'link' ? (
+                  <Link
+                    key={`${segment.href}-${index}`}
+                    href={segment.href}
+                    className={LINK_CLASSES}
+                  >
+                    {segment.text}
+                  </Link>
+                ) : (
+                  <Fragment key={`text-${index}`}>{segment.text}</Fragment>
+                ),
+              )}
             </p>
           </div>
         ) : null}
@@ -120,12 +142,6 @@ export function MessageBubble({
           </div>
         ) : null}
       </div>
-
-      {!isUser && message.sources !== undefined ? (
-        <div className="w-full max-w-[85%]">
-          <SourceChips sources={message.sources} />
-        </div>
-      ) : null}
     </article>
   );
 }

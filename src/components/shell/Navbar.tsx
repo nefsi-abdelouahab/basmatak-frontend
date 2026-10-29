@@ -14,6 +14,7 @@ import { accountMediaUrlOf } from '@/lib/api/orgAccount';
 import { volunteerMediaUrlOf } from '@/lib/api/volunteers';
 import {
   notificationIdOf,
+  notificationTitleKey,
   type NotificationItem,
 } from '@/lib/api/notifications';
 import {
@@ -143,7 +144,9 @@ function NotificationRow({
         <span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
       ) : null}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-body-sm font-medium text-ink">{item.type ?? '—'}</p>
+        <p className="truncate text-body-sm font-medium text-ink">
+          {t(`nav.notificationTitles.${notificationTitleKey(item.type)}`)}
+        </p>
         {date ? <p className="text-label-xs text-ink-muted">{date}</p> : null}
       </div>
       {!item.isRead && id !== '' ? (

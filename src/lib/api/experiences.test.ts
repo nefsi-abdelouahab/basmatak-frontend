@@ -62,6 +62,10 @@ describe('experience filters', () => {
 
   it('accepts the verified enriched shape (duration key, not durationMinutes)', () => {
     expect(EnrichedExperienceSchema.safeParse(enriched).success).toBe(true);
+    expect(
+      EnrichedExperienceSchema.parse({ ...enriched, verificationId: 'v1' })
+        .verificationId,
+    ).toBe('v1');
     const { duration: _dropped, ...withoutDuration } = enriched;
     expect(_dropped).toBe(180);
     expect(EnrichedExperienceSchema.safeParse(withoutDuration).success).toBe(false);

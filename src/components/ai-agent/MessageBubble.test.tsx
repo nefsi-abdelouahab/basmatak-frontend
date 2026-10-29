@@ -10,6 +10,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import type { ComponentProps, ReactNode } from 'react';
 import aiAgentEn from '@/messages/ai-agent/en.json';
 import { AiAgentError } from '@/lib/api/aiAgent';
+import type { AiAgentSourcesEvent } from '@/lib/api/aiAgent';
 import type { AiChatMessage } from '@/hooks/useAiChat';
 import { MessageBubble } from './MessageBubble';
 
@@ -69,6 +70,53 @@ describe('MessageBubble', () => {
       message: message({ role: 'user', content: 'Hello', status: 'complete' }),
     });
     expect(screen.getByText(aiAgentEn.message.you)).toBeDefined();
+  });
+
+  it('renders an internal Markdown link with the current locale prefix', () => {
+    renderBubble({
+      message: message({
+        content: 'See [Beach cleanup](/opportunities/beach-cleanup).',
+      }),
+    });
+    const link = screen.getByRole('link', { name: 'Beach cleanup' });
+    expect(link.getAttribute('href')).toBe(
+      '/en/opportunities/beach-cleanup',
+    );
+  });
+
+  it('strips external links to plain text', () => {
+    const { container } = renderBubble({
+      message: message({
+        content: 'Visit [example](https://evil.example).',
+      }),
+    });
+    expect(container.querySelector('a')).toBeNull();
+    expect(container.textContent).toContain('Visit example.');
+  });
+
+  it('does not render source chips even when sources are present', () => {
+    const sources: AiAgentSourcesEvent = {
+      knowledge: [
+        {
+          id: 'K1',
+          title: 'Basmatak FAQ',
+          source: 'faq/en.md',
+        },
+      ],
+      data: [
+        {
+          id: 'T1-1',
+          citationId: 'T1',
+          type: 'opportunity',
+          title: 'Food drive',
+          path: '/opportunities/food-drive',
+        },
+      ],
+    };
+    renderBubble({
+      message: message({ content: 'Answer', sources }),
+    });
+    expect(screen.queryByText(aiAgentEn.sources.title)).toBeNull();
   });
 
   it('shows localized typing state and hides streaming text from assistive tech', () => {

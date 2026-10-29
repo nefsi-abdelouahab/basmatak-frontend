@@ -26,6 +26,23 @@
     "unreadCount": "{count} unread",
     "markRead": "Mark read",
     "markAllRead": "Mark all read",
+    "notificationTitles": {
+      "applicationCreated": "New application received",
+      "applicationAccepted": "Application accepted",
+      "applicationRejected": "Application rejected",
+      "applicationWithdrawn": "Application withdrawn",
+      "submissionSubmitted": "New submission received",
+      "submissionVerified": "Submission verified",
+      "submissionRejected": "Submission rejected",
+      "participationWithdrawn": "Participation withdrawn",
+      "participationRemoved": "Participation removed",
+      "opportunityCancelled": "Opportunity cancelled",
+      "opportunityStarted": "Opportunity started",
+      "orgVerificationUpdated": "Organization verification updated",
+      "publishGateLocked": "Publishing locked",
+      "adminNotice": "Notice from the administration",
+      "generic": "New notification"
+    },
     "accountMenu": "Account",
     "viewProfile": "View profile",
     "logout": "Log out"

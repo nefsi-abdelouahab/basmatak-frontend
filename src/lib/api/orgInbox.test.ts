@@ -293,13 +293,18 @@ describe('contributions endpoints', () => {
     });
   });
 
-  it('reads the issued verification', async () => {
+  it('reads the issued verification including private organization notes', async () => {
     const { client, get } = stubClient({
-      get: () => ({ _id: 'v1', verificationCode: 'ABC123' }),
+      get: () => ({
+        _id: 'v1',
+        verificationCode: 'ABC123',
+        notes: 'Excellent follow-through on site.',
+      }),
     });
     const verification = await getVerification(client, 'v1');
     expect(get).toHaveBeenCalledWith('/verifications/v1');
     expect(verification.verificationCode).toBe('ABC123');
+    expect(verification.notes).toBe('Excellent follow-through on site.');
   });
 
   it('reads owning-org evidence media and extracts the URL', async () => {

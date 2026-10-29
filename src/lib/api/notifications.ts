@@ -73,6 +73,38 @@ export function notificationIdOf(item: NotificationItem): string {
   return item.id ?? item._id ?? '';
 }
 
+/**
+ * Notification rows carry only a `type` (no title/body). Map every backend
+ * domain event to a stable catalog key under `common.nav.notificationTitles`;
+ * unknown or missing types fall back to neutral generic copy instead of
+ * rendering the raw event name or any payload value.
+ */
+export const NOTIFICATION_TITLE_KEYS = {
+  'application.created': 'applicationCreated',
+  'application.accepted': 'applicationAccepted',
+  'application.rejected': 'applicationRejected',
+  'application.withdrawn': 'applicationWithdrawn',
+  'submission.submitted': 'submissionSubmitted',
+  'submission.verified': 'submissionVerified',
+  'submission.rejected': 'submissionRejected',
+  'participation.withdrawn': 'participationWithdrawn',
+  'participation.removed': 'participationRemoved',
+  'opportunity.cancelled': 'opportunityCancelled',
+  'opportunity.started': 'opportunityStarted',
+  'org.verification.updated': 'orgVerificationUpdated',
+  'publish-gate.locked': 'publishGateLocked',
+  'admin.notice': 'adminNotice',
+} as const;
+
+export type NotificationTitleKey = (typeof NOTIFICATION_TITLE_KEYS)[keyof typeof NOTIFICATION_TITLE_KEYS] | 'generic';
+
+export function notificationTitleKey(type: string | null | undefined): NotificationTitleKey {
+  if (!type) return 'generic';
+  return (
+    NOTIFICATION_TITLE_KEYS as Record<string, NotificationTitleKey>
+  )[type] ?? 'generic';
+}
+
 type HttpClient = Pick<AxiosInstance, 'get' | 'patch' | 'post'>;
 
 export async function getNotificationPreferences(

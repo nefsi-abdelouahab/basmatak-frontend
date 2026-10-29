@@ -16,8 +16,10 @@ import {
   launcherInsetFromRect,
   launcherSizeFor,
   nearestLauncherEdge,
+  parseChatContent,
   parseLauncherPosition,
   retryAfterDescriptor,
+  safeChatHref,
   safeSourceHref,
   serializeLauncherPosition,
   withTimeout,
@@ -148,6 +150,82 @@ describe('aiAgentUi source paths', () => {
       expect(safeSourceHref(value), value).toBeNull();
     }
     expect(safeSourceHref(undefined)).toBeNull();
+  });
+});
+
+describe('aiAgentUi chat links', () => {
+  it('prefixes public internal links with the current locale', () => {
+    expect(safeChatHref('/opportunities/food-drive', 'en')).toBe(
+      '/en/opportunities/food-drive',
+    );
+    expect(safeChatHref('/ar/orgs/helping-org', 'en')).toBe(
+      '/en/orgs/helping-org',
+    );
+    expect(safeChatHref('/volunteers/sara', 'ar')).toBe(
+      '/ar/volunteers/sara',
+    );
+    expect(safeChatHref('/talents', 'en')).toBe('/en/talents');
+    expect(safeChatHref('/opportunities', 'ar')).toBe('/ar/opportunities');
+  });
+
+  it('rejects external, private, and malformed chat links', () => {
+    for (const value of [
+      '/orgs',
+      '/volunteers/me',
+      '/volunteers/settings',
+      '/admin',
+      'javascript:alert(1)',
+      'data:text/html,hi',
+      '//evil.example/path',
+      'https://evil.example/opportunities',
+      '\\\\orgs\\\\bad',
+      '/opportunities/../admin',
+      '/opportunities/%2e%2e/admin',
+      '',
+      '   ',
+    ]) {
+      expect(safeChatHref(value, 'en'), value).toBeNull();
+    }
+    expect(safeChatHref(undefined, 'en')).toBeNull();
+  });
+
+  it('parses Markdown into safe text and app-router link segments', () => {
+    expect(
+      parseChatContent(
+        'See [Beach cleanup](/opportunities/beach-cleanup).',
+        'en',
+      ),
+    ).toEqual([
+      { type: 'text', text: 'See ' },
+      {
+        type: 'link',
+        text: 'Beach cleanup',
+        href: '/en/opportunities/beach-cleanup',
+      },
+      { type: 'text', text: '.' },
+    ]);
+  });
+
+  it('turns external and unsafe links into plain text', () => {
+    const external = parseChatContent(
+      'Visit [example](https://evil.example).',
+      'en',
+    );
+    expect(external).toEqual([
+      { type: 'text', text: 'Visit ' },
+      { type: 'text', text: 'example' },
+      { type: 'text', text: '.' },
+    ]);
+
+    const unsafe = parseChatContent(
+      'Open [this](javascript:alert(1)).',
+      'en',
+    );
+    expect(unsafe).toEqual([
+      { type: 'text', text: 'Open ' },
+      { type: 'text', text: 'this' },
+      { type: 'text', text: '.' },
+    ]);
   });
 });
 

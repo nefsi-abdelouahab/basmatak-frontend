@@ -2,14 +2,18 @@ import { describe, expect, it, vi } from 'vitest';
 import type { AxiosInstance } from 'axios';
 import {
   NOTIFICATION_PREF_KEYS,
+  NOTIFICATION_TITLE_KEYS,
   getNotificationPreferences,
   getUnreadCount,
   listNotifications,
   markAllNotificationsRead,
   markNotificationRead,
   notificationIdOf,
+  notificationTitleKey,
   patchNotificationPreferences,
 } from './notifications';
+import commonAr from '../../messages/common/ar.json';
+import commonEn from '../../messages/common/en.json';
 
 function stubClient(handlers: {
   get?: (url: string, config?: unknown) => unknown;
@@ -102,5 +106,56 @@ describe('notification bell api functions', () => {
     });
     await expect(markAllNotificationsRead(client)).resolves.toBe(3);
     expect(post).toHaveBeenCalledWith('/notifications/read-all');
+  });
+});
+
+describe('notification titles', () => {
+  const backendTypes = [
+    'application.created',
+    'application.accepted',
+    'application.rejected',
+    'application.withdrawn',
+    'submission.submitted',
+    'submission.verified',
+    'submission.rejected',
+    'participation.withdrawn',
+    'participation.removed',
+    'opportunity.cancelled',
+    'opportunity.started',
+    'org.verification.updated',
+    'publish-gate.locked',
+    'admin.notice',
+  ];
+
+  it('maps every backend domain event to human-readable en/ar copy', () => {
+    expect(Object.keys(NOTIFICATION_TITLE_KEYS).sort()).toEqual(backendTypes.sort());
+    for (const type of backendTypes) {
+      const key = notificationTitleKey(type);
+      expect(key).toBe(NOTIFICATION_TITLE_KEYS[type as keyof typeof NOTIFICATION_TITLE_KEYS]);
+      expect(commonEn.nav.notificationTitles[key].trim().length).toBeGreaterThan(0);
+      expect(commonAr.nav.notificationTitles[key].trim().length).toBeGreaterThan(0);
+      // Titles are catalog copy, never the raw event name.
+      expect(commonEn.nav.notificationTitles[key]).not.toBe(type);
+      expect(commonAr.nav.notificationTitles[key]).not.toBe(type);
+    }
+  });
+
+  it('uses neutral generic copy for missing or unknown types', () => {
+    expect(notificationTitleKey(undefined)).toBe('generic');
+    expect(notificationTitleKey(null)).toBe('generic');
+    expect(notificationTitleKey('')).toBe('generic');
+    expect(notificationTitleKey('not.a.real.event')).toBe('generic');
+    expect(commonEn.nav.notificationTitles.generic).toBe('New notification');
+    expect(commonAr.nav.notificationTitles.generic).toBe('إشعار جديد');
+  });
+
+  it('never derives a title from payload contents', () => {
+    const row = {
+      type: 'unknown.type',
+      payload: { title: 'Raw payload title', message: 'Raw payload body' },
+    };
+    const key = notificationTitleKey(row.type);
+    expect(key).toBe('generic');
+    expect(commonEn.nav.notificationTitles[key]).not.toContain('Raw payload');
   });
 });

@@ -20,6 +20,7 @@ import {
   useExperienceDetailQuery,
   usePatchExperienceVisibilityMutation,
 } from '@/hooks/useExperiences';
+import { useVerificationQuery } from '@/hooks/useOrgInbox';
 import { orgDisplayName, type EnrichedExperience } from '@/lib/api/experiences';
 import {
   hoursFromMinutes,
@@ -229,6 +230,12 @@ export function ExperienceCard({
   const [downloadError, setDownloadError] = useState(false);
   const visibilityMutation = usePatchExperienceVisibilityMutation();
   const attestationMutation = useAttestationDownloadMutation();
+  // Owner-only verification read: `verificationId` is absent on public views,
+  // so this query stays disabled unless the volunteer owns the experience.
+  const verificationQuery = useVerificationQuery(experience.verificationId ?? undefined);
+  const organizationNotes = verificationQuery.data?.notes?.trim()
+    ? verificationQuery.data.notes
+    : null;
 
   const orgName = orgDisplayName(experience.organization, locale) || t('experiences.unknownOrg');
   const date = formatDate(experience.verifiedAt, locale);
@@ -350,6 +357,15 @@ export function ExperienceCard({
         <p className="text-body-sm text-ink-muted">
           {t('experiences.reviewLabel')}: {experience.review.rating}/5
           {experience.review.notes ? ` — ${experience.review.notes}` : ''}
+        </p>
+      ) : null}
+
+      {organizationNotes ? (
+        <p
+          data-testid={`exp-org-notes-${experience.id}`}
+          className="text-body-sm text-ink-muted"
+        >
+          {t('experiences.organizationNotesLabel')}: {organizationNotes}
         </p>
       ) : null}
 

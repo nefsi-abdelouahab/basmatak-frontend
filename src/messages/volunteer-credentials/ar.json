@@ -60,6 +60,7 @@
     "audioUnsupported": "متصفحك لا يدعم تشغيل هذا التسجيل.",
     "skillsLabel": "المهارات",
     "reviewLabel": "تقييم الجهة",
+    "organizationNotesLabel": "ملاحظات الجهة",
     "reviewsTitle": "التقييمات المستلمة",
     "reviewsSubtitle": "ما قالته الجهات عن عملك.",
     "reviewsEmpty": "لا توجد تقييمات مستلمة بعد.",

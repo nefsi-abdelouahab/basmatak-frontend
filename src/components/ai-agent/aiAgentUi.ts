@@ -167,6 +167,112 @@ export function safeSourceHref(path: string | undefined): string | null {
   return parsed.pathname;
 }
 
+export type ChatContentSegment =
+  | { type: 'text'; text: string }
+  | { type: 'link'; text: string; href: string };
+
+const CHAT_LINK_PATTERN =
+  /\[([^\]\n]{1,200})\]\(([^()\s]*(?:\([^()\s]*\)[^()\s]*)*)\)/g;
+const CHAT_LOCALES = new Set(['en', 'ar']);
+
+/**
+ * Validate an assistant Markdown link and return a locale-prefixed internal
+ * path. Anything external, protocol-relative, or outside the public chat routes
+ * is rejected and will be rendered as plain text by the caller.
+ */
+export function safeChatHref(
+  path: string | undefined,
+  locale: 'en' | 'ar',
+): string | null {
+  if (typeof path !== 'string') return null;
+  const trimmed = path.trim();
+  if (
+    trimmed === '' ||
+    trimmed.length > 2048 ||
+    !trimmed.startsWith('/') ||
+    trimmed.startsWith('//') ||
+    trimmed.includes('\\') ||
+    /^[a-z][a-z0-9+.-]*:/i.test(trimmed)
+  ) {
+    return null;
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed, SAFE_SOURCE_BASE);
+  } catch {
+    return null;
+  }
+  if (parsed.origin !== SAFE_SOURCE_BASE) return null;
+
+  const pathname = parsed.pathname;
+  if (pathname.includes('\0')) return null;
+  if (/(?:^|\/)\.\.(?:\/|$)/u.test(pathname)) return null;
+  if (/(?:^|\/)\.(?:\/|$)/u.test(pathname)) return null;
+  if (/%(?:00|2e|2f|5c)/iu.test(pathname)) return null;
+
+  const segments = pathname.split('/').filter((segment) => segment !== '');
+  if (segments.length === 0) return null;
+  if (segments[0] !== undefined && CHAT_LOCALES.has(segments[0])) {
+    segments.shift();
+  }
+  if (segments.length === 0) return null;
+
+  const rest = segments.join('/');
+  if (rest === 'opportunities' || rest === 'talents') {
+    return `/${locale}/${rest}`;
+  }
+  if (
+    /^opportunities\/[^/]+$/u.test(rest) ||
+    /^orgs\/[^/]+$/u.test(rest)
+  ) {
+    return `/${locale}/${rest}`;
+  }
+  if (/^volunteers\/[^/]+$/u.test(rest)) {
+    const username = rest.slice('volunteers/'.length);
+    if (username === 'me' || username === 'settings') return null;
+    return `/${locale}/${rest}`;
+  }
+  return null;
+}
+
+/**
+ * Parse assistant Markdown into safe text/link segments. Internal public links
+ * become app-router links; every external or unsafe link keeps only its text.
+ */
+export function parseChatContent(
+  content: string,
+  locale: 'en' | 'ar',
+): ChatContentSegment[] {
+  const source = typeof content === 'string' ? content : '';
+  if (source === '') return [];
+
+  const segments: ChatContentSegment[] = [];
+  let lastIndex = 0;
+
+  for (const match of source.matchAll(CHAT_LINK_PATTERN)) {
+    const index = match.index ?? 0;
+    const text = match[1] ?? '';
+    const href = safeChatHref(match[2], locale);
+
+    if (index > lastIndex) {
+      segments.push({ type: 'text', text: source.slice(lastIndex, index) });
+    }
+    segments.push(
+      href === null
+        ? { type: 'text', text }
+        : { type: 'link', text, href },
+    );
+    lastIndex = index + match[0].length;
+  }
+
+  if (lastIndex < source.length) {
+    segments.push({ type: 'text', text: source.slice(lastIndex) });
+  }
+
+  return segments;
+}
+
 export class AiAgentStatusTimeoutError extends Error {
   constructor() {
     super('AI_AGENT_STATUS_TIMEOUT');
