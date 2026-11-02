@@ -66,7 +66,7 @@ describe('validateAccountFile', () => {
 describe('phone and website patterns', () => {
   it('matches the backend phone rule (no spaces, 8-15 digits)', () => {
     expect(ORG_ACCOUNT_PHONE_PATTERN.test('+213555123456')).toBe(true);
-    expect(ORG_ACCOUNT_PHONE_PATTERN.test('0555123456')).toBe(true);
+    expect(ORG_ACCOUNT_PHONE_PATTERN.test('0555123456')).toBe(false);
     expect(ORG_ACCOUNT_PHONE_PATTERN.test('05 55 12 34 56')).toBe(false);
     expect(ORG_ACCOUNT_PHONE_PATTERN.test('1234567')).toBe(false);
   });
@@ -87,12 +87,12 @@ describe('orgDisplayCode', () => {
 
 describe('completionView', () => {
   it('passes percent through with clamping and no client math', () => {
-    expect(completionView({ percent: 62, missing: ['website'], complete: false })).toEqual({
+    expect(completionView({ percent: 62, missingFields: ['website'], complete: false })).toEqual({
       percent: 62,
       complete: false,
-      missing: ['website'],
+      missingFields: ['website'],
     });
-    expect(completionView({ percent: 140, missing: [], complete: true }).percent).toBe(100);
+    expect(completionView({ percent: 140, missingFields: [], complete: true }).percent).toBe(100);
   });
 });
 
@@ -180,11 +180,15 @@ describe('org account reads', () => {
 
   it('reads completion display-only', async () => {
     const client = stubClient({
-      'GET /organizations/me/profile-completion': { percent: 62, missing: ['website'], complete: false },
+      'GET /organizations/me/profile-completion': {
+        percent: 62,
+        missingFields: ['website'],
+        complete: false,
+      },
     });
     await expect(getOrgAccountCompletion(client)).resolves.toEqual({
       percent: 62,
-      missing: ['website'],
+      missingFields: ['website'],
       complete: false,
     });
   });

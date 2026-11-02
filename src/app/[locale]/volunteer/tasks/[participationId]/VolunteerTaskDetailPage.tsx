@@ -20,7 +20,7 @@ export function VolunteerTaskDetailPage({
         data-testid="volunteer-task-detail"
         className="flex min-w-0 flex-col gap-4"
       >
-        <Link href="/volunteer/tasks" className="text-sm font-medium text-primary">
+        <Link href="/volunteer/tasks" className="text-sm font-medium text-gold-strong">
           {t('participations.title')}
         </Link>
         <ParticipationDetail participationId={participationId} locale={locale} />

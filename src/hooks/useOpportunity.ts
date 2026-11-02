@@ -99,6 +99,7 @@ export function useMyApplicationQuery(
 export function useApplyMutation(opportunityId: string) {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.applicationSubmitted', silent: true },
     mutationFn: ({ positionId, input }: { positionId: string; input: ApplyInput }) =>
       opportunityApi.applyToPosition(api, opportunityId, positionId, input),
     onSuccess: () => {
@@ -110,6 +111,7 @@ export function useApplyMutation(opportunityId: string) {
 export function useWithdrawMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.applicationWithdrawn' },
     mutationFn: (applicationId: string) => opportunityApi.withdrawApplication(api, applicationId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
@@ -119,6 +121,7 @@ export function useWithdrawMutation() {
 
 export function useReportOpportunityMutation() {
   return useMutation({
+    meta: { successKey: 'success.reportSubmitted', silent: true },
     mutationFn: (input: ReportOpportunityInput) => opportunityApi.reportOpportunity(api, input),
   });
 }

@@ -79,7 +79,7 @@ function DossierDocument({ mediaId }: { mediaId: string }) {
       href={url}
       target="_blank"
       rel="noreferrer"
-      className="text-sm text-primary hover:underline"
+      className="text-sm text-gold-strong hover:underline"
     >
       {t('verifications.documentLink')}
     </a>

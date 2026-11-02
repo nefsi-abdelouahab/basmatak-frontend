@@ -77,6 +77,7 @@ function storeTokens(tokens: { accessToken: string; refreshToken: string }): voi
 export function useLoginMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.signedIn', silent: true },
     mutationFn: (input: LoginInput) => authApi.login(api, input),
     onSuccess: (tokens) => {
       storeTokens(tokens);
@@ -119,6 +120,7 @@ export function useRegisterVolunteerMutation() {
   const queryClient = useQueryClient();
   const router = useRouter();
   return useMutation({
+    meta: { successKey: 'success.accountCreated', silent: true },
     mutationFn: async (input: RegisterInput) => {
       await throwIfAlreadyAuthenticated(router);
       return authApi.registerVolunteer(api, input);
@@ -134,6 +136,7 @@ export function useRegisterOrganizationMutation() {
   const queryClient = useQueryClient();
   const router = useRouter();
   return useMutation({
+    meta: { successKey: 'success.accountCreated', silent: true },
     mutationFn: async (input: RegisterInput) => {
       await throwIfAlreadyAuthenticated(router);
       return authApi.registerOrganization(api, input);
@@ -147,12 +150,14 @@ export function useRegisterOrganizationMutation() {
 
 export function useForgotPasswordMutation() {
   return useMutation({
+    meta: { successKey: 'success.resetLinkSent', silent: true },
     mutationFn: (input: { email: string }) => authApi.forgotPassword(api, input),
   });
 }
 
 export function useResetPasswordMutation() {
   return useMutation({
+    meta: { successKey: 'success.passwordReset', silent: true },
     mutationFn: (input: { token: string; newPassword: string }) =>
       authApi.resetPassword(api, input),
   });
@@ -160,18 +165,21 @@ export function useResetPasswordMutation() {
 
 export function useVerifyEmailMutation() {
   return useMutation({
+    meta: { successKey: 'success.emailVerified', silent: true },
     mutationFn: (input: { token: string }) => authApi.verifyEmail(api, input),
   });
 }
 
 export function useResendVerificationMutation() {
   return useMutation({
+    meta: { successKey: 'success.verificationSent', silent: true },
     mutationFn: () => authApi.resendVerification(api),
   });
 }
 
 export function useChangePasswordMutation() {
   return useMutation({
+    meta: { successKey: 'success.passwordChanged', silent: true },
     mutationFn: (input: { currentPassword: string; newPassword: string }) =>
       authApi.changePassword(api, input),
   });
@@ -179,6 +187,7 @@ export function useChangePasswordMutation() {
 
 export function useLogoutOthersMutation() {
   return useMutation({
+    meta: { successKey: 'success.otherSessionsSignedOut', silent: true },
     mutationFn: () => authApi.logoutOthers(api),
   });
 }
@@ -188,6 +197,7 @@ export function useLogoutAllMutation() {
   const router = useRouter();
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.signedOut' },
     mutationFn: () => authApi.logoutAll(api),
     onSuccess: () => {
       defaultTokenHooks.clearTokens();
@@ -201,6 +211,7 @@ export function useLogoutMutation() {
   const router = useRouter();
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.signedOut' },
     mutationFn: () => logout(api),
     onSuccess: () => {
       defaultTokenHooks.clearTokens();

@@ -11,6 +11,7 @@ import {
   clampLauncherInset,
   clampLauncherY,
   defaultLauncherY,
+  detectTextDirection,
   errorMessageKey,
   isQuotaExhaustedError,
   launcherInsetFromRect,
@@ -22,6 +23,7 @@ import {
   safeChatHref,
   safeSourceHref,
   serializeLauncherPosition,
+  stripChatLocalePrefix,
   withTimeout,
 } from './aiAgentUi';
 
@@ -32,7 +34,7 @@ function status(
     enabled: true,
     mode: 'normal',
     knowledge: { files: 1, chunks: 2 },
-    limits: { messageChars: 2000, historyMessages: 4, historyChars: 2400 },
+    limits: { messageChars: 2000, historyMessages: 6, historyChars: 4000 },
     ...overrides,
   };
 }
@@ -168,6 +170,44 @@ describe('aiAgentUi chat links', () => {
     expect(safeChatHref('/opportunities', 'ar')).toBe('/ar/opportunities');
   });
 
+  it('collapses repeated locale prefixes into one', () => {
+    expect(safeChatHref('/en/en/opportunities/food-drive', 'en')).toBe(
+      '/en/opportunities/food-drive',
+    );
+    expect(safeChatHref('/ar/en/opportunities/food-drive', 'ar')).toBe(
+      '/ar/opportunities/food-drive',
+    );
+    expect(safeChatHref('/en/ar/en/orgs/helping-org', 'en')).toBe(
+      '/en/orgs/helping-org',
+    );
+  });
+
+  it('strips the origin from absolute same-site links', () => {
+    expect(
+      safeChatHref(
+        'http://localhost:3000/en/en/opportunities/food-drive',
+        'en',
+      ),
+    ).toBe('/en/opportunities/food-drive');
+    expect(
+      safeChatHref(
+        'https://basmatak.com/ar/opportunities/food-drive',
+        'ar',
+      ),
+    ).toBe('/ar/opportunities/food-drive');
+  });
+
+  it('removes a locale prefix before handing a path to next-intl Link', () => {
+    expect(stripChatLocalePrefix('/en/opportunities/food-drive')).toBe(
+      '/opportunities/food-drive',
+    );
+    expect(
+      stripChatLocalePrefix('/en/en/opportunities/food-drive'),
+    ).toBe('/opportunities/food-drive');
+    expect(stripChatLocalePrefix('/ar/talents')).toBe('/talents');
+    expect(stripChatLocalePrefix('/')).toBe('/');
+  });
+
   it('rejects external, private, and malformed chat links', () => {
     for (const value of [
       '/orgs',
@@ -177,7 +217,8 @@ describe('aiAgentUi chat links', () => {
       'javascript:alert(1)',
       'data:text/html,hi',
       '//evil.example/path',
-      'https://evil.example/opportunities',
+      'https://evil.example/admin',
+      'ftp://evil.example/opportunities',
       '\\\\orgs\\\\bad',
       '/opportunities/../admin',
       '/opportunities/%2e%2e/admin',
@@ -201,6 +242,31 @@ describe('aiAgentUi chat links', () => {
         type: 'link',
         text: 'Beach cleanup',
         href: '/en/opportunities/beach-cleanup',
+        kind: 'entity',
+      },
+      { type: 'text', text: '.' },
+    ]);
+  });
+
+  it('marks only entity routes as card links', () => {
+    expect(
+      parseChatContent(
+        '[All talents](/talents) and [Food drive](/orgs/helping-org).',
+        'en',
+      ),
+    ).toEqual([
+      {
+        type: 'link',
+        text: 'All talents',
+        href: '/en/talents',
+        kind: 'inline',
+      },
+      { type: 'text', text: ' and ' },
+      {
+        type: 'link',
+        text: 'Food drive',
+        href: '/en/orgs/helping-org',
+        kind: 'entity',
       },
       { type: 'text', text: '.' },
     ]);
@@ -226,6 +292,15 @@ describe('aiAgentUi chat links', () => {
       { type: 'text', text: 'this' },
       { type: 'text', text: '.' },
     ]);
+  });
+});
+
+describe('aiAgentUi message direction', () => {
+  it('detects Arabic script independently of the UI locale', () => {
+    expect(detectTextDirection('مرحبا كيف أساعد؟')).toBe('rtl');
+    expect(detectTextDirection('English only')).toBe('ltr');
+    expect(detectTextDirection('English with عربي')).toBe('rtl');
+    expect(detectTextDirection('')).toBe('ltr');
   });
 });
 

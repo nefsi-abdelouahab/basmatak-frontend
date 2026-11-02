@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Container } from '@/components/ui/Container';
 
 export const primaryActionClass =
-  'inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover';
+  'inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-on-primary hover:bg-primary-hover';
 
 export const secondaryActionClass =
   'inline-flex items-center justify-center gap-2 rounded-md border border-border bg-surface px-4 py-2 text-sm font-medium text-ink hover:bg-surface-muted';

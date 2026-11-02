@@ -13,6 +13,7 @@ import { Loader } from '@/components/ui/Loader';
 import { Pagination } from '@/components/ui/Pagination';
 import { Pill } from '@/components/ui/Pill';
 import { mapToApiError } from '@/lib/api/errors';
+import { notify } from '@/lib/notify';
 import { useSessionQuery, getLoginHref } from '@/hooks/useSession';
 import { useVolunteerMeQuery } from '@/hooks/useVolunteerAccount';
 import { useToggleTalentFavoriteMutation, isAuthError } from '@/hooks/useFavorites';
@@ -202,18 +203,16 @@ function CopyProfileLink() {
         variant="secondary"
         size="sm"
         data-testid="profile-copy"
-        onClick={() => {
+        onClick={async () => {
           try {
-            const url = window.location.href;
-            if (navigator.clipboard) {
-              navigator.clipboard.writeText(url).catch(() => undefined);
-            }
+            await navigator.clipboard.writeText(window.location.href);
+            notify.success('success.linkCopied');
+            setCopied(true);
+            window.setTimeout(() => setCopied(false), 2500);
           } catch {
-            // Clipboard unavailable (permissions, non-secure context) — the
-            // inline confirmation below is best-effort only, never an error.
+            notify.error('error.copyFailed');
+            setCopied(false);
           }
-          setCopied(true);
-          window.setTimeout(() => setCopied(false), 2500);
         }}
       >
         {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
@@ -452,7 +451,7 @@ export function PublicTalentProfilePage({
             title={t('profile.notFoundTitle')}
             description={t('profile.notFoundBody')}
             action={
-              <Link href={backHref} className="text-sm font-medium text-primary">
+              <Link href={backHref} className="text-sm font-medium text-gold-strong">
                 {t('profile.backToTalents')}
               </Link>
             }

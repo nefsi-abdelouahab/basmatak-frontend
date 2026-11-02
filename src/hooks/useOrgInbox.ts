@@ -77,6 +77,7 @@ export function useApplicantProfileQuery(username: string | undefined) {
 export function useStartReviewApplicationMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.reviewStarted', silent: true },
     mutationFn: ({ applicationId }: { applicationId: string }) =>
       orgInboxApi.startReviewApplication(api, applicationId),
     onSuccess: () => {
@@ -88,6 +89,7 @@ export function useStartReviewApplicationMutation() {
 export function useAcceptApplicationMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.applicationAccepted', silent: true },
     mutationFn: ({ applicationId }: { applicationId: string }) =>
       orgInboxApi.acceptApplication(api, applicationId),
     onSuccess: () => {
@@ -99,6 +101,7 @@ export function useAcceptApplicationMutation() {
 export function useRejectApplicationMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.applicationRejected', silent: true },
     mutationFn: ({
       applicationId,
       reason,
@@ -140,6 +143,7 @@ export function useOpportunityParticipantsQuery(
 export function useRemoveParticipationMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.participantRemoved', silent: true },
     mutationFn: ({
       participationId,
       reason,
@@ -199,6 +203,7 @@ export function useEvidenceMediaQuery(mediaId: string | null | undefined) {
 export function useStartReviewSubmissionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.reviewStarted', silent: true },
     mutationFn: ({ submissionId }: { submissionId: string }) =>
       orgInboxApi.startReviewSubmission(api, submissionId),
     onSuccess: () => {
@@ -210,6 +215,7 @@ export function useStartReviewSubmissionMutation() {
 export function useVerifySubmissionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.submissionVerified', silent: true },
     mutationFn: ({ submissionId }: { submissionId: string }) =>
       orgInboxApi.verifySubmission(api, submissionId),
     onSuccess: () => {
@@ -221,6 +227,7 @@ export function useVerifySubmissionMutation() {
 export function useRejectSubmissionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.submissionRejected', silent: true },
     mutationFn: ({
       submissionId,
       reason,

@@ -293,12 +293,23 @@ export const AiAgentLauncher = forwardRef<
     };
   }
 
+  // Keep the launcher mounted so its dragged position survives while the
+  // panel is open, but take it out of sight and out of pointer reach.
+  if (open) {
+    style = {
+      ...style,
+      visibility: 'hidden',
+      pointerEvents: 'none',
+    };
+  }
+
   return (
     <button
       ref={forwardedRef}
       type="button"
       data-testid="ai-agent-launcher"
       aria-label={open ? t('launcher.close') : t('launcher.open')}
+      title={open ? t('launcher.close') : t('launcher.open')}
       aria-expanded={open}
       aria-controls={AI_AGENT_PANEL_ID}
       onClick={handleClick}
@@ -307,7 +318,7 @@ export const AiAgentLauncher = forwardRef<
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
       style={style}
-      className="fixed z-50 inline-flex h-[52px] w-[52px] touch-none items-center justify-center rounded-full border border-border bg-surface shadow-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface motion-safe:transition-transform motion-safe:hover:scale-105 sm:h-14 sm:w-14"
+      className="fixed z-[60] inline-flex h-[52px] w-[52px] touch-none items-center justify-center rounded-full border-2 border-gold bg-surface shadow-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface motion-safe:transition-transform motion-safe:hover:scale-105 sm:h-14 sm:w-14"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

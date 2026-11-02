@@ -27,6 +27,7 @@ import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
 import { Pill } from '@/components/ui/Pill';
 import { mapToApiError } from '@/lib/api/errors';
+import { notify } from '@/lib/notify';
 import { useSessionQuery } from '@/hooks/useSession';
 import { useOrgAccountQuery } from '@/hooks/useOrgAccount';
 import {
@@ -111,7 +112,7 @@ function initialsOf(name: string): string {
 function LogoBlock({ name, logoUrl }: { name: string; logoUrl: string | null }) {
   const [failed, setFailed] = useState(false);
   return (
-    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-primary-tint text-lg font-bold text-primary sm:h-20 sm:w-20">
+    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gold-soft text-lg font-bold text-ink sm:h-20 sm:w-20">
       {logoUrl && !failed ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -139,9 +140,11 @@ function ShareButton() {
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(window.location.href);
+          notify.success('success.linkCopied');
           setCopied(true);
           window.setTimeout(() => setCopied(false), 2000);
         } catch {
+          notify.error('error.copyFailed');
           setCopied(false);
         }
       }}
@@ -171,7 +174,7 @@ function OpportunityCard({ locale, card }: { locale: string; card: PublicOppCard
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2 text-xs">
               {category ? (
-                <span className="rounded-full bg-primary-tint px-2.5 py-0.5 font-medium text-primary">
+                <span className="rounded-full bg-gold-soft px-2.5 py-0.5 font-medium text-gold-strong">
                   {category}
                 </span>
               ) : null}
@@ -224,7 +227,7 @@ function OpportunityCard({ locale, card }: { locale: string; card: PublicOppCard
           ) : null}
           <Link
             href={`/opportunities/${oppSlugOf(card)}`}
-            className="inline-flex items-center gap-1 text-sm font-medium text-primary"
+            className="inline-flex items-center gap-1 text-sm font-medium text-gold-strong"
           >
             {t('orgProfile.viewApply')}
             <ArrowRight size={16} aria-hidden="true" className="rtl:rotate-180" />
@@ -249,7 +252,11 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
   const ownSlug = session.data?.role === 'organization' ? (accountQuery.data?.slug ?? null) : null;
   const isOwner = ownSlug !== null && ownSlug === slug;
 
-  const profileQuery = usePublicOrgProfileQuery(slug);
+  // Viewer state is part of the cache key: signing in/out refetches so the
+  // signed-in-only contact phone appears/disappears without a reload.
+  const viewer = session.isPending ? 'pending' : session.data ? 'signed-in' : 'guest';
+  const isGuest = !session.isPending && !session.data;
+  const profileQuery = usePublicOrgProfileQuery(slug, viewer);
   const archiveQuery = usePublicOrgOppsQuery(
     slug,
     useMemo(() => ({ status: tab, cursor, limit: 9 }), [tab, cursor]),
@@ -284,7 +291,7 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
             title={t('shared.notFoundTitle')}
             description={t('shared.notFoundBody')}
             action={
-              <Link href="/" className="text-sm font-medium text-primary">
+              <Link href="/" className="text-sm font-medium text-gold-strong">
                 {t('shared.backHome')}
               </Link>
             }
@@ -342,11 +349,14 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
     .filter((name): name is string => typeof name === 'string' && name.trim() !== '');
 
   const contactEmail = profile.contact?.email ?? null;
+  // The backend omits the phone for guests and ineligible viewers; the page
+  // renders exactly what the payload carries instead of masking it client-side.
   const contactPhone = profile.contact?.phone ?? null;
   const hasHeadquarters =
     locationLine !== null ||
     contactEmail !== null ||
     contactPhone !== null ||
+    isGuest ||
     profile.website != null ||
     profile.operatingScope != null;
   const hasAbout = (profile.description ?? '') !== '' || focusNames.length > 0;
@@ -407,7 +417,7 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
                   target="_blank"
                   rel="noopener noreferrer"
                   data-testid="org-website"
-                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover"
                 >
                   {t('orgProfile.websiteCta')}
                   <ExternalLink size={14} aria-hidden="true" />
@@ -500,7 +510,7 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
         <Card>
           <div data-testid="org-headquarters" className="flex flex-col gap-3">
             <h2 className="inline-flex items-center gap-2 text-lg font-semibold text-ink">
-              <Building2 size={18} aria-hidden="true" className="text-primary" />
+              <Building2 size={18} aria-hidden="true" className="text-gold-strong" />
               {t('orgProfile.headquarters')}
             </h2>
             <dl className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
@@ -513,14 +523,18 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
                   </div>
                 </div>
               ) : null}
-              {contactEmail || contactPhone ? (
+              {contactEmail || contactPhone || isGuest ? (
                 <div data-testid="org-contact" className="flex flex-col gap-2">
                   {contactEmail ? (
                     <div className="flex items-start gap-2">
                       <Mail size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-ink-muted" />
                       <div>
                         <dt className="font-medium text-ink-muted">{t('orgProfile.contact')}</dt>
-                        <dd className="break-all text-ink">{contactEmail}</dd>
+                        <dd className="break-all text-ink">
+                          <a href={`mailto:${contactEmail}`} className="hover:underline">
+                            {contactEmail}
+                          </a>
+                        </dd>
                       </div>
                     </div>
                   ) : null}
@@ -530,7 +544,27 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
                       <div>
                         <dt className="font-medium text-ink-muted">{t('orgProfile.contact')}</dt>
                         <dd className="text-ink" dir="ltr">
-                          {contactPhone}
+                          <a
+                            data-testid="org-contact-phone"
+                            href={`tel:${contactPhone}`}
+                            className="hover:underline"
+                          >
+                            {contactPhone}
+                          </a>
+                        </dd>
+                      </div>
+                    </div>
+                  ) : null}
+                  {isGuest ? (
+                    <div data-testid="org-contact-signin" className="flex items-start gap-2">
+                      <Phone size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-ink-muted" />
+                      <div>
+                        <dt className="font-medium text-ink-muted">{t('orgProfile.contact')}</dt>
+                        <dd className="text-ink-muted">
+                          <Link href="/login" className="font-medium text-gold-strong hover:underline">
+                            {t('orgProfile.contactSignIn')}
+                          </Link>
+                          <span className="block text-sm">{t('orgProfile.contactSignInHint')}</span>
                         </dd>
                       </div>
                     </div>

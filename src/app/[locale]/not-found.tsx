@@ -8,7 +8,7 @@ import { NotFoundScreen } from '@/components/system/NotFoundScreen';
 export default async function LocaleNotFound() {
   const locale = await getLocale();
   return (
-    <div className="flex min-h-screen flex-col bg-surface">
+    <div className="flex min-h-screen flex-col bg-background">
       <PublicNavbar />
       <main data-testid="shell-main" className="min-w-0 flex-1">
         <NotFoundScreen />

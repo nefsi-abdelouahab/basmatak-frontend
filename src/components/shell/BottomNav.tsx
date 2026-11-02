@@ -101,7 +101,7 @@ const ADMIN_MORE_TABS: Tab[] = [
 ];
 
 const TAB_CLASS =
-  'flex min-w-0 flex-1 items-center justify-center rounded-md px-1 py-2.5 transition-colors';
+  'relative flex min-w-0 flex-1 items-center justify-center rounded-md px-1 py-2.5 transition-colors';
 
 export function BottomNav() {
   const t = useTranslations('common');
@@ -185,7 +185,7 @@ export function BottomNav() {
                 role="menuitem"
                 data-testid={`bottomnav-tab-${key}`}
                 className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-body-md ${
-                  isActive(href) ? 'font-medium text-primary' : 'text-ink-muted'
+                  isActive(href) ? 'bg-gold-soft font-medium text-gold-strong' : 'text-ink-muted'
                 }`}
               >
                 <Icon size={20} aria-hidden="true" className="shrink-0" />
@@ -204,7 +204,7 @@ export function BottomNav() {
                 data-testid={`bottomnav-tab-${key}`}
                 aria-label={tabLabel(key)}
                 aria-current={active ? 'page' : undefined}
-                className={`${TAB_CLASS} ${active ? 'font-medium text-primary' : 'text-ink-muted'}`}
+                className={`${TAB_CLASS} ${active ? 'font-medium text-gold-strong after:absolute after:inset-x-3 after:top-0 after:h-0.5 after:rounded-full after:bg-gold' : 'text-ink-muted'}`}
               >
                 <Icon size={22} aria-hidden="true" />
               </Link>
@@ -218,7 +218,7 @@ export function BottomNav() {
             aria-haspopup="menu"
             aria-current={moreActive && !moreOpen ? 'page' : undefined}
             onClick={() => setMoreOpen((open) => !open)}
-            className={`${TAB_CLASS} ${moreActive || moreOpen ? 'font-medium text-primary' : 'text-ink-muted'}`}
+            className={`${TAB_CLASS} ${moreActive || moreOpen ? 'font-medium text-gold-strong after:absolute after:inset-x-3 after:top-0 after:h-0.5 after:rounded-full after:bg-gold' : 'text-ink-muted'}`}
           >
             <Menu size={22} aria-hidden="true" />
           </button>

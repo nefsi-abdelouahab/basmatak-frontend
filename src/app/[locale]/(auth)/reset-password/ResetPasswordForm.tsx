@@ -39,7 +39,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
           title={t('resetPassword.missingTokenTitle')}
           description={t('resetPassword.missingTokenDescription')}
         />
-        <Link href="/forgot-password" className="text-sm font-medium text-primary">
+        <Link href="/forgot-password" className="text-sm font-medium text-gold-strong">
           {t('resetPassword.requestNew')}
         </Link>
       </AuthSplit>
@@ -82,7 +82,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
             title={t('resetPassword.expiredTitle')}
             description={t('resetPassword.expiredDescription')}
           />
-          <Link href="/forgot-password" className="text-sm font-medium text-primary">
+          <Link href="/forgot-password" className="text-sm font-medium text-gold-strong">
             {t('resetPassword.requestNew')}
           </Link>
         </div>

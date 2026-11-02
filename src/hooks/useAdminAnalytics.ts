@@ -151,6 +151,7 @@ export function useAdminAuditBrowserQuery(
 
 export function useAdminAuditLogsCsvExportMutation() {
   return useMutation({
+    meta: { successKey: 'success.auditExported', silent: true },
     mutationFn: (filters: adminAnalyticsApi.AdminAuditFilters = {}) =>
       adminAnalyticsApi.exportAdminAuditLogsCsv(api, filters),
   });

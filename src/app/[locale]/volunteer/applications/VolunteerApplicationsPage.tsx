@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/Button';
 import { Empty } from '@/components/ui/Empty';
 import { Input } from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import {
   canWithdrawApplication,
   rowId,
@@ -168,9 +169,9 @@ function ApplicationFilterTabs({
             aria-selected={selected}
             data-testid={`tab-${tab.value}`}
             onClick={() => onTab(tab.value)}
-            className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-3 text-label-md font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+            className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-3 text-label-md font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong ${
               selected
-                ? 'bg-primary text-white'
+                ? 'bg-primary text-on-primary'
                 : 'bg-surface-muted text-ink-muted hover:bg-border-muted hover:text-ink'
             }`}
           >
@@ -179,7 +180,7 @@ function ApplicationFilterTabs({
             {typeof count === 'number' ? (
               <span
                 className={`rounded px-1.5 py-0.5 text-label-xs font-medium ${
-                  selected ? 'bg-white/20 text-white' : 'bg-border-muted text-ink-muted'
+                  selected ? 'bg-on-primary/20 text-on-primary' : 'bg-border-muted text-ink-muted'
                 }`}
               >
                 {count}
@@ -261,7 +262,7 @@ function ApplicationCard({
         ) : (
           <span
             aria-hidden="true"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary-tint text-lg font-semibold text-primary"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gold-soft text-lg font-semibold text-gold-strong"
           >
             {initial}
           </span>
@@ -286,7 +287,7 @@ function ApplicationCard({
             {opportunityName}
           </h2>
           <p className="mt-1 text-label-md text-ink-muted">
-            <span className="font-medium text-primary">{positionName}</span>
+            <span className="font-medium text-gold-strong">{positionName}</span>
             <span aria-hidden="true">{' • '}</span>
             <span>
               {t('applications.appliedLabel')}
@@ -361,7 +362,7 @@ function ApplicationCard({
             data-testid={`expand-${id}`}
             aria-expanded={expanded}
             onClick={onToggle}
-            className="inline-flex items-center gap-1 text-label-md font-medium text-primary hover:text-primary-hover"
+            className="inline-flex items-center gap-1 text-label-md font-medium text-gold-strong hover:text-ink"
           >
             <span>
               {expanded ? t('applications.hideDetails') : t('applications.viewApplicationDetails')}
@@ -407,7 +408,7 @@ function ApplicationCard({
             <Link
               data-testid={`task-${id}`}
               href="/volunteer/tasks"
-              className="inline-flex h-10 items-center gap-1.5 rounded-md bg-primary px-4 text-label-md font-medium text-white hover:bg-primary-hover"
+              className="inline-flex h-10 items-center gap-1.5 rounded-md bg-primary px-4 text-label-md font-medium text-on-primary hover:bg-primary-hover"
             >
               <CheckCircle2 size={16} aria-hidden="true" />
               <span>{t('applications.viewTask')}</span>
@@ -525,8 +526,12 @@ export function VolunteerApplicationsPage({ locale }: { locale: string }) {
             sidebar), and the center + right columns scroll internally with
             visually hidden scrollbars. Below xl the layout collapses to a
             single column and the document scrolls normally. */}
-        <div className="grid min-w-0 grid-cols-1 items-start gap-6 xl:h-[calc(100dvh-7rem)] xl:grid-cols-3 xl:items-stretch xl:overflow-hidden">
-          <div className="flex min-w-0 flex-col gap-6 xl:col-span-2 xl:min-h-0 xl:overflow-y-auto xl:[-ms-overflow-style:none] xl:[scrollbar-width:none] xl:[&::-webkit-scrollbar]:hidden">
+        <div className="grid min-w-0 grid-cols-1 items-start gap-6 xl:h-[calc(100dvh-7rem)] xl:grid-cols-3 xl:grid-rows-[minmax(0,1fr)] xl:items-stretch xl:overflow-hidden">
+          <ScrollFade
+            className="min-w-0 xl:col-span-2 xl:min-h-0"
+            viewportClassName="flex flex-col gap-6 xl:overflow-y-auto"
+            tone="background"
+          >
             <section className="min-w-0 rounded-xl border border-border bg-surface p-4 shadow-sm sm:p-5">
               <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div className="min-w-0">
@@ -536,7 +541,7 @@ export function VolunteerApplicationsPage({ locale }: { locale: string }) {
                   <p className="mt-1 text-body-md text-ink-muted">{t('applications.subtitle')}</p>
                 </div>
                 <span className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-md bg-surface-muted px-3 py-1.5 text-label-xs font-medium text-ink-muted md:self-auto">
-                  <ShieldCheck size={16} aria-hidden="true" className="shrink-0 text-primary" />
+                  <ShieldCheck size={16} aria-hidden="true" className="shrink-0 text-gold-strong" />
                   <span>{t('applications.identityBadge')}</span>
                 </span>
               </div>
@@ -557,7 +562,7 @@ export function VolunteerApplicationsPage({ locale }: { locale: string }) {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder={t('applications.searchPlaceholder')}
-                    className="h-10 w-full rounded-md border border-border bg-surface-muted pe-3 ps-9 text-body-md text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                    className="h-10 w-full rounded-md border border-border bg-surface-muted pe-3 ps-9 text-body-md text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
                   />
                 </div>
                 <div className="flex flex-wrap items-end gap-3">
@@ -648,7 +653,7 @@ export function VolunteerApplicationsPage({ locale }: { locale: string }) {
               </p>
             ) : null}
             {listQuery.data && visibleItems.length === 0 ? (
-              <Empty title={t('applications.empty')} />
+              <Empty title={t('applications.empty')} pattern />
             ) : null}
             <ul className="flex min-w-0 flex-col gap-4">
               {visibleItems.map((row) => {
@@ -685,9 +690,14 @@ export function VolunteerApplicationsPage({ locale }: { locale: string }) {
                 </Button>
               </div>
             ) : null}
-          </div>
+          </ScrollFade>
 
-          <aside className="flex min-w-0 flex-col gap-4 xl:min-h-0 xl:overflow-y-auto xl:[-ms-overflow-style:none] xl:[scrollbar-width:none] xl:[&::-webkit-scrollbar]:hidden">
+          <ScrollFade
+            as="aside"
+            className="min-w-0 xl:min-h-0"
+            viewportClassName="flex flex-col gap-4 xl:overflow-y-auto"
+            tone="background"
+          >
             <section
               aria-labelledby="applications-overview-title"
               className="min-w-0 rounded-xl border border-border bg-surface p-4 shadow-sm"
@@ -697,10 +707,10 @@ export function VolunteerApplicationsPage({ locale }: { locale: string }) {
                   id="applications-overview-title"
                   className="inline-flex items-center gap-2 text-title-md font-semibold text-ink"
                 >
-                  <ClipboardList size={18} aria-hidden="true" className="shrink-0 text-primary" />
+                  <ClipboardList size={18} aria-hidden="true" className="shrink-0 text-gold-strong" />
                   <span>{t('applications.overviewTitle')}</span>
                 </h2>
-                <span className="text-headline-md font-semibold text-primary">
+                <span className="text-headline-md font-semibold text-gold-strong">
                   {allCountQuery.data ? allCountQuery.data.total : '—'}
                 </span>
               </div>
@@ -813,7 +823,7 @@ export function VolunteerApplicationsPage({ locale }: { locale: string }) {
                       </span>
                       <Link
                         href="/volunteer/tasks"
-                        className="mt-1 inline-flex items-center justify-between gap-2 border-t border-border-muted pt-2 text-label-md font-semibold text-primary hover:text-primary-hover"
+                        className="mt-1 inline-flex items-center justify-between gap-2 border-t border-border-muted pt-2 text-label-md font-semibold text-gold-strong hover:text-ink"
                       >
                         <span>{t('applications.goToTasks')}</span>
                         <ArrowRight
@@ -836,7 +846,7 @@ export function VolunteerApplicationsPage({ locale }: { locale: string }) {
                 id="applications-privacy-title"
                 className="inline-flex items-center gap-2 text-title-sm font-semibold text-ink"
               >
-                <ShieldCheck size={18} aria-hidden="true" className="shrink-0 text-primary" />
+                <ShieldCheck size={18} aria-hidden="true" className="shrink-0 text-gold-strong" />
                 <span>{t('applications.privacyTitle')}</span>
               </h2>
               <p className="mt-2 text-body-md leading-relaxed text-ink-muted">
@@ -845,7 +855,7 @@ export function VolunteerApplicationsPage({ locale }: { locale: string }) {
             </section>
 
             <ActivityStrip locale={locale} />
-          </aside>
+          </ScrollFade>
         </div>
       </div>
     </RequireTasks>

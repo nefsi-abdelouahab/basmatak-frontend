@@ -21,8 +21,8 @@ export default function AuthLayout({
 }) {
   setRequestLocale(locale);
   return (
-    <div className="flex min-h-dvh flex-col bg-surface-muted">
-      <main data-testid="shell-main" className="flex min-w-0 flex-1 flex-col">
+    <div className="flex h-dvh flex-col bg-background">
+      <main data-testid="shell-main" className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
         <RequireGuest>{children}</RequireGuest>
       </main>
     </div>

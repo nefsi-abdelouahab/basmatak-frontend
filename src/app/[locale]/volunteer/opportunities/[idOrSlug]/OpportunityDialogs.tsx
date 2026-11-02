@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 
 const TEXTAREA_CLASS =
-  'w-full rounded-md border border-border bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none';
+  'w-full rounded-md border border-border bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none';
 
 // Apply dialog: optional message (trimmed, <= 2000) over the per-position
 // apply endpoint. Server codes are the source of truth; client validation is
@@ -69,7 +69,7 @@ export function ApplyDialog({
         {serverCode === 'EMAIL_NOT_VERIFIED' ? (
           <p data-testid="apply-verify-note" role="alert" className="mt-2 text-sm text-status-pending">
             {t('apply.unverifiedEmail')}{' '}
-            <Link href="/verify-email" className="font-medium text-primary">
+            <Link href="/verify-email" className="font-medium text-gold-strong">
               {t('apply.verifyCta')}
             </Link>
           </p>

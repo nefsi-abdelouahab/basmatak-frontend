@@ -2,6 +2,7 @@ import axios from 'axios';
 import { z } from 'zod';
 import type { AxiosInstance } from 'axios';
 import { emailSchema, normalizePhoneNumber, phoneSchema } from './auth';
+import { ALGERIAN_PHONE_PATTERN } from './phone';
 import { ApiError } from './errors';
 
 // F13 org-account module: one typed function per profile/settings backend
@@ -28,7 +29,7 @@ import { ApiError } from './errors';
 // (same Deviation-5 pattern F2 uses); sessions/prefs shapes mirror F2's
 // archived modules without importing them.
 
-export const ORG_ACCOUNT_PHONE_PATTERN = /^\+?[0-9]{8,15}$/;
+export const ORG_ACCOUNT_PHONE_PATTERN = ALGERIAN_PHONE_PATTERN;
 export const ORG_ACCOUNT_WEBSITE_PATTERN = /^https?:\/\/.+/;
 const MONGO_ID_PATTERN = /^[0-9a-fA-F]{24}$/;
 
@@ -129,7 +130,7 @@ export type UpdateOrgAccountInput = z.infer<typeof UpdateOrgAccountInputSchema>;
 
 export const OrgAccountCompletionSchema = z.object({
   percent: z.number(),
-  missing: z.array(z.string()),
+  missingFields: z.array(z.string()),
   complete: z.boolean(),
 });
 
@@ -140,10 +141,14 @@ export type OrgAccountCompletion = z.infer<typeof OrgAccountCompletionSchema>;
 export function completionView(completion: OrgAccountCompletion): {
   percent: number;
   complete: boolean;
-  missing: string[];
+  missingFields: string[];
 } {
   const percent = Math.min(100, Math.max(0, Math.round(completion.percent)));
-  return { percent, complete: completion.complete, missing: completion.missing };
+  return {
+    percent,
+    complete: completion.complete,
+    missingFields: completion.missingFields,
+  };
 }
 
 export const AccountUserSchema = z
@@ -253,6 +258,27 @@ export function accountSaveFieldError(
   }
   return null;
 }
+
+export const OrgLocationRowSchema = z
+  .object({
+    code: z.string(),
+    nameAr: z.string(),
+    nameFr: z.string(),
+  })
+  .passthrough();
+
+export type OrgLocationRow = z.infer<typeof OrgLocationRowSchema>;
+
+export const OrgSkillCategorySchema = z
+  .object({
+    id: z.string().optional(),
+    _id: z.string().optional(),
+    nameAr: z.string(),
+    nameFr: z.string(),
+  })
+  .passthrough();
+
+export type OrgSkillCategory = z.infer<typeof OrgSkillCategorySchema>;
 
 export const AccountSessionDeviceSchema = z
   .object({
@@ -377,6 +403,30 @@ export async function getOrgAccountCompletion(
 ): Promise<OrgAccountCompletion> {
   const { data } = await client.get('/organizations/me/profile-completion');
   return OrgAccountCompletionSchema.parse(data);
+}
+
+export async function listOrgLocationsWilayas(
+  client: OrgHttpClient,
+): Promise<OrgLocationRow[]> {
+  const { data } = await client.get('/locations/wilayas');
+  return z.array(OrgLocationRowSchema).parse(data);
+}
+
+export async function listOrgLocationsMunicipalities(
+  client: OrgHttpClient,
+  wilayaId: string,
+): Promise<OrgLocationRow[]> {
+  const { data } = await client.get(
+    `/locations/wilayas/${encodeURIComponent(wilayaId)}/municipalities`,
+  );
+  return z.array(OrgLocationRowSchema).parse(data);
+}
+
+export async function listOrgSkillCategories(
+  client: OrgHttpClient,
+): Promise<OrgSkillCategory[]> {
+  const { data } = await client.get('/skill-categories');
+  return z.array(OrgSkillCategorySchema).parse(data);
 }
 
 export async function deleteOrgAccount(

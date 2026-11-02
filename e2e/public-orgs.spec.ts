@@ -64,7 +64,8 @@ const talentsPage = {
   pages: 1,
 };
 
-const profile = {
+// Real contract: guests receive the email only; the phone key is omitted.
+const guestProfile = {
   slug: 'timimoun-cultural',
   registryId: 'ORG-000042',
   nameFr: 'Association Culturelle',
@@ -73,9 +74,15 @@ const profile = {
   website: 'https://example.org',
   foundedYear: 2018,
   verificationStatus: 'verified',
-  contact: { email: 'contact@example.org', phone: '+213555123456' },
+  contact: { email: 'contact@example.org' },
   focusDisciplines: ['culture'],
   stats: { opportunitiesActive: 4, opportunitiesCompleted: 9, verifiedHours: 1420 },
+};
+
+// Signed-in eligible viewers receive the dedicated organization phone.
+const signedInProfile = {
+  ...guestProfile,
+  contact: { email: 'contact@example.org', phone: '+213555123456' },
 };
 
 const archivePage = {
@@ -173,7 +180,7 @@ function orgHandlers(): Handlers {
     ...guest,
     '/organizations/timimoun-cultural/opportunities': { status: 200, body: archivePage },
     '/organizations/timimoun-cultural/reliability': { status: 200, body: reliability },
-    '/organizations/timimoun-cultural': { status: 200, body: profile },
+    '/organizations/timimoun-cultural': { status: 200, body: guestProfile },
   };
 }
 
@@ -317,6 +324,13 @@ test.describe('org profile session states (content-level, no layout switch)', ()
     await expect(page.getByTestId('org-manage')).toHaveCount(0);
     await expect(page.locator('aside')).toHaveCount(0);
     await expect(page.getByTestId('shell-sidebar')).toHaveCount(0);
+    // Guests never see the phone: a sign-in prompt replaces it.
+    await expect(page.getByTestId('org-contact-signin')).toBeVisible();
+    await expect(page.getByTestId('org-contact-signin')).toContainText(
+      en.orgProfile.contactSignIn,
+    );
+    await expect(page.getByTestId('org-contact-phone')).toHaveCount(0);
+    await expect(page.getByTestId('org-contact')).not.toContainText('+213555123456');
   });
 
   test('signed-in non-owner sees no manage control and no sidebar', async ({ page }) => {
@@ -325,6 +339,7 @@ test.describe('org profile session states (content-level, no layout switch)', ()
       page,
       {
         ...orgHandlers(),
+        '/organizations/timimoun-cultural': { status: 200, body: signedInProfile },
         '/auth/me': {
           status: 200,
           body: { id: 'o9', email: 'other@example.org', role: 'organization', status: 'active' },
@@ -339,6 +354,13 @@ test.describe('org profile session states (content-level, no layout switch)', ()
     await expect(page.getByTestId('org-manage')).toHaveCount(0);
     await expect(page.locator('aside')).toHaveCount(0);
     await expect(page.getByTestId('shell-sidebar')).toHaveCount(0);
+    // Signed-in viewers get the phone as a tel: link, not the sign-in prompt.
+    await expect(page.getByTestId('org-contact-phone')).toBeVisible();
+    await expect(page.getByTestId('org-contact-phone')).toHaveAttribute(
+      'href',
+      'tel:+213555123456',
+    );
+    await expect(page.getByTestId('org-contact-signin')).toHaveCount(0);
   });
 
   test('owner sees manage control and no sidebar', async ({ page }) => {
@@ -347,6 +369,7 @@ test.describe('org profile session states (content-level, no layout switch)', ()
       page,
       {
         ...orgHandlers(),
+        '/organizations/timimoun-cultural': { status: 200, body: signedInProfile },
         '/auth/me': {
           status: 200,
           body: { id: 'o1', email: 'owner@example.org', role: 'organization', status: 'active' },

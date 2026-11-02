@@ -75,7 +75,7 @@ function announcement() {
 describe('MessageList', () => {
   afterEach(cleanup);
 
-  it('shows the empty state with localized suggestions', () => {
+  it('shows the empty state with three localized suggestions', () => {
     const { onSuggestion } = renderList();
     expect(screen.getByText(aiAgentEn.empty.title)).toBeDefined();
     expect(
@@ -88,17 +88,25 @@ describe('MessageList', () => {
       'suggestion1',
       'suggestion2',
       'suggestion3',
-      'suggestion4',
     ] as const) {
       expect(
         screen.getByRole('button', { name: aiAgentEn.empty[key] }),
       ).toBeDefined();
     }
-
     fireEvent.click(
       screen.getByRole('button', { name: aiAgentEn.empty.suggestion2 }),
     );
     expect(onSuggestion).toHaveBeenCalledWith(aiAgentEn.empty.suggestion2);
+  });
+
+  it('hides suggestions after the first message', () => {
+    renderList({ messages: [message({ role: 'user' })] });
+    expect(screen.queryByText(aiAgentEn.empty.title)).toBeNull();
+    expect(
+      screen.queryByRole('list', {
+        name: aiAgentEn.empty.suggestionsLabel,
+      }),
+    ).toBeNull();
   });
 
   it('disables suggestions while chat is unavailable', () => {
@@ -107,7 +115,6 @@ describe('MessageList', () => {
       'suggestion1',
       'suggestion2',
       'suggestion3',
-      'suggestion4',
     ] as const) {
       const button = screen.getByRole('button', {
         name: aiAgentEn.empty[key],

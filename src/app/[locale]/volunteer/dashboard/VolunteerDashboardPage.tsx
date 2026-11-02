@@ -8,6 +8,7 @@ import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
 import { Button } from '@/components/ui/Button';
 import { Pill } from '@/components/ui/Pill';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import {
   orgDisplayName,
   useFeedMunicipalitiesQuery,
@@ -161,7 +162,7 @@ function HeaderCard({ locale }: { locale: string }) {
           <Link
             href={`/volunteer/talents/${meQuery.data.username}`}
             data-testid="dashboard-view-profile"
-            className="shrink-0 rounded-md border border-border-muted px-3 py-1.5 text-label-sm font-medium text-primary transition-colors hover:bg-surface-muted"
+            className="shrink-0 rounded-md border border-border-muted px-3 py-1.5 text-label-sm font-medium text-gold-strong transition-colors hover:bg-surface-muted"
           >
             {t('dashboard.viewProfile')}
           </Link>
@@ -206,7 +207,7 @@ function LatestExperience({
         <Link
           href="/volunteer/experiences"
           data-testid="dashboard-latest-view-all"
-          className="shrink-0 text-label-sm font-medium text-primary hover:underline"
+          className="shrink-0 text-label-sm font-medium text-gold-strong hover:underline"
         >
           {t('dashboard.latestViewAll', { count: verifiedCount })}
         </Link>
@@ -217,7 +218,7 @@ function LatestExperience({
           description={t('dashboard.latestEmptyBody')}
           action={
             <Link href="/volunteer/opportunities">
-              <Button type="button" variant="primary" size="sm">
+              <Button type="button" variant="gold" size="sm">
                 {t('dashboard.latestEmptyCta')}
               </Button>
             </Link>
@@ -364,7 +365,7 @@ function OpportunitiesFeed({ locale, wilayaName }: { locale: string; wilayaName:
           <Link
             href="/opportunities"
             data-testid="feed-view-all"
-            className="shrink-0 text-label-sm font-medium text-primary hover:underline"
+            className="shrink-0 text-label-sm font-medium text-gold-strong hover:underline"
           >
             {t('dashboard.feedViewAll')}
           </Link>
@@ -381,7 +382,7 @@ function OpportunitiesFeed({ locale, wilayaName }: { locale: string; wilayaName:
                 data-testid={testId}
                 onClick={() => setTab(key)}
                 className={`rounded-md px-3 py-1 text-label-sm font-medium transition-colors ${
-                  active ? 'bg-primary-tint text-primary' : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
+                  active ? 'bg-gold-soft text-gold-strong' : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
                 }`}
               >
                 {label}
@@ -450,7 +451,7 @@ function SuggestedRow({
   );
   return (
     <Link href={`/opportunities/${detailId}`} data-testid="rail-suggested-item" className="group block">
-      <p className="text-title-sm font-medium text-ink transition-colors group-hover:text-primary">
+      <p className="text-title-sm font-medium text-ink transition-colors group-hover:text-gold-strong">
         {item.title ?? detailId}
       </p>
       {orgName !== '' ? <p className="mt-0.5 text-label-xs text-ink-muted">{orgName}</p> : null}
@@ -465,32 +466,60 @@ function RightRail({ locale }: { locale: string }) {
   const t = useTranslations('volunteerHome');
   const dashboardQuery = useVolunteerHomeDashboardQuery();
   const recommendedQuery = useRecommendedQuery(true);
-  const percent = dashboardQuery.data?.completionPercent ?? 0;
+  const completion = dashboardQuery.data?.completion;
+  const percent = completion?.percent ?? dashboardQuery.data?.completionPercent ?? 0;
+  const complete = completion?.complete ?? false;
+  const missing = (completion?.missingFields ?? []).slice(0, 5);
   const suggested = (recommendedQuery.data?.items ?? []).slice(0, 3);
 
   return (
-    <div
+    <ScrollFade
       data-testid="dashboard-rail"
-      className="flex min-w-0 flex-col gap-6 lg:max-h-full lg:overflow-y-auto lg:overscroll-contain"
+      className="min-w-0 lg:h-full"
+      viewportClassName="flex flex-col gap-6 lg:overflow-y-auto lg:overscroll-contain"
+      tone="background"
     >
       <section aria-label={t('dashboard.railCompletionTitle')} className="rounded-lg border border-border bg-surface p-4 shadow-sm">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-title-sm font-semibold text-ink">{t('dashboard.railCompletionTitle')}</h3>
-          <span data-testid="dashboard-completion" className="text-title-sm font-semibold text-primary">
+          <span data-testid="dashboard-completion" className="text-title-sm font-semibold text-gold-strong">
             {t('dashboard.completionValue', { percent })}
           </span>
         </div>
         <div className="mt-2.5">
           <ProgressBar percent={percent} label={t('dashboard.railCompletionTitle')} />
         </div>
-        <p className="mt-2.5 text-body-sm leading-normal text-ink-muted">{t('dashboard.railCompletionHint')}</p>
-        <Link
-          href="/volunteer/profile"
-          className="mt-2 inline-flex items-center gap-1 text-label-sm font-medium text-primary hover:underline"
-        >
-          <span>{t('dashboard.railCompletionCta')}</span>
-          <ArrowRight size={14} aria-hidden="true" className="rtl:rotate-180" />
-        </Link>
+        {complete ? (
+          <p className="mt-2.5 text-body-sm leading-normal text-status-success">
+            {t('dashboard.railCompletionDoneHint')}
+          </p>
+        ) : (
+          <>
+            <p className="mt-2.5 text-body-sm leading-normal text-ink-muted">
+              {t('dashboard.railCompletionHint')}
+            </p>
+            {missing.length > 0 ? (
+              <ul
+                data-testid="dashboard-completion-missing"
+                className="mt-2 flex flex-col gap-1 text-label-sm text-ink-muted"
+              >
+                {missing.map((key) => (
+                  <li key={key} className="flex items-center gap-1.5">
+                    <span aria-hidden="true" className="size-1.5 rounded-full bg-gold-strong" />
+                    {t(`dashboard.completionFields.${key}`)}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            <Link
+              href="/volunteer/profile"
+              className="mt-2 inline-flex items-center gap-1 text-label-sm font-medium text-gold-strong hover:underline"
+            >
+              <span>{t('dashboard.railCompletionCta')}</span>
+              <ArrowRight size={14} aria-hidden="true" className="rtl:rotate-180" />
+            </Link>
+          </>
+        )}
       </section>
 
       <section aria-label={t('dashboard.railSuggestedTitle')} className="space-y-3 rounded-lg border border-border bg-surface p-4 shadow-sm">
@@ -523,7 +552,7 @@ function RightRail({ locale }: { locale: string }) {
           <p className="mt-0.5 text-body-sm text-ink-muted">{t('dashboard.railPopularGapBody')}</p>
         </div>
       </section>
-    </div>
+    </ScrollFade>
   );
 }
 
@@ -559,11 +588,13 @@ export function VolunteerDashboardPage({ locale }: { locale: string }) {
         ) : (
           <div
             data-testid="dashboard-grid"
-            className="grid min-w-0 grid-cols-1 items-start gap-6 lg:h-[calc(100dvh-7rem)] lg:grid-cols-[minmax(0,1fr)_300px]"
+            className="grid min-w-0 grid-cols-1 items-start gap-6 lg:h-[calc(100dvh-7rem)] lg:grid-cols-[minmax(0,1fr)_300px] lg:grid-rows-[minmax(0,1fr)]"
           >
-            <div
+            <ScrollFade
               data-testid="dashboard-center"
-              className="flex min-w-0 flex-col gap-6 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain"
+              className="min-w-0 lg:h-full"
+              viewportClassName="flex flex-col gap-6 lg:overflow-y-auto lg:overscroll-contain"
+              tone="background"
             >
               <HeaderCard locale={locale} />
               <StatsRowShell
@@ -578,7 +609,7 @@ export function VolunteerDashboardPage({ locale }: { locale: string }) {
                 locale={locale}
               />
               <OpportunitiesFeed locale={locale} wilayaName={wilayaName} />
-            </div>
+            </ScrollFade>
             <RightRail locale={locale} />
           </div>
         )}

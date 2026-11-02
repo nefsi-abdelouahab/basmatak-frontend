@@ -61,13 +61,13 @@ export function VerifyEmailForm({
       <Link
         href="/login"
         aria-label={t('shared.backToLogin')}
-        className="inline-flex h-9 w-9 items-center justify-center self-start rounded-md text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="inline-flex h-9 w-9 items-center justify-center self-start rounded-md text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong"
       >
         <ArrowLeft aria-hidden="true" size={18} className="rtl:rotate-180" />
       </Link>
       {token && state === 'verifying' ? (
         <p data-testid="auth-verifying" className="flex items-center gap-2 text-ink-muted">
-          <Loader2 aria-hidden="true" size={18} className="animate-spin text-primary" />
+          <Loader2 aria-hidden="true" size={18} className="animate-spin text-gold-strong" />
           {t('verifyEmail.verifying')}
         </p>
       ) : null}
@@ -80,7 +80,7 @@ export function VerifyEmailForm({
               description={t('verifyEmail.successDescription')}
             />
           </div>
-          <Link href="/login" className="text-sm font-medium text-primary">
+          <Link href="/login" className="text-sm font-medium text-gold-strong">
             {t('verifyEmail.signInCta')}
           </Link>
         </>
@@ -88,7 +88,7 @@ export function VerifyEmailForm({
       {showUnverifiedGate ? (
         <div data-testid="auth-unverified-gate" className="flex flex-col gap-2">
           <div className="flex items-start gap-2">
-            <Mail aria-hidden="true" size={20} className="mt-0.5 shrink-0 text-primary" />
+            <Mail aria-hidden="true" size={20} className="mt-0.5 shrink-0 text-gold-strong" />
             <AuthSuccess
               title={t('verifyEmail.unverifiedTitle')}
               description={t('verifyEmail.unverifiedDescription')}
@@ -98,11 +98,11 @@ export function VerifyEmailForm({
             type="button"
             onClick={onResend}
             disabled={resend.isPending}
-            className="self-start text-sm font-medium text-primary disabled:opacity-50"
+            className="self-start text-sm font-medium text-gold-strong disabled:opacity-50"
           >
             {t('verifyEmail.resend')}
           </button>
-          <Link href={continueHref} className="text-sm font-medium text-primary">
+          <Link href={continueHref} className="text-sm font-medium text-gold-strong">
             {t('verifyEmail.continueCta')}
           </Link>
         </div>
@@ -111,7 +111,7 @@ export function VerifyEmailForm({
         <div data-testid="auth-verify-invalid" className="flex flex-col gap-2">
           <div className="flex items-start gap-2">
             {!token ? (
-              <Mail aria-hidden="true" size={20} className="mt-0.5 shrink-0 text-primary" />
+              <Mail aria-hidden="true" size={20} className="mt-0.5 shrink-0 text-gold-strong" />
             ) : (
               <XCircle aria-hidden="true" size={20} className="mt-0.5 shrink-0 text-status-error" />
             )}
@@ -126,7 +126,7 @@ export function VerifyEmailForm({
             type="button"
             onClick={onResend}
             disabled={resend.isPending}
-            className="self-start text-sm font-medium text-primary disabled:opacity-50"
+            className="self-start text-sm font-medium text-gold-strong disabled:opacity-50"
           >
             {t('verifyEmail.requestNew')}
           </button>

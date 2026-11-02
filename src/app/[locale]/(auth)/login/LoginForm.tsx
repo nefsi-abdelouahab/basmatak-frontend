@@ -81,6 +81,7 @@ export function LoginForm({ next, status }: { next?: string; status?: string }) 
       backHref="/"
       backLabel={tCommon('actions.goHome')}
       tagline={t('login.tagline')}
+      pattern
     >
       {status === 'password-reset' ? (
         <AuthSuccess
@@ -89,7 +90,7 @@ export function LoginForm({ next, status }: { next?: string; status?: string }) 
         />
       ) : null}
       {next ? (
-        <p data-testid="auth-continue-notice" className="text-sm font-medium text-primary">
+        <p data-testid="auth-continue-notice" className="text-sm font-medium text-gold-strong">
           {t('login.continueNotice')}
         </p>
       ) : null}
@@ -115,7 +116,7 @@ export function LoginForm({ next, status }: { next?: string; status?: string }) 
             className="h-10"
           />
           <div className="flex justify-end">
-            <Link href="/forgot-password" className="text-sm font-medium text-primary">
+            <Link href="/forgot-password" className="text-sm font-medium text-gold-strong">
               {t('login.forgot')}
             </Link>
           </div>
@@ -141,14 +142,14 @@ export function LoginForm({ next, status }: { next?: string; status?: string }) 
           <h2 className="text-base font-semibold text-ink">{t('login.unverifiedTitle')}</h2>
           <p className="text-sm text-ink-muted">{t('login.unverifiedDescription')}</p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/verify-email" className="text-sm font-medium text-primary">
+            <Link href="/verify-email" className="text-sm font-medium text-gold-strong">
               {t('login.verifyNow')}
             </Link>
             <button
               type="button"
               onClick={onResend}
               disabled={resend.isPending}
-              className="text-sm font-medium text-primary disabled:opacity-50"
+              className="text-sm font-medium text-gold-strong disabled:opacity-50"
             >
               {t('login.resend')}
             </button>
@@ -162,20 +163,20 @@ export function LoginForm({ next, status }: { next?: string; status?: string }) 
           <p className="text-sm text-ink-muted">{t('login.suspendedDescription')}</p>
           <Link
             href={`/system/forbidden?code=${formStatus.code}`}
-            className="text-sm font-medium text-primary"
+            className="text-sm font-medium text-gold-strong"
           >
             {t('login.viewDetails')}
           </Link>
         </div>
       ) : null}
       {formStatus.kind === 'rate-limited' ? (
-        <Link href="/system/rate-limited" className="text-sm font-medium text-primary">
+        <Link href="/system/rate-limited" className="text-sm font-medium text-gold-strong">
           {t('login.viewStatus')}
         </Link>
       ) : null}
       <p className="text-sm text-ink-muted">
         {t('login.noAccount')}{' '}
-        <Link href="/create-account" className="font-medium text-primary">
+        <Link href="/create-account" className="font-medium text-gold-strong">
           {t('login.createAccount')}
         </Link>
       </p>

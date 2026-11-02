@@ -446,6 +446,8 @@
     "founded": "Founded",
     "activeSince": "Active since {year}",
     "contact": "Contact",
+    "contactSignIn": "Sign in to view contact details",
+    "contactSignInHint": "Phone numbers are visible to signed-in members only.",
     "focus": "Focus areas",
     "statsActive": "Active opportunities",
     "statsCompleted": "Completed opportunities",

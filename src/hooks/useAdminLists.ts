@@ -32,6 +32,7 @@ export function useAdminVolunteersQuery(filters: AdminVolunteersFilters = {}) {
 
 export function useAdminVolunteersCsvMutation() {
   return useMutation({
+    meta: { successKey: 'success.volunteersExported', silent: true },
     mutationFn: (filters: AdminVolunteersFilters = {}) =>
       adminListsApi.exportAdminVolunteersCsv(api, filters),
   });
@@ -60,6 +61,7 @@ export function useAdminUserQuery(userId: string | undefined) {
 
 export function useAdminUserStatusMutation() {
   return useMutation({
+    meta: { successKey: 'success.statusUpdated', silent: true },
     mutationFn: ({ userId, change }: { userId: string; change: AdminStatusChange }) =>
       adminListsApi.setAdminUserStatus(api, userId, change),
   });
@@ -67,6 +69,7 @@ export function useAdminUserStatusMutation() {
 
 export function useAdminNoticeMutation() {
   return useMutation({
+    meta: { successKey: 'success.noticeSent', silent: true },
     mutationFn: ({ userId, message }: { userId: string; message: string }) =>
       adminListsApi.sendAdminNotice(api, userId, message),
   });
@@ -84,6 +87,7 @@ export function useAdminOrganizationsQuery(filters: AdminOrganizationsFilters = 
 
 export function useAdminOrganizationsCsvMutation() {
   return useMutation({
+    meta: { successKey: 'success.organizationsExported', silent: true },
     mutationFn: (filters: AdminOrganizationsFilters = {}) =>
       adminListsApi.exportAdminOrganizationsCsv(api, filters),
   });
@@ -91,6 +95,7 @@ export function useAdminOrganizationsCsvMutation() {
 
 export function useAdminOrganizationStatusMutation() {
   return useMutation({
+    meta: { successKey: 'success.statusUpdated', silent: true },
     mutationFn: ({
       organizationId,
       change,
@@ -118,6 +123,7 @@ export function useAdminVerificationsQuery(filters: AdminVerificationsFilters = 
 
 export function useAdminVerificationAssignMutation() {
   return useMutation({
+    meta: { successKey: 'success.verificationAssigned', silent: true },
     mutationFn: ({
       rowId,
       assignedAdminId,
@@ -140,6 +146,7 @@ export function useAdminLatestDossierQuery(organizationId: string | undefined) {
 
 export function useAdminVerificationApproveMutation() {
   return useMutation({
+    meta: { successKey: 'success.verificationApproved', silent: true },
     mutationFn: (organizationId: string) =>
       adminListsApi.approveAdminVerification(api, organizationId),
   });
@@ -147,6 +154,7 @@ export function useAdminVerificationApproveMutation() {
 
 export function useAdminVerificationRejectMutation() {
   return useMutation({
+    meta: { successKey: 'success.verificationRejected', silent: true },
     mutationFn: ({
       organizationId,
       rejectionReason,
@@ -179,6 +187,7 @@ export function useAdminOpportunitiesQuery(filters: AdminOpportunitiesFilters = 
 
 export function useAdminOpportunitiesCsvMutation() {
   return useMutation({
+    meta: { successKey: 'success.opportunitiesExported', silent: true },
     mutationFn: (filters: AdminOpportunitiesFilters = {}) =>
       adminListsApi.exportAdminOpportunitiesCsv(api, filters),
   });
@@ -205,6 +214,7 @@ export function useAdminOpportunityVerificationStatusQuery(
 
 export function useAdminOpportunityStatusMutation() {
   return useMutation({
+    meta: { successKey: 'success.statusUpdated', silent: true },
     mutationFn: ({
       opportunityId,
       change,

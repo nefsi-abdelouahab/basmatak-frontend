@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { createSseParser } from './sse';
 
 /**
- * Frontend transport for the public Basmatak AI assistant.
+ * Frontend transport for Basma, the public Basmatak assistant.
  *
  * The backend contract is intentionally narrow: status is a small public JSON
  * payload, and chat is a POST that answers with an SSE stream. No provider,
@@ -150,8 +150,8 @@ export interface AiAgentStreamResult {
 }
 
 export const AI_AGENT_MESSAGE_CHARS = 2000;
-export const AI_AGENT_HISTORY_MESSAGES = 4;
-export const AI_AGENT_HISTORY_CHARS = 2400;
+export const AI_AGENT_HISTORY_MESSAGES = 6;
+export const AI_AGENT_HISTORY_CHARS = 4000;
 
 const FALLBACK_BASE_URL = 'http://localhost:3000/api/v1';
 
@@ -298,20 +298,20 @@ export const AiAgentSourcesSchema = AiAgentSourcesEventSchema;
 // --- User-safe errors ------------------------------------------------------
 
 const GENERIC_ERROR_MESSAGE =
-  'The assistant could not complete the response. Please try again.';
+  'Basma could not complete the response. Please try again.';
 
 const SAFE_ERROR_MESSAGES: Readonly<Record<string, string>> = Object.freeze({
   AI_AGENT_DISABLED:
-    'The assistant is temporarily unavailable. Please try again shortly.',
+    'Basma is temporarily unavailable. Please try again shortly.',
   AI_AGENT_INVALID_INPUT: 'Please check the message length and try again.',
   VALIDATION_ERROR: 'Please check the message length and try again.',
   RATE_LIMITED: 'Too many messages. Please wait a moment and try again.',
-  AI_AGENT_BUSY: 'The assistant is busy right now. Please retry shortly.',
+  AI_AGENT_BUSY: 'Basma is busy right now. Please retry shortly.',
   AI_AGENT_QUOTA_EXHAUSTED:
-    'The assistant has reached its usage limit. Please try again later.',
+    'Basma has reached its usage limit. Please try again later.',
   AI_AGENT_PROVIDER_UNAVAILABLE:
-    'The assistant is temporarily unavailable. Please retry.',
-  AI_AGENT_TIMEOUT: 'The assistant took too long to answer. Please retry.',
+    'Basma is temporarily unavailable. Please retry.',
+  AI_AGENT_TIMEOUT: 'Basma took too long to answer. Please retry.',
   AI_AGENT_INTERNAL_ERROR: GENERIC_ERROR_MESSAGE,
   INTERNAL_SERVER_ERROR: GENERIC_ERROR_MESSAGE,
   NETWORK_ERROR:
@@ -319,7 +319,7 @@ const SAFE_ERROR_MESSAGES: Readonly<Record<string, string>> = Object.freeze({
   AI_AGENT_STREAM_INTERRUPTED:
     'The answer stopped unexpectedly. Please retry.',
   AI_AGENT_INVALID_RESPONSE:
-    'The assistant returned an unexpected response. Please retry.',
+    'Basma returned an unexpected response. Please retry.',
 });
 
 export function aiAgentErrorMessage(code: string): string {

@@ -1,6 +1,7 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import en from '../src/messages/volunteer-account/en.json';
 import ar from '../src/messages/volunteer-account/ar.json';
+import toastEn from '../src/messages/toast/en.json';
 
 type Locale = 'en' | 'ar';
 const catalogs = { en, ar } as const;
@@ -127,6 +128,10 @@ function baseHandlers(): Record<string, { status: number; body?: unknown }> {
     '/auth/me': { status: 200, body: user },
     '/volunteers/me': { status: 200, body: me },
     '/volunteers/me/dashboard': { status: 200, body: dashboard },
+    '/volunteers/me/profile-completion': {
+      status: 200,
+      body: { percent: 62, missingFields: ['bio'], complete: false },
+    },
     '/volunteers/me/skills': { status: 200, body: [] },
     '/volunteers/me/availability': { status: 200, body: emptySchedule },
     '/skills': { status: 200, body: [{ id: 'seed1', nameFr: 'Santé', nameAr: 'الصحة' }] },
@@ -160,9 +165,12 @@ for (const width of [1440, 1100, 390]) {
         await expect(page.getByTestId('profile-availability')).toBeVisible();
         await expect(page.getByTestId('profile-visibility')).toBeVisible();
         await expect(page.getByTestId('profile-completion')).toContainText('62');
+        await expect(page.getByTestId('profile-completion')).toContainText(
+          catalogs[locale].completion.fields.bio,
+        );
         await expect(page.getByTestId('public-profile-link')).toHaveAttribute(
           'href',
-          `/${locale}/volunteers/amineb`,
+          `/${locale}/volunteer/talents/amineb`,
         );
         // Opt-out defaults: every toggle renders ON.
         for (const key of [
@@ -210,7 +218,9 @@ for (const width of [1440, 1100, 390]) {
       await page.goto('/en/volunteer/profile');
       await page.getByLabel(en.profile.headlineLabel).fill('Community helper');
       await page.getByTestId('profile-identity').getByRole('button', { name: en.shared.save }).click();
-      await expect(page.getByTestId('profile-saved')).toBeVisible();
+      await expect(page.locator('[data-sonner-toast]')).toContainText(
+        toastEn.success.profileUpdated,
+      );
       const patch = captured.find(
         (c) => c.path.endsWith('/volunteers/me') && c.method === 'PATCH',
       );
@@ -287,7 +297,9 @@ for (const width of [1440, 1100, 390]) {
       await page.locator('#avail-monday-0-from').fill('09:00');
       await page.locator('#avail-monday-0-to').fill('12:00');
       await page.getByTestId('profile-availability').getByRole('button', { name: en.shared.save }).click();
-      await expect(page.getByTestId('availability-saved')).toBeVisible();
+      await expect(page.locator('[data-sonner-toast]')).toContainText(
+        toastEn.success.availabilityUpdated,
+      );
       const put = captured.find((c) => c.path.endsWith('/volunteers/me/availability') && c.method === 'PUT');
       expect(put?.body).toMatchObject({ monday: [{ from: '09:00', to: '12:00' }] });
     });
@@ -296,12 +308,12 @@ for (const width of [1440, 1100, 390]) {
       const captured: Captured[] = [];
       await mockApi(page, baseHandlers(), captured);
       await page.goto('/en/volunteer/profile');
-      await page.locator('input[type="file"]').setInputFiles({
+      await page.locator('#profile-avatar-input').setInputFiles({
         name: 'clip.mp4',
         mimeType: 'video/mp4',
         buffer: Buffer.from([0, 1, 2]),
       });
-      await expect(page.getByTestId('avatar-error')).toHaveText(en.profile.avatarTypeError);
+      await expect(page.getByTestId('profile-avatar-error')).toHaveText(en.profile.avatarTypeError);
       expect(captured.find((c) => c.path.endsWith('/media/uploads'))).toBeUndefined();
     });
 
@@ -318,7 +330,7 @@ for (const width of [1440, 1100, 390]) {
         captured,
       );
       await page.goto('/en/volunteer/profile');
-      await page.locator('input[type="file"]').setInputFiles({
+      await page.locator('#profile-avatar-input').setInputFiles({
         name: 'avatar.jpg',
         mimeType: 'image/jpeg',
         buffer: Buffer.from([0, 1, 2]),

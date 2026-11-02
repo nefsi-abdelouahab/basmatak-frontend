@@ -25,7 +25,7 @@ export function PasswordInput({ id, className = '', ...rest }: InputProps) {
         onClick={() => setVisible((v) => !v)}
         aria-label={visible ? t('shared.hidePassword') : t('shared.showPassword')}
         aria-pressed={visible}
-        className="absolute bottom-2 end-2 flex h-6 w-6 items-center justify-center rounded-md text-ink-muted transition-colors hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+        className="absolute bottom-2 end-2 flex h-6 w-6 items-center justify-center rounded-md text-ink-muted transition-colors hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-strong"
       >
         {visible ? (
           <EyeOff aria-hidden="true" size={18} />

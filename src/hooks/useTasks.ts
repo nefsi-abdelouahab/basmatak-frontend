@@ -43,6 +43,7 @@ export function useApplicationQuery(applicationId: string | null) {
 export function useWithdrawApplicationMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.applicationWithdrawn', silent: true },
     mutationFn: (applicationId: string) => tasksApi.withdrawApplication(api, applicationId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(APPLICATIONS_DOMAIN) });
@@ -75,6 +76,7 @@ export function useParticipationQuery(participationId: string | null) {
 export function useWithdrawParticipationMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.participationWithdrawn', silent: true },
     mutationFn: (participationId: string) =>
       tasksApi.withdrawParticipation(api, participationId),
     onSuccess: () => {
@@ -97,6 +99,7 @@ export function useVolunteerActivityQuery(params?: ActivityParams) {
 // navigation). Renders only where an experienceId is present.
 export function useDownloadAttestationMutation() {
   return useMutation({
+    meta: { successKey: 'success.attestationDownloaded', silent: true },
     mutationFn: (experienceId: string) => tasksApi.downloadAttestation(api, experienceId),
   });
 }

@@ -31,7 +31,7 @@ function RowAvatar({ mediaId, name }: { mediaId: string | null; name: string }) 
       onError={(event) => {
         if (!event.currentTarget.src.endsWith('/user.jpg')) event.currentTarget.src = '/user.jpg';
       }}
-      className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-primary/30"
+      className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-gold-strong/30"
     />
   );
 }
@@ -113,7 +113,7 @@ export function PublicTalentCard({
           <div className="flex min-w-0 flex-col gap-1.5">
             <div className="flex flex-wrap items-baseline gap-2">
               <h2 className="text-lg font-semibold tracking-tight text-ink">
-                <Link href={`/volunteers/${item.username}`} className="transition-colors hover:text-primary">
+                <Link href={`/volunteers/${item.username}`} className="transition-colors hover:text-gold-strong">
                   {name}
                 </Link>
               </h2>

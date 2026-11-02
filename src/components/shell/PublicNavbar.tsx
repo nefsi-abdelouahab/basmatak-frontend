@@ -7,8 +7,10 @@ import { LogIn, Menu, Search, UserPlus, X } from 'lucide-react';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { useSessionQuery } from '@/hooks/useSession';
 import { Container } from '@/components/ui/Container';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { NavIconLink } from './NavIconLink';
+import { ThemeToggle } from './ThemeToggle';
 
 // Public top navbar: brand, talent search, links to real routes only. Routes
 // without a page (About, How Verification, Privacy, Terms) render no link.
@@ -101,11 +103,11 @@ export function PublicNavbar() {
     pathname.startsWith('/talents') || pathname.startsWith('/volunteers');
   const activeClass = (active: boolean) =>
     active
-      ? 'text-sm font-medium text-ink'
+      ? 'text-sm font-medium text-ink underline decoration-gold decoration-2 underline-offset-8'
       : 'text-sm text-ink-muted transition-colors hover:text-ink';
   const mobileLinkClass = (active: boolean) =>
     `block whitespace-nowrap rounded-md px-3 py-2.5 text-base transition-colors ${
-      active ? 'bg-surface-muted font-medium text-ink' : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
+      active ? 'bg-gold-soft font-medium text-ink' : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
     }`;
 
   const searchField = (id: string, autoWidth: string) => (
@@ -122,7 +124,7 @@ export function PublicNavbar() {
         placeholder={t('nav.searchPlaceholder')}
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        className={`${autoWidth} h-10 rounded-md border border-border bg-surface-muted pe-3 ps-9 text-body-sm text-ink transition-colors placeholder:text-ink-muted focus:border-primary focus:bg-surface focus:outline-none`}
+        className={`${autoWidth} h-10 rounded-md border border-border bg-surface-muted pe-3 ps-9 text-body-sm text-ink transition-colors placeholder:text-ink-muted focus:border-gold-strong focus:bg-surface focus:outline-none`}
       />
     </>
   );
@@ -188,7 +190,7 @@ export function PublicNavbar() {
             {dashboardHref && dashboardLabel ? (
               <Link
                 href={dashboardHref}
-                className="inline-flex h-9 items-center whitespace-nowrap rounded-md bg-primary px-3 text-[13px] font-medium text-white transition-colors hover:bg-primary-hover xl:px-4 xl:text-sm"
+                className="inline-flex h-9 items-center whitespace-nowrap rounded-md bg-primary px-3 text-[13px] font-medium text-on-primary transition-colors hover:bg-primary-hover xl:px-4 xl:text-sm"
               >
                 {dashboardLabel}
               </Link>
@@ -209,6 +211,7 @@ export function PublicNavbar() {
                 />
               </>
             )}
+            <ThemeToggle />
             <LanguageSwitcher />
           </div>
 
@@ -221,7 +224,7 @@ export function PublicNavbar() {
               aria-controls="public-navbar-mobile-menu"
               aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
               onClick={() => setMenuOpen((open) => !open)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-ink transition-colors hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-ink transition-colors hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong"
             >
               {menuOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
             </button>
@@ -242,10 +245,11 @@ export function PublicNavbar() {
 
         {/* Mobile/tablet dropdown panel: same links + same auth state + language. */}
         {menuOpen && (
-          <div
+          <ScrollFade
             id="public-navbar-mobile-menu"
             data-testid="public-navbar-mobile-menu"
-            className="max-h-[calc(100dvh-8rem)] overflow-y-auto border-t border-border-muted py-3 lg:hidden"
+            className="lg:hidden"
+            viewportClassName="max-h-[calc(100dvh-8rem)] overflow-y-auto border-t border-border-muted py-3"
           >
             <nav aria-label={t('nav.home')} data-testid="public-navbar-links-mobile" className="space-y-1">
               <Link
@@ -274,7 +278,7 @@ export function PublicNavbar() {
               {dashboardHref && dashboardLabel ? (
                 <Link
                   href={dashboardHref}
-                  className="flex h-11 items-center justify-center rounded-md bg-primary px-4 text-base font-medium text-white transition-colors hover:bg-primary-hover"
+                  className="flex h-11 items-center justify-center rounded-md bg-primary px-4 text-base font-medium text-on-primary transition-colors hover:bg-primary-hover"
                 >
                   {dashboardLabel}
                 </Link>
@@ -289,7 +293,7 @@ export function PublicNavbar() {
                   </Link>
                   <Link
                     href="/create-account"
-                    className="flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 text-base font-medium text-white transition-colors hover:bg-primary-hover"
+                    className="flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 text-base font-medium text-on-primary transition-colors hover:bg-primary-hover"
                   >
                     <UserPlus size={18} aria-hidden="true" />
                     {t('nav.createProfile')}
@@ -297,10 +301,11 @@ export function PublicNavbar() {
                 </>
               )}
             </div>
-            <div className="mt-3 flex items-center justify-start border-t border-border-muted pt-3">
+            <div className="mt-3 flex items-center justify-start gap-2 border-t border-border-muted pt-3">
+              <ThemeToggle />
               <LanguageSwitcher />
             </div>
-          </div>
+          </ScrollFade>
         )}
       </Container>
     </header>

@@ -31,6 +31,13 @@ function placeholders(message: string): string[] {
 }
 
 describe('aiAgent catalog parity (en/ar)', () => {
+  it('pins the Basma empty-state greeting in both locales', () => {
+    expect(aiAgentEn.empty.title).toBe("Hi, I'm Basma. How can I help?");
+    expect(aiAgentAr.empty.title).toBe('مرحباً، أنا بصمة. كيف أساعدك؟');
+    expect(aiAgentEn.panel.subtitle).toBe('Basmatak Assistant');
+    expect(aiAgentAr.panel.subtitle).toBe('مساعد بصمتك');
+  });
+
   it('has identical key sets', () => {
     expect(keys(aiAgentAr as Json).sort()).toEqual(keys(aiAgentEn as Json).sort());
   });

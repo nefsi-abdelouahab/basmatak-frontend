@@ -81,9 +81,9 @@ export function TabBar({
           aria-selected={active === tab.value}
           data-testid={`tab-${tab.value}`}
           onClick={() => onTab(tab.value)}
-          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong ${
             active === tab.value
-              ? 'border-primary bg-primary text-white'
+              ? 'border-gold-strong bg-primary text-on-primary'
               : 'border-border bg-surface text-ink hover:bg-surface-muted'
           }`}
         >
@@ -91,7 +91,7 @@ export function TabBar({
           {counts && typeof counts[tab.value] === 'number' ? (
             <span
               className={`rounded-full px-1.5 py-0.5 text-xs font-medium ${
-                active === tab.value ? 'bg-white/20 text-white' : 'bg-surface-muted text-ink-muted'
+                active === tab.value ? 'bg-on-primary/20 text-on-primary' : 'bg-surface-muted text-ink-muted'
               }`}
             >
               {counts[tab.value]}
@@ -126,9 +126,9 @@ export function StatusTimeline({
                 aria-current={state === 'current' ? 'step' : undefined}
                 className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
                   state === 'done'
-                    ? 'bg-status-success text-white'
+                    ? 'bg-status-success text-on-success'
                     : state === 'current'
-                      ? 'bg-primary text-white'
+                      ? 'bg-primary text-on-primary'
                       : 'bg-border-muted text-ink-muted'
                 }`}
               >

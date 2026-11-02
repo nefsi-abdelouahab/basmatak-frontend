@@ -155,7 +155,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
             title={t('detail.notFoundTitle')}
             description={t('detail.notFoundBody')}
             action={
-              <Link href="/volunteer/opportunities" className="text-sm font-medium text-primary">
+              <Link href="/volunteer/opportunities" className="text-sm font-medium text-gold-strong">
                 {t('detail.backAction')}
               </Link>
             }
@@ -357,7 +357,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
                     key={key || position.title}
                     data-testid="position-card"
                     className={`flex cursor-pointer items-start gap-3 rounded-md border p-3 ${
-                      isChecked ? 'border-primary' : 'border-border'
+                      isChecked ? 'border-gold-strong' : 'border-border'
                     }`}
                   >
                     <input
@@ -459,7 +459,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
                   <li key={detailIdOf(item)} className="rounded-md border border-border-muted p-3">
                     <Link
                       href={`/volunteer/opportunities/${item.slug ?? detailIdOf(item)}`}
-                      className="font-medium text-primary"
+                      className="font-medium text-gold-strong"
                     >
                       {item.title}
                     </Link>
@@ -490,7 +490,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
               {detail.organization?.slug ? (
                 <Link
                   href={`/orgs/${detail.organization.slug}`}
-                  className="font-medium text-primary"
+                  className="font-medium text-gold-strong"
                 >
                   {t('sidebar.viewOrg')}
                 </Link>
@@ -499,7 +499,7 @@ export function OpportunityDetailsPage({ locale, idOrSlug }: { locale: string; i
           </Card>
           <Card title={t('certificate.title')}>
             <p className="text-sm text-ink-muted">{t('certificate.body')}</p>
-            <Link href="/volunteer/experiences" className="mt-2 inline-block text-sm font-medium text-primary">
+            <Link href="/volunteer/experiences" className="mt-2 inline-block text-sm font-medium text-gold-strong">
               {t('certificate.viewInExperiences')}
             </Link>
           </Card>

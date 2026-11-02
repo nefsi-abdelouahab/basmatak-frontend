@@ -20,6 +20,7 @@ import {
 import { Link } from '@/i18n/navigation';
 import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import { useAccountMediaQuery } from '@/hooks/useOrgAccount';
 import {
   useEvidenceMediaQuery,
@@ -262,7 +263,7 @@ function Hero() {
         className="h-56 w-full bg-surface-muted bg-cover bg-center md:h-72"
         style={{ backgroundImage: `url("${coverUrl}")` }}
       >
-        <div className="h-full w-full bg-gradient-to-t from-ink/70 via-ink/20 to-transparent" />
+        <div className="h-full w-full bg-overlay/40" />
       </div>
       <div className="px-4 md:px-6">
         <div className="relative -mt-16 flex flex-col justify-between gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm md:flex-row md:items-center md:p-6">
@@ -308,7 +309,7 @@ function Hero() {
           <Link
             href={publicHref}
             data-testid="org-public-profile"
-            className="inline-flex shrink-0 items-center gap-1 self-end text-title-sm font-medium text-primary hover:text-primary-hover md:self-center"
+            className="inline-flex shrink-0 items-center gap-1 self-end text-title-sm font-medium text-gold-strong hover:text-ink md:self-center"
           >
             <span>{t('hero.viewPublicProfile')}</span>
             <ArrowRight size={14} aria-hidden="true" className="rtl:rotate-180" />
@@ -356,7 +357,7 @@ function Greeting() {
         <Link
           href="/org/opportunities/new"
           data-testid="action-create-opp"
-          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2.5 text-title-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
+          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2.5 text-title-sm font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover"
         >
           <Plus size={16} aria-hidden="true" className="shrink-0" />
           <span>{t('actions.create')}</span>
@@ -397,7 +398,7 @@ function StatsRow({
           <div key={card.key} className="min-w-0">
             <dd
               data-testid={card.testId}
-              className={`text-display-lg font-semibold tracking-tight ${card.highlight ? 'text-primary' : 'text-ink'}`}
+              className={`text-display-lg font-semibold tracking-tight ${card.highlight ? 'text-gold-strong' : 'text-ink'}`}
             >
               {card.value}
             </dd>
@@ -488,7 +489,7 @@ function ContributionsSection() {
                         <Link
                           href={`/org/contributions/${id}`}
                           data-testid={`contribution-review-${id}`}
-                          className="inline-flex items-center gap-1 text-title-sm font-medium text-primary hover:text-primary-hover"
+                          className="inline-flex items-center gap-1 text-title-sm font-medium text-gold-strong hover:text-ink"
                         >
                           <span>{t('contributions.review')}</span>
                           <ArrowRight size={14} aria-hidden="true" className="rtl:rotate-180" />
@@ -596,7 +597,7 @@ function ApplicationsSection() {
                     <Link
                       href={`/org/applications/${id}`}
                       data-testid={`application-view-${id}`}
-                      className="inline-flex shrink-0 items-center gap-1 text-title-sm font-medium text-primary hover:text-primary-hover"
+                      className="inline-flex shrink-0 items-center gap-1 text-title-sm font-medium text-gold-strong hover:text-ink"
                     >
                       <span>{t('applications.view')}</span>
                       <ArrowRight size={14} aria-hidden="true" className="rtl:rotate-180" />
@@ -689,7 +690,7 @@ function ActivitiesSection() {
                 <Link
                   href="/org/participants"
                   data-testid="activity-view-roster"
-                  className="inline-flex shrink-0 items-center gap-1 text-title-sm font-medium text-ink hover:text-primary"
+                  className="inline-flex shrink-0 items-center gap-1 text-title-sm font-medium text-ink hover:text-gold-strong"
                 >
                   <span>{t('activities.view')}</span>
                   <ArrowRight size={14} aria-hidden="true" className="rtl:rotate-180" />
@@ -756,7 +757,7 @@ function RecentOpportunities() {
         <Link
           href="/org/opportunities"
           data-testid="recent-opps-view-all"
-          className="shrink-0 text-label-sm font-medium text-primary hover:text-primary-hover"
+          className="shrink-0 text-label-sm font-medium text-gold-strong hover:text-ink"
         >
           {t('recentOpps.viewAll')}
         </Link>
@@ -792,7 +793,7 @@ function RecentOpportunities() {
                     <Link
                       href={`/org/opportunities/${id}`}
                       data-testid={`recent-opp-manage-${id}`}
-                      className="inline-flex items-center gap-1 pt-1 text-title-sm font-medium text-primary hover:text-primary-hover"
+                      className="inline-flex items-center gap-1 pt-1 text-title-sm font-medium text-gold-strong hover:text-ink"
                     >
                       <span>{t('recentOpps.manage')}</span>
                       <ArrowRight size={14} aria-hidden="true" className="rtl:rotate-180" />
@@ -934,23 +935,27 @@ export function OrgDashboardPage({ locale }: { locale: string }) {
             The rail holds the design's right context column (~320px). */}
         <div
           data-testid="dashboard-grid"
-          className="mt-6 grid min-w-0 grid-cols-1 items-start gap-6 lg:h-[calc(100dvh-7rem)] lg:grid-cols-[minmax(0,1fr)_320px]"
+          className="mt-6 grid min-w-0 grid-cols-1 items-start gap-6 lg:h-[calc(100dvh-7rem)] lg:grid-cols-[minmax(0,1fr)_320px] lg:grid-rows-[minmax(0,1fr)]"
         >
-          <div
+          <ScrollFade
             data-testid="dashboard-center"
-            className="flex min-w-0 flex-col gap-6 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
+            className="min-w-0 lg:h-full"
+            viewportClassName="flex flex-col gap-6 lg:overflow-y-auto lg:overscroll-contain"
+            tone="background"
           >
             <ContributionsSection />
             <ApplicationsSection />
             <ActivitiesSection />
-          </div>
-          <div
+          </ScrollFade>
+          <ScrollFade
             data-testid="dashboard-rail"
-            className="flex min-w-0 flex-col gap-6 lg:max-h-full lg:overflow-y-auto lg:overscroll-contain lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
+            className="min-w-0 lg:h-full"
+            viewportClassName="flex flex-col gap-6 lg:overflow-y-auto lg:overscroll-contain"
+            tone="background"
           >
             <RecentOpportunities />
             <ActivityFeed />
-          </div>
+          </ScrollFade>
         </div>
       </div>
     </RequireOrg>

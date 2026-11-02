@@ -62,9 +62,38 @@ export function useOrgAccountCompletionQuery() {
   });
 }
 
+export function useOrgLocationsWilayasQuery() {
+  return useQuery({
+    queryKey: queryKeysList('wilayas'),
+    queryFn: () => orgAccountApi.listOrgLocationsWilayas(api),
+    staleTime: 300_000,
+    retry: false,
+  });
+}
+
+export function useOrgLocationsMunicipalitiesQuery(wilayaId: string | undefined) {
+  return useQuery({
+    queryKey: queryKeysList(`municipalities:${wilayaId ?? 'none'}`),
+    queryFn: () => orgAccountApi.listOrgLocationsMunicipalities(api, wilayaId as string),
+    enabled: Boolean(wilayaId),
+    staleTime: 300_000,
+    retry: false,
+  });
+}
+
+export function useOrgSkillCategoriesQuery() {
+  return useQuery({
+    queryKey: queryKeysList('skill-categories'),
+    queryFn: () => orgAccountApi.listOrgSkillCategories(api),
+    staleTime: 300_000,
+    retry: false,
+  });
+}
+
 export function usePatchOrgAccountMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.orgProfileUpdated', silent: true },
     mutationFn: (input: UpdateOrgAccountInput) => orgAccountApi.patchOrgAccount(api, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
@@ -77,6 +106,7 @@ export function usePatchOrgAccountMutation() {
 export function useDeleteOrgAccountMutation() {
   const router = useRouter();
   return useMutation({
+    meta: { successKey: 'success.orgDeleted', silent: true },
     mutationFn: () => orgAccountApi.deleteOrgAccount(api),
     onSuccess: () => {
       defaultTokenHooks.clearTokens();
@@ -97,6 +127,7 @@ export function useAccountUserQuery() {
 export function usePatchAccountUserMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.profileUpdated', silent: true },
     mutationFn: (input: UpdateAccountUser) => orgAccountApi.patchAccountUser(api, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
@@ -106,6 +137,7 @@ export function usePatchAccountUserMutation() {
 
 export function useAccountChangePasswordMutation() {
   return useMutation({
+    meta: { successKey: 'success.passwordChanged', silent: true },
     mutationFn: (input: { currentPassword: string; newPassword: string }) =>
       changePassword(api, input),
   });
@@ -123,6 +155,7 @@ export function useAccountSessionsQuery() {
 export function useRevokeAccountSessionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.sessionRevoked', silent: true },
     mutationFn: (sessionId: string) => orgAccountApi.revokeAccountSession(api, sessionId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
@@ -134,6 +167,7 @@ export function useRevokeAccountSessionMutation() {
 export function useLogoutOtherSessionsMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.otherSessionsSignedOut', silent: true },
     mutationFn: () => logoutOthers(api),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
@@ -154,6 +188,7 @@ export function useAccountPrefsQuery() {
 export function usePatchAccountPrefsMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.notificationPrefsUpdated', silent: true },
     mutationFn: (prefs: AccountPrefs) => orgAccountApi.patchAccountPrefs(api, prefs),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });

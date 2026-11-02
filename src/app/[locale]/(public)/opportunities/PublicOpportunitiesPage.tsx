@@ -204,13 +204,13 @@ function FilterSelect({
       <Icon
         aria-hidden="true"
         size={18}
-        className="pointer-events-none absolute start-2.5 top-1/2 -translate-y-1/2 text-primary"
+        className="pointer-events-none absolute start-2.5 top-1/2 -translate-y-1/2 text-gold-strong"
       />
       <select
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-9 w-full cursor-pointer appearance-none rounded-md border border-border bg-surface pe-8 ps-9 text-label-sm text-ink transition-colors focus:border-primary focus:outline-none"
+        className="h-9 w-full cursor-pointer appearance-none rounded-md border border-border bg-surface pe-8 ps-9 text-label-sm text-ink transition-colors focus:border-gold-strong focus:outline-none"
       >
         <option value="">{allLabel}</option>
         {options.map((option) => (
@@ -311,7 +311,7 @@ function OpportunityArticle({
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div className="flex-1">
             <h2 className="text-title-lg font-semibold text-ink">
-              <Link href={detailHref} className="transition-colors hover:text-primary">
+              <Link href={detailHref} className="transition-colors hover:text-gold-strong">
                 {item.title ?? slug}
               </Link>
             </h2>
@@ -325,7 +325,7 @@ function OpportunityArticle({
               data-testid="opp-view-cta"
               className={
                 featured
-                  ? 'inline-flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-label-md font-medium text-white shadow-sm transition-colors hover:bg-primary-hover'
+                  ? 'inline-flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-label-md font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover'
                   : 'inline-flex items-center gap-1 rounded-md border border-border bg-surface px-4 py-2 text-label-md font-medium text-ink transition-colors hover:bg-surface-muted'
               }
             >
@@ -339,7 +339,7 @@ function OpportunityArticle({
             <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
               {location ? (
                 <span className="inline-flex items-center gap-1.5">
-                  <MapPin aria-hidden="true" size={18} className="shrink-0 text-primary" />
+                  <MapPin aria-hidden="true" size={18} className="shrink-0 text-gold-strong" />
                   <span>{location}</span>
                 </span>
               ) : null}
@@ -353,7 +353,7 @@ function OpportunityArticle({
                   <MonitorSmartphone
                     aria-hidden="true"
                     size={16}
-                    className="shrink-0 text-primary"
+                    className="shrink-0 text-gold-strong"
                   />
                   <span>{modeLabel}</span>
                 </span>
@@ -364,7 +364,7 @@ function OpportunityArticle({
             <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
               {range !== '' ? (
                 <span className="inline-flex items-center gap-1.5">
-                  <Calendar aria-hidden="true" size={18} className="shrink-0 text-primary" />
+                  <Calendar aria-hidden="true" size={18} className="shrink-0 text-gold-strong" />
                   <span>{range}</span>
                 </span>
               ) : null}
@@ -375,7 +375,7 @@ function OpportunityArticle({
               ) : null}
               {hoursLine ? (
                 <span className="inline-flex items-center gap-1.5">
-                  <Hourglass aria-hidden="true" size={16} className="shrink-0 text-primary" />
+                  <Hourglass aria-hidden="true" size={16} className="shrink-0 text-gold-strong" />
                   <span>{hoursLine}</span>
                 </span>
               ) : null}
@@ -386,21 +386,21 @@ function OpportunityArticle({
               <Clock
                 aria-hidden="true"
                 size={18}
-                className={closing ? 'shrink-0 text-status-pending' : 'shrink-0 text-primary'}
+                className={closing ? 'shrink-0 text-status-pending' : 'shrink-0 text-gold-strong'}
               />
               <span className={closing ? 'font-medium text-status-pending' : undefined}>{deadlineLine}</span>
             </p>
           ) : null}
           {category ? (
             <p className="flex items-center gap-1.5">
-              <Tag aria-hidden="true" size={18} className="shrink-0 text-primary" />
+              <Tag aria-hidden="true" size={18} className="shrink-0 text-gold-strong" />
               <span>{category}</span>
             </p>
           ) : null}
         </div>
         {skills.length > 0 ? (
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <Sparkles aria-hidden="true" size={14} className="shrink-0 text-primary" />
+            <Sparkles aria-hidden="true" size={14} className="shrink-0 text-gold-strong" />
             <span className="me-1 text-label-xs uppercase tracking-wider text-ink-muted">
               {t('oppsList.skillsLabel')}
             </span>
@@ -531,7 +531,7 @@ export function PublicOpportunitiesPage({
       <section data-section="header" className="mb-6 flex flex-col justify-between gap-6 border-b border-border-muted pb-6 md:flex-row md:items-end">
         <div className="max-w-2xl">
           <p className="mb-2 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center rounded bg-primary-tint px-2 py-0.5 text-label-xs font-semibold uppercase tracking-wider text-primary">
+            <span className="inline-flex items-center rounded bg-gold-soft px-2 py-0.5 text-label-xs font-semibold uppercase tracking-wider text-gold-strong">
               {t('oppsList.eyebrowBadge')}
             </span>
             <span className="text-label-xs text-ink-muted">{t('oppsList.eyebrowNote')}</span>
@@ -567,7 +567,7 @@ export function PublicOpportunitiesPage({
               value={qDraft}
               onChange={(event) => setQDraft(event.target.value)}
               placeholder={t('oppsList.searchPlaceholder')}
-              className="h-10 w-full rounded-md border border-border bg-surface-muted/60 py-2 pe-4 ps-11 text-body-sm text-ink transition-colors placeholder:text-ink-muted focus:border-primary focus:bg-surface focus:outline-none"
+              className="h-10 w-full rounded-md border border-border bg-surface-muted/60 py-2 pe-4 ps-11 text-body-sm text-ink transition-colors placeholder:text-ink-muted focus:border-gold-strong focus:bg-surface focus:outline-none"
             />
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -639,7 +639,7 @@ export function PublicOpportunitiesPage({
                   id="opp-list-sort"
                   value={filters.sort}
                   onChange={(event) => update({ sort: event.target.value })}
-                  className="h-8 cursor-pointer appearance-none rounded-md border border-border bg-surface pe-7 ps-2 text-label-sm text-ink transition-colors focus:border-primary focus:outline-none"
+                  className="h-8 cursor-pointer appearance-none rounded-md border border-border bg-surface pe-7 ps-2 text-label-sm text-ink transition-colors focus:border-gold-strong focus:outline-none"
                 >
                   {sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -698,7 +698,7 @@ export function PublicOpportunitiesPage({
             <button
               type="button"
               onClick={reset}
-              className="rounded-md bg-primary px-4 py-2 text-label-md font-medium text-white transition-colors hover:bg-primary-hover"
+              className="rounded-md bg-primary px-4 py-2 text-label-md font-medium text-on-primary transition-colors hover:bg-primary-hover"
             >
               {t('oppsList.emptyBrowseAll')}
             </button>
@@ -717,7 +717,7 @@ export function PublicOpportunitiesPage({
           <button
             type="button"
             onClick={reset}
-            className="rounded-md bg-primary px-4 py-2 text-label-md font-medium text-white transition-colors hover:bg-primary-hover"
+            className="rounded-md bg-primary px-4 py-2 text-label-md font-medium text-on-primary transition-colors hover:bg-primary-hover"
           >
             {t('oppsList.resetAll')}
           </button>
@@ -774,7 +774,7 @@ export function PublicOpportunitiesPage({
           className="mt-6 flex flex-col items-center justify-between gap-6 rounded-lg border border-border-muted bg-surface-muted p-6 md:flex-row"
         >
           <div className="flex items-start gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary-tint text-primary">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-gold-soft text-gold-strong">
               <ShieldCheck aria-hidden="true" size={24} />
             </div>
             <div>
@@ -791,7 +791,7 @@ export function PublicOpportunitiesPage({
             </Link>
             <Link
               href="/create-account"
-              className="flex-1 rounded-md bg-primary px-4 py-2 text-center text-label-md font-medium text-white shadow-sm transition-colors hover:bg-primary-hover md:flex-none"
+              className="flex-1 rounded-md bg-primary px-4 py-2 text-center text-label-md font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover md:flex-none"
             >
               {t('oppsList.ctaCreate')}
             </Link>

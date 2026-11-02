@@ -1,36 +1,50 @@
 import type { Config } from 'tailwindcss';
-import { tokens } from './src/theme/tokens';
+import { cssVariables, tokens } from './src/theme/tokens';
 
 const config: Config = {
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: tokens.colors.primary,
-          hover: tokens.colors.primaryHover,
-          tint: tokens.colors.tint,
-        },
+        background: cssVariables.background,
         surface: {
-          DEFAULT: tokens.colors.surface,
-          muted: tokens.colors.surfaceMuted,
+          DEFAULT: cssVariables.surface,
+          muted: cssVariables.surfaceMuted,
         },
         border: {
-          DEFAULT: tokens.colors.border,
-          muted: tokens.colors.borderMuted,
+          DEFAULT: cssVariables.border,
+          muted: cssVariables.borderMuted,
         },
+        primary: {
+          DEFAULT: cssVariables.primary,
+          hover: cssVariables.primaryHover,
+        },
+        'on-primary': cssVariables.onPrimary,
+        gold: {
+          DEFAULT: cssVariables.gold,
+          hover: cssVariables.goldHover,
+          strong: cssVariables.goldStrong,
+          soft: cssVariables.goldSoft,
+        },
+        'on-gold': cssVariables.onGold,
         status: {
-          success: tokens.colors.success,
-          pending: tokens.colors.pending,
-          error: tokens.colors.error,
+          success: cssVariables.success,
+          pending: cssVariables.pending,
+          error: cssVariables.error,
+          'error-warm': cssVariables.errorWarm,
         },
+        'on-success': cssVariables.onSuccess,
+        'on-error': cssVariables.onError,
         ink: {
-          DEFAULT: tokens.colors.ink,
-          muted: tokens.colors.inkMuted,
+          DEFAULT: cssVariables.ink,
+          muted: cssVariables.inkMuted,
         },
+        overlay: cssVariables.overlay,
+        'on-overlay': cssVariables.onOverlay,
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'var(--font-plex-arabic)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        arabic: ['var(--font-tajawal)', 'Tajawal', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         sm: tokens.radii.sm,

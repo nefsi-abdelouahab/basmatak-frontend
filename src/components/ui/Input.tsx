@@ -17,7 +17,7 @@ export function Input({ id, label, error, hint, className = '', ...rest }: Input
       </label>
       <input
         id={id}
-        className={`w-full rounded-md border bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none ${error ? 'border-status-error' : 'border-border focus:border-primary'} ${className}`}
+        className={`w-full rounded-md border bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none ${error ? 'border-status-error' : 'border-border focus:border-gold-strong'} ${className}`}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
         {...rest}

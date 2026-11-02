@@ -280,7 +280,7 @@ export function OrgContributionsPage({ locale }: { locale: string }) {
             <h1 className="text-2xl font-bold tracking-tight text-ink">{t('contributions.title')}</h1>
             <p className="max-w-2xl text-sm text-ink-muted">{t('contributions.subtitle')}</p>
             <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 pt-1 text-sm text-ink-muted">
-              <FileStack size={16} aria-hidden="true" className="text-primary" />
+              <FileStack size={16} aria-hidden="true" className="text-gold-strong" />
               <span data-testid="contributions-stats">
                 <span>{t('contributions.statAwaiting', { count: totals['to-review'] ?? '…' })}</span>
                 <span aria-hidden="true"> · </span>
@@ -311,7 +311,7 @@ export function OrgContributionsPage({ locale }: { locale: string }) {
                   onClick={() => setTab(value)}
                   className={`shrink-0 pb-2.5 text-sm transition-colors ${
                     active
-                      ? 'border-b-2 border-primary font-semibold text-primary'
+                      ? 'border-b-2 border-gold-strong font-semibold text-gold-strong'
                       : 'font-medium text-ink-muted hover:text-ink'
                   }`}
                 >
@@ -338,7 +338,7 @@ export function OrgContributionsPage({ locale }: { locale: string }) {
                 placeholder={t('shared.searchPlaceholder')}
                 value={q}
                 onChange={(event) => setQ(event.target.value)}
-                className="h-10 w-full rounded-lg border border-border bg-surface py-2 pe-3 ps-9 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                className="h-10 w-full rounded-lg border border-border bg-surface py-2 pe-3 ps-9 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
               />
             </div>
             <div className="relative md:col-span-3">
@@ -353,7 +353,7 @@ export function OrgContributionsPage({ locale }: { locale: string }) {
                 aria-label={t('shared.opportunityLabel')}
                 value={opportunityId}
                 onChange={(event) => setOpportunityId(event.target.value)}
-                className="h-10 w-full appearance-none rounded-lg border border-border bg-surface py-2 pe-8 ps-9 text-sm text-ink focus:border-primary focus:outline-none"
+                className="h-10 w-full appearance-none rounded-lg border border-border bg-surface py-2 pe-8 ps-9 text-sm text-ink focus:border-gold-strong focus:outline-none"
               >
                 <option value="">{t('shared.allOpportunities')}</option>
                 {(oppsQuery.data?.items ?? []).map((opp) => {
@@ -384,7 +384,7 @@ export function OrgContributionsPage({ locale }: { locale: string }) {
                   aria-label={t('contributions.formatLabel')}
                   value={format}
                   onChange={(event) => setFormat(event.target.value as '' | SubmissionFormat)}
-                  className="h-10 w-full appearance-none rounded-lg border border-border bg-surface py-2 pe-8 ps-9 text-sm text-ink focus:border-primary focus:outline-none"
+                  className="h-10 w-full appearance-none rounded-lg border border-border bg-surface py-2 pe-8 ps-9 text-sm text-ink focus:border-gold-strong focus:outline-none"
                 >
                   <option value="">{t('contributions.allFormats')}</option>
                   {SUBMISSION_FORMATS.map((value) => (
@@ -412,7 +412,7 @@ export function OrgContributionsPage({ locale }: { locale: string }) {
                 aria-label={t('contributions.sortLabel')}
                 value={sort}
                 onChange={(event) => setSort(event.target.value as SubmissionInboxSort)}
-                className="h-10 w-full appearance-none rounded-lg border border-border bg-surface py-2 pe-8 ps-9 text-sm text-ink focus:border-primary focus:outline-none"
+                className="h-10 w-full appearance-none rounded-lg border border-border bg-surface py-2 pe-8 ps-9 text-sm text-ink focus:border-gold-strong focus:outline-none"
               >
                 {SUBMISSION_INBOX_SORTS.map((value) => (
                   <option key={value} value={value}>
@@ -585,11 +585,11 @@ function QueueCard({
     <li data-testid="submission-row">
       <article
         className={`relative p-4 transition-colors ${
-          active ? 'bg-primary-tint' : 'hover:bg-surface-muted'
+          active ? 'bg-gold-soft' : 'hover:bg-surface-muted'
         }`}
       >
         {active ? (
-          <span aria-hidden="true" className="absolute inset-y-3 start-0 w-1 rounded-e bg-primary" />
+          <span aria-hidden="true" className="absolute inset-y-3 start-0 w-1 rounded-e bg-gold" />
         ) : null}
         <button
           type="button"
@@ -671,11 +671,11 @@ function VerifiedQueueCard({
     <li data-testid="verified-row">
       <article
         className={`relative p-4 transition-colors ${
-          active ? 'bg-primary-tint' : 'hover:bg-surface-muted'
+          active ? 'bg-gold-soft' : 'hover:bg-surface-muted'
         }`}
       >
         {active ? (
-          <span aria-hidden="true" className="absolute inset-y-3 start-0 w-1 rounded-e bg-primary" />
+          <span aria-hidden="true" className="absolute inset-y-3 start-0 w-1 rounded-e bg-gold" />
         ) : null}
         <button
           type="button"
@@ -685,7 +685,7 @@ function VerifiedQueueCard({
           className="flex w-full min-w-0 items-start gap-3 text-start"
         >
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-muted text-ink">
-            <BadgeCheck size={20} aria-hidden="true" className="text-primary" />
+            <BadgeCheck size={20} aria-hidden="true" className="text-gold-strong" />
           </span>
           <span className="flex min-w-0 flex-1 flex-col">
             <span className="flex items-baseline justify-between gap-2">
@@ -731,7 +731,7 @@ function VerifiedExperiencePanel({ row }: { row: OrgExperienceRow }) {
         <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-start gap-4">
             <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-surface-muted">
-              <BadgeCheck size={28} aria-hidden="true" className="text-primary" />
+              <BadgeCheck size={28} aria-hidden="true" className="text-gold-strong" />
             </span>
             <div className="flex min-w-0 flex-col">
               <h2 className="text-xl font-semibold tracking-tight text-ink">{title}</h2>
@@ -754,7 +754,7 @@ function VerifiedExperiencePanel({ row }: { row: OrgExperienceRow }) {
         <div>
           <Link
             href="/org/experiences"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover"
           >
             <span>{t('contributions.openArchive')}</span>
             <ArrowRight size={16} aria-hidden="true" className="rtl:rotate-180" />

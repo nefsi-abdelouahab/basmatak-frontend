@@ -2,14 +2,16 @@
 
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'gold' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-white hover:bg-primary-hover',
+  primary: 'bg-primary text-on-primary hover:bg-primary-hover',
   secondary: 'border border-border bg-surface text-ink hover:bg-surface-muted',
-  ghost: 'text-primary hover:bg-surface-muted',
-  danger: 'bg-status-error text-white hover:opacity-90',
+  ghost: 'text-gold-strong hover:bg-surface-muted',
+  // Reserved for a few highlighted actions only. Gold always pairs with black.
+  gold: 'bg-gold text-on-gold hover:bg-gold-hover',
+  danger: 'bg-status-error text-on-error hover:opacity-90',
 };
 
 const SIZES: Record<ButtonSize, string> = {
@@ -33,7 +35,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50 ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong disabled:cursor-not-allowed disabled:opacity-50 ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
       {...rest}
     >
       {children}

@@ -119,7 +119,7 @@ export function AvailabilitySection() {
               <button
                 type="button"
                 onClick={() => addSlot(day)}
-                className="text-label-sm font-medium text-primary"
+                className="text-label-sm font-medium text-gold-strong"
               >
                 {t('profile.addSlot')}
               </button>

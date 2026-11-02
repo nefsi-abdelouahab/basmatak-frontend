@@ -36,6 +36,7 @@ export function useAdminReportsQuery(filters: AdminReportFilters = {}, options?:
 
 export function useAdminReportsCsvExportMutation() {
   return useMutation({
+    meta: { successKey: 'success.reportsExported', silent: true },
     mutationFn: (filters: AdminReportFilters = {}) =>
       adminModerationApi.exportAdminReportsCsv(api, filters),
   });
@@ -44,6 +45,7 @@ export function useAdminReportsCsvExportMutation() {
 export function useAssignAdminReportMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.reportAssigned', silent: true },
     mutationFn: ({ reportId, assignedAdminId }: { reportId: string; assignedAdminId: string }) =>
       adminModerationApi.assignAdminReport(api, reportId, { assignedAdminId }),
     onSuccess: () => {
@@ -55,6 +57,7 @@ export function useAssignAdminReportMutation() {
 export function useResolveAdminReportMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.reportResolved', silent: true },
     mutationFn: ({ reportId, input }: { reportId: string; input: ResolveReportInput }) =>
       adminModerationApi.resolveAdminReport(api, reportId, input),
     onSuccess: () => {
@@ -65,6 +68,7 @@ export function useResolveAdminReportMutation() {
 
 export function useSendAdminNoticeMutation() {
   return useMutation({
+    meta: { successKey: 'success.noticeSent', silent: true },
     mutationFn: ({ userId, message }: { userId: string; message: string }) =>
       adminModerationApi.sendAdminNotice(api, userId, { message }),
   });
@@ -73,6 +77,7 @@ export function useSendAdminNoticeMutation() {
 export function useHideAdminReviewMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.reviewHidden', silent: true },
     mutationFn: (reviewId: string) => adminModerationApi.hideAdminReview(api, reviewId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
@@ -112,6 +117,7 @@ export function useAdminSettingsQuery(options?: { enabled?: boolean }) {
 export function useUpdateAdminSettingMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.settingUpdated', silent: true },
     mutationFn: ({ key, value }: { key: string; value: unknown }) =>
       adminModerationApi.updateAdminSetting(api, key, value),
     onSuccess: () => {
@@ -123,6 +129,7 @@ export function useUpdateAdminSettingMutation() {
 export function useMaintenanceToggleMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: (variables: { enabled: boolean }) => variables.enabled ? 'success.maintenanceEnabled' : 'success.maintenanceDisabled', silent: true },
     mutationFn: (input: { enabled: boolean; message?: string }) =>
       adminModerationApi.toggleMaintenance(api, input),
     onSuccess: () => {

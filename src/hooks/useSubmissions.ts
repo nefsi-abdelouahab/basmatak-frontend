@@ -65,6 +65,7 @@ export function useMySubmissionsQuery() {
 export function useCreateSubmissionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.submissionStarted', silent: true },
     mutationFn: ({
       participationId,
       input,
@@ -81,6 +82,7 @@ export function useCreateSubmissionMutation() {
 export function usePatchSubmissionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.draftSaved', silent: true },
     mutationFn: ({
       submissionId,
       input,
@@ -98,6 +100,7 @@ export function usePatchSubmissionMutation() {
 export function useSubmitSubmissionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.contributionSubmitted', silent: true },
     mutationFn: ({
       submissionId,
       input,
@@ -115,6 +118,7 @@ export function useSubmitSubmissionMutation() {
 export function useCreateMediaLinkMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.linkAdded', silent: true },
     mutationFn: async ({ url }: { url: string }) => {
       const check = isAllowedEvidenceLink(url);
       if (!check.ok) throw new Error(`INVALID_LINK_${check.reason.toUpperCase()}`);
@@ -129,6 +133,7 @@ export function useCreateMediaLinkMutation() {
 export function useDeleteMediaMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.fileRemoved', silent: true },
     mutationFn: (mediaId: string) => submissionsApi.deleteMedia(api, mediaId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });

@@ -14,10 +14,12 @@ import {
   Send,
 } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/navigation';
+import { notify } from '@/lib/notify';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import { Select } from '@/components/ui/Select';
 import { ForbiddenScreen } from '@/components/system/ForbiddenScreen';
 import { NotFoundScreen } from '@/components/system/NotFoundScreen';
@@ -695,7 +697,7 @@ function PositionsEditor({
                 placeholder={t('create.positionDescHint')}
                 value={draft.description}
                 onChange={(event) => setDraft((d) => ({ ...d, description: event.target.value }))}
-                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
               />
             </div>
             <fieldset>
@@ -706,7 +708,7 @@ function PositionsEditor({
               ) : allSkills.length === 0 ? (
                 <p className="text-sm text-ink-muted">{t('create.positionSkillsEmpty')}</p>
               ) : (
-                <div className="flex max-h-48 flex-wrap gap-2 overflow-y-auto rounded-md border border-border bg-surface p-3">
+                <ScrollFade viewportClassName="flex max-h-48 flex-wrap gap-2 overflow-y-auto rounded-md border border-border bg-surface p-3">
                   {allSkills.map((skill) => {
                     const id = skillIdOf(skill);
                     const checked = draft.skillIds.includes(id);
@@ -715,7 +717,7 @@ function PositionsEditor({
                         key={id}
                         className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-label-sm transition-colors ${
                           checked
-                            ? 'border-primary bg-primary/10 font-medium text-ink'
+                            ? 'border-gold-strong bg-gold-soft font-medium text-ink'
                             : 'border-border text-ink-muted hover:text-ink'
                         }`}
                       >
@@ -729,7 +731,7 @@ function PositionsEditor({
                       </label>
                     );
                   })}
-                </div>
+                </ScrollFade>
               )}
             </fieldset>
             <div>
@@ -742,7 +744,7 @@ function PositionsEditor({
                 placeholder={t('create.positionDeliverablesHint')}
                 value={draft.deliverables}
                 onChange={(event) => setDraft((d) => ({ ...d, deliverables: event.target.value }))}
-                className="w-full rounded-md border border-border bg-surface px-3 py-2 font-mono text-[13px] leading-relaxed text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                className="w-full rounded-md border border-border bg-surface px-3 py-2 font-mono text-[13px] leading-relaxed text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
               />
             </div>
             {error ? <OppSectionError message={error} testId="position-error" /> : null}
@@ -970,6 +972,7 @@ export function OpportunityEditor({ locale, opportunityId }: { locale: string; o
     const check = validateCoverFile({ name: file.name, type: file.type, size: file.size });
     if (!check.ok) {
       setCoverError(check.reason === 'type' ? t('create.coverTypeError') : t('create.coverSizeError'));
+      notify.error(check.reason === 'type' ? 'error.fileTypeNotAllowed' : 'error.fileTooLarge');
       return;
     }
     setCoverError(null);
@@ -1014,7 +1017,8 @@ export function OpportunityEditor({ locale, opportunityId }: { locale: string; o
   }
 
   // Save draft: create (POST → status draft) on a new screen, update (PATCH)
-  // on an existing draft. Inline states only — no toast library.
+  // on an existing draft. Field errors stay inline; the global toast confirms
+  // the save.
   async function onSave(event?: FormEvent) {
     event?.preventDefault();
     if (!validate() || coverProgress !== null) return;
@@ -1211,7 +1215,7 @@ export function OpportunityEditor({ locale, opportunityId }: { locale: string; o
                 type="button"
                 data-testid="cover-dropzone"
                 onClick={() => fileRef.current?.click()}
-                className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-surface-muted/40 text-ink-muted transition-colors hover:border-primary hover:text-ink"
+                className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-surface-muted/40 text-ink-muted transition-colors hover:border-gold-strong hover:text-ink"
               >
                 <ImagePlus size={24} aria-hidden="true" className="shrink-0" />
                 <span className="text-label-md font-medium">{t('create.coverUpload')}</span>
@@ -1308,7 +1312,7 @@ export function OpportunityEditor({ locale, opportunityId }: { locale: string; o
                 onChange={(event) => set('description')(event.target.value)}
                 aria-invalid={fieldErrors.description ? true : undefined}
                 className={`w-full rounded-md border bg-surface px-3.5 py-3 text-body-md leading-relaxed text-ink placeholder:text-ink-muted focus:outline-none ${
-                  fieldErrors.description ? 'border-status-error' : 'border-border focus:border-primary'
+                  fieldErrors.description ? 'border-status-error' : 'border-border focus:border-gold-strong'
                 }`}
               />
               {fieldErrors.description ? (
@@ -1374,7 +1378,7 @@ export function OpportunityEditor({ locale, opportunityId }: { locale: string; o
                       onClick={() => set('mode')(active ? '' : mode)}
                       className={`inline-flex h-10 items-center rounded-lg border px-4 text-label-md font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                         active
-                          ? 'border-primary bg-primary/10 text-ink'
+                          ? 'border-gold-strong bg-gold-soft text-ink'
                           : 'border-border bg-surface text-ink-muted hover:text-ink'
                       }`}
                     >
@@ -1460,7 +1464,7 @@ export function OpportunityEditor({ locale, opportunityId }: { locale: string; o
                 value={form.prerequisites}
                 disabled={lockedFields.has('prerequisites')}
                 onChange={(event) => set('prerequisites')(event.target.value)}
-                className="w-full rounded-md border border-border bg-surface px-3.5 py-3 font-mono text-[13px] leading-relaxed text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none disabled:opacity-50"
+                className="w-full rounded-md border border-border bg-surface px-3.5 py-3 font-mono text-[13px] leading-relaxed text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none disabled:opacity-50"
               />
               <p className="text-label-xs text-ink-muted">{t('create.prerequisitesHint')}</p>
               {lockedHint('prerequisites')}
@@ -1625,7 +1629,7 @@ export function OpportunityEditor({ locale, opportunityId }: { locale: string; o
                   href={publicHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-label-sm font-medium text-primary hover:underline"
+                  className="inline-flex items-center gap-1 text-label-sm font-medium text-gold-strong hover:underline"
                 >
                   <span>{t('create.previewOpenNewTab')}</span>
                   <ExternalLink size={12} aria-hidden="true" className="shrink-0" />

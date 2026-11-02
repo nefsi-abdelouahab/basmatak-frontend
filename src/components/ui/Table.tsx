@@ -15,7 +15,7 @@ export interface TableProps<T> {
 
 export function Table<T>({ columns, rows, keyOf, caption }: TableProps<T>) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto" tabIndex={0}>
       <table className="w-full border-collapse text-start">
         {caption ? <caption className="pb-2 text-start text-sm text-ink-muted">{caption}</caption> : null}
         <thead>

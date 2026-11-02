@@ -21,6 +21,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import { useSessionQuery } from '@/hooks/useSession';
 import { useMyApplicationsQuery, useMyParticipationsQuery } from '@/hooks/useTasks';
 import { useMyOrganizationQuery } from '@/hooks/useOrgStats';
@@ -104,9 +105,11 @@ function OrgSidebar({ pathname }: { pathname: string }) {
   const t = useTranslations('orgWorkspace');
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   return (
-    <aside
+    <ScrollFade
+      as="aside"
       data-testid="shell-sidebar"
-      className="hidden w-64 shrink-0 rounded-lg border border-border bg-surface p-2 shadow-sm lg:sticky lg:top-20 lg:block lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
+      className="hidden w-64 shrink-0 rounded-lg border border-border bg-surface p-2 shadow-sm lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100dvh-7rem)] lg:flex-col lg:self-start"
+      viewportClassName="min-h-0 lg:flex-1 lg:overflow-y-auto"
     >
       <div className="space-y-4">
         <div>
@@ -122,9 +125,9 @@ function OrgSidebar({ pathname }: { pathname: string }) {
                   href={href}
                   data-testid={`sidebar-link-org-${key}`}
                   aria-current={active ? 'page' : undefined}
-                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+                  className={`flex items-center gap-2 rounded-md border-s-2 border-transparent py-2 pe-3 ps-2.5 text-body-md transition-colors ${
                     active
-                      ? 'bg-primary-tint font-medium text-primary'
+                      ? 'border-gold bg-gold-soft font-medium text-gold-strong'
                       : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
                   }`}
                 >
@@ -148,9 +151,9 @@ function OrgSidebar({ pathname }: { pathname: string }) {
                   href={href}
                   data-testid={`sidebar-link-org-${key}`}
                   aria-current={active ? 'page' : undefined}
-                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+                  className={`flex items-center gap-2 rounded-md border-s-2 border-transparent py-2 pe-3 ps-2.5 text-body-md transition-colors ${
                     active
-                      ? 'bg-primary-tint font-medium text-primary'
+                      ? 'border-gold bg-gold-soft font-medium text-gold-strong'
                       : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
                   }`}
                 >
@@ -170,9 +173,9 @@ function OrgSidebar({ pathname }: { pathname: string }) {
               href="/org/settings"
               data-testid="sidebar-link-org-settings"
               aria-current={isActive('/org/settings') ? 'page' : undefined}
-              className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+              className={`flex items-center gap-2 rounded-md border-s-2 border-transparent py-2 pe-3 ps-2.5 text-body-md transition-colors ${
                 isActive('/org/settings')
-                  ? 'bg-primary-tint font-medium text-primary'
+                  ? 'border-gold bg-gold-soft font-medium text-gold-strong'
                   : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
               }`}
             >
@@ -185,7 +188,7 @@ function OrgSidebar({ pathname }: { pathname: string }) {
           <OrgVerifiedBadge />
         </div>
       </div>
-    </aside>
+    </ScrollFade>
   );
 }
 
@@ -221,9 +224,11 @@ function AdminSidebar({ pathname }: { pathname: string }) {
     { label: t('nav.moderation'), links: ADMIN_MODERATION, testPrefix: 'moderation' },
   ];
   return (
-    <aside
+    <ScrollFade
+      as="aside"
       data-testid="shell-sidebar"
-      className="hidden w-64 shrink-0 rounded-lg border border-border bg-surface p-2 shadow-sm lg:sticky lg:top-20 lg:block lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
+      className="hidden w-64 shrink-0 rounded-lg border border-border bg-surface p-2 shadow-sm lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100dvh-7rem)] lg:flex-col lg:self-start"
+      viewportClassName="min-h-0 lg:flex-1 lg:overflow-y-auto"
     >
       <div className="space-y-4">
         {groups.map((group) => (
@@ -240,9 +245,9 @@ function AdminSidebar({ pathname }: { pathname: string }) {
                     href={href}
                     data-testid={`sidebar-link-admin-${key}`}
                     aria-current={active ? 'page' : undefined}
-                    className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+                    className={`flex items-center gap-2 rounded-md border-s-2 border-transparent py-2 pe-3 ps-2.5 text-body-md transition-colors ${
                       active
-                        ? 'bg-primary-tint font-medium text-primary'
+                        ? 'border-gold bg-gold-soft font-medium text-gold-strong'
                         : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
                     }`}
                   >
@@ -263,9 +268,9 @@ function AdminSidebar({ pathname }: { pathname: string }) {
               href="/admin/settings"
               data-testid="sidebar-link-admin-settings"
               aria-current={isActive('/admin/settings') ? 'page' : undefined}
-              className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+              className={`flex items-center gap-2 rounded-md border-s-2 border-transparent py-2 pe-3 ps-2.5 text-body-md transition-colors ${
                 isActive('/admin/settings')
-                  ? 'bg-primary-tint font-medium text-primary'
+                  ? 'border-gold bg-gold-soft font-medium text-gold-strong'
                   : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
               }`}
             >
@@ -276,9 +281,9 @@ function AdminSidebar({ pathname }: { pathname: string }) {
               href="/admin/audit-logs"
               data-testid="sidebar-link-admin-audit-logs"
               aria-current={isActive('/admin/audit-logs') ? 'page' : undefined}
-              className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+              className={`flex items-center gap-2 rounded-md border-s-2 border-transparent py-2 pe-3 ps-2.5 text-body-md transition-colors ${
                 isActive('/admin/audit-logs')
-                  ? 'bg-primary-tint font-medium text-primary'
+                  ? 'border-gold bg-gold-soft font-medium text-gold-strong'
                   : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
               }`}
             >
@@ -288,7 +293,7 @@ function AdminSidebar({ pathname }: { pathname: string }) {
           </nav>
         </div>
       </div>
-    </aside>
+    </ScrollFade>
   );
 }
 
@@ -312,9 +317,9 @@ function SidebarLink({
       href={href}
       data-testid={testId}
       aria-current={active ? 'page' : undefined}
-      className={`flex items-center gap-2 rounded-md px-3 py-2 text-body-md transition-colors ${
+      className={`flex items-center gap-2 rounded-md border-s-2 border-transparent py-2 pe-3 ps-2.5 text-body-md transition-colors ${
         active
-          ? 'bg-primary-tint font-medium text-primary'
+          ? 'border-gold bg-gold-soft font-medium text-gold-strong'
           : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
       }`}
     >
@@ -378,9 +383,11 @@ export function Sidebar() {
   };
 
   return (
-    <aside
+    <ScrollFade
+      as="aside"
       data-testid="shell-sidebar"
-      className="hidden w-64 shrink-0 rounded-lg border border-border bg-surface p-2 shadow-sm lg:sticky lg:top-20 lg:block lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
+      className="hidden w-64 shrink-0 rounded-lg border border-border bg-surface p-2 shadow-sm lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100dvh-7rem)] lg:flex-col lg:self-start"
+      viewportClassName="min-h-0 lg:flex-1 lg:overflow-y-auto"
     >
       <div className="space-y-4">
         <div>
@@ -442,6 +449,6 @@ export function Sidebar() {
           <p className="mt-1">{t('footer.rights', { year: 2026, name: t('appName') })}</p>
         </div>
       </div>
-    </aside>
+    </ScrollFade>
   );
 }

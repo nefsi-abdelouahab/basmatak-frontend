@@ -16,6 +16,7 @@ import {
   Users,
 } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/navigation';
+import { notify } from '@/lib/notify';
 import { useSessionQuery, getLoginHref } from '@/hooks/useSession';
 import { useToggleOpportunityFavoriteMutation, isAuthError } from '@/hooks/useFavorites';
 import { isOrgVerified, opportunityRef, orgDisplayName } from '@/hooks/useFeed';
@@ -91,10 +92,12 @@ function ShareOpportunityButton({ title, detailHref }: { title: string; detailHr
           }
           try {
             await navigator.clipboard.writeText(url);
+            notify.success('success.linkCopied');
             setCopied(true);
             if (timer.current) clearTimeout(timer.current);
             timer.current = setTimeout(() => setCopied(false), 2500);
           } catch {
+            notify.error('error.copyFailed');
             setCopied(false);
           }
         }}
@@ -279,7 +282,7 @@ export function OpportunityCard({
       <div className="flex min-w-0 items-center gap-3">
         <div
           aria-hidden="true"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-muted text-primary"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-muted text-gold-strong"
         >
           <Building2 size={20} />
         </div>
@@ -306,7 +309,7 @@ export function OpportunityCard({
         {interactive ? (
           <Link
             href={detailHref}
-            className="text-title-lg font-semibold tracking-tight text-ink transition-colors hover:text-primary"
+            className="text-title-lg font-semibold tracking-tight text-ink transition-colors hover:text-gold-strong"
           >
             {title}
           </Link>
@@ -434,7 +437,7 @@ export function OpportunityCard({
           </div>
           <Link
             href={detailHref}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-label-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-label-sm font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover"
           >
             <span>{t('opportunities.viewOpportunity')}</span>
             <ArrowRight size={16} aria-hidden="true" className="rtl:rotate-180" />

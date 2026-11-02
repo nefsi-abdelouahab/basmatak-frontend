@@ -55,7 +55,7 @@ export function PublicMediaLink({ media }: { media: PublicMedia }) {
       href={media.url ?? ''}
       target="_blank"
       rel="noreferrer noopener"
-      className="text-sm font-medium text-primary hover:underline"
+      className="text-sm font-medium text-gold-strong hover:underline"
     >
       {t('portfolio.openLink')}
     </a>

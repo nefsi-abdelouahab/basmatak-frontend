@@ -10,6 +10,7 @@ import {
 import { NextIntlClientProvider } from 'next-intl';
 import type { ComponentProps, ReactNode } from 'react';
 import aiAgentEn from '@/messages/ai-agent/en.json';
+import aiAgentAr from '@/messages/ai-agent/ar.json';
 import type { AiAgentStatusResponse } from '@/lib/api/aiAgent';
 import type { AiChatView } from './aiAgentUi';
 import { AiAgentPanel } from './AiAgentPanel';
@@ -59,12 +60,16 @@ function createChat(overrides: Partial<AiChatView> = {}): AiChatView {
 
 function renderPanel(
   props: Partial<ComponentProps<typeof AiAgentPanel>> = {},
+  locale: 'en' | 'ar' = 'en',
 ) {
   const chat = props.chat ?? createChat();
   const onClose = props.onClose ?? vi.fn();
   const onRetryStatus = props.onRetryStatus ?? vi.fn();
   const view = render(
-    <NextIntlClientProvider locale="en" messages={{ aiAgent: aiAgentEn }}>
+    <NextIntlClientProvider
+      locale={locale}
+      messages={{ aiAgent: locale === 'ar' ? aiAgentAr : aiAgentEn }}
+    >
       <AiAgentPanel
         chat={chat}
         availability="online"
@@ -72,7 +77,7 @@ function renderPanel(
         statusPending={false}
         quotaBlocked={false}
         quotaRetryAfter={undefined}
-        edge="end"
+        side="right"
         {...props}
         onClose={onClose}
         onRetryStatus={onRetryStatus}
@@ -88,19 +93,81 @@ describe('AiAgentPanel', () => {
     document.body.style.overflow = '';
   });
 
-  it('renders an accessible dialog and focuses the composer on desktop', async () => {
+  it('renders a compact accessible header with the Basma name and subtitle', async () => {
     renderPanel();
     const dialog = screen.getByRole('dialog', {
-      name: aiAgentEn.panel.title,
+      name: aiAgentEn.panel.label,
     });
     expect(dialog.getAttribute('aria-modal')).toBeNull();
+    expect(dialog.getAttribute('aria-describedby')).not.toBeNull();
+    expect(
+      screen.getByRole('heading', { name: aiAgentEn.panel.title }),
+    ).toBeDefined();
     expect(screen.getByText(aiAgentEn.panel.subtitle)).toBeDefined();
+    expect(
+      screen.queryByText(
+        'Answers about opportunities, organizations, and volunteering on Basmatak.',
+      ),
+    ).toBeNull();
+    expect(
+      screen.queryByText(
+        'Answers are generated from public Basmatak data and may be incomplete.',
+      ),
+    ).toBeNull();
     expect(screen.getByText(aiAgentEn.status.online)).toBeDefined();
     await waitFor(() => {
       expect(document.activeElement).toBe(
         screen.getByTestId('ai-agent-input'),
       );
     });
+  });
+
+  it('keeps a fixed panel size anchored to the bottom corner', () => {
+    renderPanel();
+    const panel = screen.getByTestId('ai-agent-panel');
+    expect(panel.className).toContain('fixed');
+    expect(panel.style.height).toContain('640px');
+    expect(panel.style.height).toContain('100dvh');
+    expect(panel.style.width).toBe('400px');
+    expect(panel.style.bottom).toContain('1rem');
+    expect(panel.style.bottom).toContain('safe-area-inset-bottom');
+    expect(panel.style.right).toContain('safe-area-inset-right');
+    expect(panel.style.left).toBe('');
+    expect(panel.className).toContain('rounded-[20px]');
+    expect(panel.className).toContain('shadow-modal');
+  });
+
+  it('uses the requested physical side regardless of locale', () => {
+    const right = renderPanel();
+    expect(screen.getByTestId('ai-agent-panel').style.right).toContain(
+      'safe-area-inset-right',
+    );
+    expect(screen.getByTestId('ai-agent-panel').style.left).toBe('');
+    right.unmount();
+
+    renderPanel({ side: 'left' }, 'ar');
+    expect(screen.getByTestId('ai-agent-panel').style.left).toContain(
+      'safe-area-inset-left',
+    );
+    expect(screen.getByTestId('ai-agent-panel').style.right).toBe('');
+  });
+
+  it('keeps the composer flush as the last panel child with no extra gap', () => {
+    renderPanel();
+    const panel = screen.getByTestId('ai-agent-panel');
+    const composerShell = screen.getByTestId('ai-agent-composer-shell');
+    const transcript = panel.children[1] as HTMLElement;
+
+    expect(panel.className).toContain('flex');
+    expect(panel.className).toContain('flex-col');
+    expect(panel.className).not.toContain('pb-[');
+    expect(panel.style.paddingBottom).toBe('');
+    expect(transcript.className).toContain('flex-1');
+    expect(transcript.className).toContain('min-h-0');
+    expect(panel.lastElementChild).toBe(composerShell);
+    expect(composerShell.parentElement).toBe(panel);
+    expect(composerShell.className).toContain('pb-3');
+    expect(composerShell.className).not.toContain('4.5rem');
   });
 
   it('closes from the button and Escape', () => {
@@ -139,13 +206,6 @@ describe('AiAgentPanel', () => {
       screen.getByRole('button', { name: aiAgentEn.panel.newChat }),
     );
     expect(chat.newChat).toHaveBeenCalledTimes(1);
-  });
-
-  it('offsets the panel to the reported logical edge', () => {
-    renderPanel({ edge: 'start' });
-    expect(
-      screen.getByTestId('ai-agent-panel').className,
-    ).toContain('sm:start-4');
   });
 
   it('shows the offline banner and lets the user retry status', () => {
@@ -230,7 +290,7 @@ describe('AiAgentPanel', () => {
     const listeners: Array<(event: Event) => void> = [];
     const media = {
       matches: true,
-      media: '(max-width: 639px)',
+      media: '(max-width: 479px)',
       addEventListener: vi.fn(
         (_type: string, listener: (event: Event) => void) => {
           listeners.push(listener);
@@ -250,15 +310,22 @@ describe('AiAgentPanel', () => {
 
     const { unmount } = renderPanel();
     const dialog = screen.getByRole('dialog', {
-      name: aiAgentEn.panel.title,
+      name: aiAgentEn.panel.label,
     });
     expect(dialog.getAttribute('aria-modal')).toBe('true');
     expect(document.body.style.overflow).toBe('hidden');
     expect(listeners.length).toBeGreaterThan(0);
+    expect(dialog.style.width).toBe('calc(100vw - 1.5rem)');
+    expect(dialog.style.height).toContain('100dvh');
+    expect(dialog.style.height).toContain('6rem');
+    expect(dialog.style.height).toContain('safe-area-inset-bottom');
+    expect(dialog.style.left).toBe('0.75rem');
+    expect(dialog.style.right).toBe('');
+    expect(dialog.style.bottom).toContain('1rem');
 
     await waitFor(() => {
       expect(document.activeElement).toBe(
-        screen.getByRole('button', { name: aiAgentEn.panel.close }),
+        screen.getByTestId('ai-agent-input'),
       );
     });
 

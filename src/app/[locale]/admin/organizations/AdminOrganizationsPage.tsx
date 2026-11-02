@@ -38,6 +38,7 @@ import { Card } from '@/components/ui/Card';
 import { Empty } from '@/components/ui/Empty';
 import { Input } from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import { Select } from '@/components/ui/Select';
 import {
   isAdminUserStatus,
@@ -328,7 +329,7 @@ function DossierDocumentRow({ mediaId }: { mediaId: string }) {
         href={url}
         target="_blank"
         rel="noreferrer"
-        className="ms-2 inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-primary hover:underline"
+        className="ms-2 inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-gold-strong hover:underline"
       >
         {t('verifications.documentLink')}
         <Eye size={13} aria-hidden="true" />
@@ -530,7 +531,7 @@ function OrganizationPanel({
             <Link
               href={`/orgs/${slug}`}
               data-testid="admin-organization-profile-link"
-              className="inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-primary hover:underline"
+              className="inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-gold-strong hover:underline"
             >
               {t('organizations.profileCta')}
               <ExternalLink size={13} aria-hidden="true" />
@@ -591,7 +592,7 @@ function OrganizationPanel({
           </FactTile>
           <FactTile icon={<Mail size={13} />} label={t('organizations.emailLabel')}>
             {contact.email ? (
-              <a href={`mailto:${contact.email}`} className="text-primary hover:underline">
+              <a href={`mailto:${contact.email}`} className="text-gold-strong hover:underline">
                 {contact.email}
               </a>
             ) : (
@@ -607,7 +608,7 @@ function OrganizationPanel({
                 href={website}
                 target="_blank"
                 rel="noreferrer"
-                className="text-primary hover:underline"
+                className="text-gold-strong hover:underline"
               >
                 {website}
               </a>
@@ -1205,7 +1206,7 @@ export function AdminOrganizationsPage() {
       <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
         <section aria-label={t('organizations.title')} className="min-w-0 xl:col-span-7">
           <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" tabIndex={0}>
               <table className="w-full border-collapse text-start">
                 <thead>
                   <tr className="border-b border-border bg-surface-muted/60 text-xs font-medium uppercase tracking-wider text-ink-muted">
@@ -1248,7 +1249,7 @@ export function AdminOrganizationsPage() {
                         aria-selected={active}
                         className={
                           active
-                            ? 'bg-primary-tint/40'
+                            ? 'bg-gold-soft/40'
                             : 'transition-colors hover:bg-surface-muted'
                         }
                       >
@@ -1292,7 +1293,7 @@ export function AdminOrganizationsPage() {
                           <button
                             type="button"
                             onClick={() => selectRow(row)}
-                            className="inline-flex items-center justify-end gap-0.5 text-xs font-medium text-primary hover:underline"
+                            className="inline-flex items-center justify-end gap-0.5 text-xs font-medium text-gold-strong hover:underline"
                           >
                             {t('organizations.reviewCta')}
                             <ArrowRight size={14} aria-hidden="true" />
@@ -1380,17 +1381,23 @@ export function AdminOrganizationsPage() {
                 type="button"
                 aria-label={t('organizations.detailClose')}
                 onClick={() => setSelectedId(undefined)}
-                className="absolute inset-0 h-full w-full cursor-default bg-black/40 xl:hidden"
+                className="absolute inset-0 h-full w-full cursor-default bg-overlay/40 xl:hidden"
               />
-              <div className="absolute inset-y-0 end-0 w-full max-w-md overflow-y-auto bg-surface p-4 shadow-xl xl:static xl:max-w-none xl:overflow-visible xl:bg-transparent xl:p-0 xl:shadow-none">
-                <div className="xl:sticky xl:top-20 xl:max-h-[calc(100dvh-7rem)] xl:overflow-y-auto">
+              <ScrollFade
+                className="absolute inset-y-0 end-0 w-full max-w-md bg-surface p-4 shadow-raised xl:static xl:max-w-none xl:bg-transparent xl:p-0 xl:shadow-none"
+                viewportClassName="overflow-y-auto xl:overflow-visible"
+              >
+                <ScrollFade
+                  className="xl:sticky xl:top-20"
+                  viewportClassName="xl:max-h-[calc(100dvh-7rem)] xl:overflow-y-auto"
+                >
                   <OrganizationPanel
                     row={selectedRow}
                     onChanged={refetchAll}
                     onClose={() => setSelectedId(undefined)}
                   />
-                </div>
-              </div>
+                </ScrollFade>
+              </ScrollFade>
             </div>
           ) : (
             <Card>

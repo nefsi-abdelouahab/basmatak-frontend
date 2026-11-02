@@ -205,12 +205,18 @@ async function routeFacts(page: Page, selectors: string[]): Promise<SectionFacts
 
 const norm = (value: string) => value.trim().toLowerCase().replace(/\s+/g, ' ');
 
+// Left = design code.html palette; right = Basmatak warm light identity.
 const ALLOWED_STYLE_PAIRS = new Set([
-  'rgb(20, 27, 43)|rgb(17, 24, 39)', // A-ink headings
-  'rgb(74, 68, 85)|rgb(100, 116, 139)', // A-ink muted
+  'rgb(20, 27, 43)|rgb(20, 17, 13)', // A-ink headings -> ink
+  'rgb(74, 68, 85)|rgb(92, 85, 72)', // A-ink muted -> ink-muted
   'rgb(249, 249, 255)|rgb(255, 255, 255)', // A-canvas cards -> surface
-  'rgb(241, 243, 255)|rgb(248, 250, 252)', // A-canvas low
-  'rgb(233, 237, 255)|rgb(248, 250, 252)', // A-canvas container
+  'rgb(241, 243, 255)|rgb(244, 240, 230)', // A-canvas low -> surface-muted
+  'rgb(233, 237, 255)|rgb(244, 240, 230)', // A-canvas container -> surface-muted
+  'rgb(233, 237, 255)|rgb(246, 236, 203)', // A-tint CTA fill -> gold-soft
+  'rgb(109, 40, 217)|rgb(212, 166, 42)', // A-cta primary -> gold fill
+  'rgb(109, 40, 217)|rgb(20, 17, 13)', // A-cta primary -> near-black fill
+  'rgb(109, 40, 217)|rgb(138, 101, 8)', // A-link -> gold-strong
+  'rgb(255, 255, 255)|rgb(20, 17, 13)', // A-cta text -> on-gold
 ]);
 
 const DATA_SECTIONS = new Set(['list']);
@@ -326,8 +332,7 @@ async function mockOpps(page: Page, mode: 'populated' | 'empty') {
 test('opportunities structural fidelity table (code.html vs /en/opportunities)', async ({
   page,
 }) => {
-  await page.goto(CODE_URL);
-  await page.waitForLoadState('load');
+  await page.goto(CODE_URL, { waitUntil: 'domcontentloaded' });
   const codeH1Size = await page.$eval('h1', (el) => getComputedStyle(el).fontSize).catch(() => '');
   const styled = codeH1Size !== '';
   const codeSections = await codeFacts(page);
@@ -491,8 +496,7 @@ test('opportunities ar smoke (mirrored layout, translated copy)', async ({ page 
 
 test('opportunities pixel signal (informational only, never gates)', async ({ page }) => {
   await mockOpps(page, 'populated');
-  await page.goto(CODE_URL);
-  await page.waitForLoadState('load');
+  await page.goto(CODE_URL, { waitUntil: 'domcontentloaded' });
   await page.setViewportSize({ width: 1440, height: 900 });
   const baseline = await page.screenshot({ timeout: 60000 });
   await page.goto('/en/opportunities');

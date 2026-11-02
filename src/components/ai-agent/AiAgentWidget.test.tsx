@@ -25,7 +25,7 @@ import {
   streamChat,
   type AiAgentStatusResponse,
 } from '@/lib/api/aiAgent';
-import { AI_AGENT_STATUS_TIMEOUT_MS } from './aiAgentUi';
+import { AI_AGENT_STATUS_TIMEOUT_MS, AI_AGENT_LAUNCHER_STORAGE_KEY } from './aiAgentUi';
 import { AiAgentWidget } from './AiAgentWidget';
 
 vi.mock('@/lib/api', () => ({ api: {} }));
@@ -81,6 +81,26 @@ async function openPanel() {
   return screen.findByTestId('ai-agent-panel');
 }
 
+function mockLauncherRect(
+  launcher: HTMLElement,
+  left: number,
+  top: number,
+  width = 56,
+  height = 56,
+) {
+  return vi.spyOn(launcher, 'getBoundingClientRect').mockReturnValue({
+    left,
+    top,
+    width,
+    height,
+    right: left + width,
+    bottom: top + height,
+    x: left,
+    y: top,
+    toJSON: () => ({}),
+  } as DOMRect);
+}
+
 function getInput(): HTMLTextAreaElement {
   return screen.getByTestId('ai-agent-input') as HTMLTextAreaElement;
 }
@@ -104,8 +124,166 @@ describe('AiAgentWidget', () => {
   afterEach(() => {
     cleanup();
     vi.useRealTimers();
+    vi.restoreAllMocks();
     window.sessionStorage.clear();
     window.localStorage.clear();
+  });
+
+  it('renders a compact header and no footer disclaimer', async () => {
+    renderWidget();
+    const panel = await openPanel();
+    await waitFor(() => {
+      expect(screen.getByText(aiAgentEn.status.online)).toBeDefined();
+    });
+
+    expect(screen.getByText(aiAgentEn.panel.subtitle)).toBeDefined();
+    expect(
+      screen.getByText(aiAgentEn.branding.name, {
+        selector: 'h2',
+      }),
+    ).toBeDefined();
+    expect(
+      screen.queryByText(
+        'Answers about opportunities, organizations, and volunteering on Basmatak.',
+      ),
+    ).toBeNull();
+    expect(
+      screen.queryByText(
+        'Answers are generated from public Basmatak data and may be incomplete.',
+      ),
+    ).toBeNull();
+    expect(panel.style.height).toContain('640px');
+    expect(panel.style.height).toContain('100dvh');
+    expect(panel.style.width).toBe('400px');
+    expect(panel.style.bottom).toContain('1rem');
+  });
+
+  it('opens on the right when the launcher is on the right half', async () => {
+    renderWidget();
+    mockLauncherRect(
+      screen.getByTestId('ai-agent-launcher'),
+      900,
+      700,
+    );
+
+    const panel = await openPanel();
+    expect(panel.style.right).toContain('safe-area-inset-right');
+    expect(panel.style.left).toBe('');
+    expect(panel.style.bottom).toContain('1rem');
+    expect(panel.style.bottom).toContain('safe-area-inset-bottom');
+  });
+
+  it('opens on the left when the launcher is on the left half', async () => {
+    renderWidget();
+    mockLauncherRect(
+      screen.getByTestId('ai-agent-launcher'),
+      20,
+      700,
+    );
+
+    const panel = await openPanel();
+    expect(panel.style.left).toContain('safe-area-inset-left');
+    expect(panel.style.right).toBe('');
+    expect(panel.style.bottom).toContain('1rem');
+  });
+
+  it('recomputes the side on the next opening after the launcher moves', async () => {
+    renderWidget();
+    const launcher = screen.getByTestId('ai-agent-launcher');
+    const rect = mockLauncherRect(launcher, 900, 700);
+
+    const rightPanel = await openPanel();
+    expect(rightPanel.style.right).toContain('safe-area-inset-right');
+
+    fireEvent.click(
+      screen.getByRole('button', { name: aiAgentEn.panel.close }),
+    );
+    await waitFor(() => {
+      expect(screen.queryByTestId('ai-agent-panel')).toBeNull();
+    });
+
+    rect.mockReturnValue({
+      left: 20,
+      top: 700,
+      width: 56,
+      height: 56,
+      right: 76,
+      bottom: 756,
+      x: 20,
+      y: 700,
+      toJSON: () => ({}),
+    } as DOMRect);
+
+    const leftPanel = await openPanel();
+    expect(leftPanel.style.left).toContain('safe-area-inset-left');
+    expect(leftPanel.style.right).toBe('');
+  });
+
+  it('hides the launcher while open and restores it at the same position on close', async () => {
+    window.localStorage.setItem(
+      AI_AGENT_LAUNCHER_STORAGE_KEY,
+      JSON.stringify({ version: 1, edge: 'end', y: 500 }),
+    );
+    renderWidget();
+    const launcher = screen.getByTestId('ai-agent-launcher');
+    await waitFor(() => {
+      expect(launcher.style.top).toBe('500px');
+    });
+    mockLauncherRect(launcher, 900, 500);
+
+    await openPanel();
+    expect(launcher.style.visibility).toBe('hidden');
+    expect(launcher.style.pointerEvents).toBe('none');
+    expect(launcher.style.top).toBe('500px');
+
+    await waitFor(() => {
+      expect(document.activeElement).toBe(getInput());
+    });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: aiAgentEn.panel.close }),
+    );
+    await waitFor(() => {
+      expect(screen.queryByTestId('ai-agent-panel')).toBeNull();
+    });
+
+    expect(launcher.style.visibility).toBe('');
+    expect(launcher.style.pointerEvents).toBe('');
+    expect(launcher.style.top).toBe('500px');
+    expect(launcher.style.insetInlineEnd).toBe('16px');
+    await waitFor(() => {
+      expect(document.activeElement).toBe(launcher);
+    });
+  });
+
+  it('sends a suggestion and hides the empty state afterwards', async () => {
+    mockedStream.mockImplementation(async () => ({
+      text: 'Here is an opportunity.',
+      done: { finishReason: 'stop' },
+      aborted: false,
+    }));
+
+    renderWidget();
+    await openPanel();
+    await waitFor(() => {
+      expect(screen.getByText(aiAgentEn.status.online)).toBeDefined();
+    });
+    expect(screen.getByText(aiAgentEn.empty.title)).toBeDefined();
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: aiAgentEn.empty.suggestion1,
+      }),
+    );
+
+    await waitFor(() => expect(mockedStream).toHaveBeenCalledTimes(1));
+    expect(mockedStream.mock.calls[0]?.[0]).toMatchObject({
+      message: aiAgentEn.empty.suggestion1,
+      locale: 'en',
+    });
+    await waitFor(() => {
+      expect(screen.queryByText(aiAgentEn.empty.title)).toBeNull();
+    });
   });
 
   it('checks status on mount and on each open, without polling', async () => {
@@ -188,7 +366,7 @@ describe('AiAgentWidget', () => {
       screen
         .getByRole('link', { name: 'food drive' })
         .getAttribute('href'),
-    ).toBe('/en/opportunities/food-drive');
+    ).toBe('/opportunities/food-drive');
     expect(screen.queryByText(aiAgentEn.sources.title)).toBeNull();
     expect(getInput().value).toBe('');
   });

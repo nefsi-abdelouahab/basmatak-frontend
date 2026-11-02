@@ -3,6 +3,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Scrollbars are hidden on every element (not just html/body), so nested
+   scrollers — sidebars, modals, dropdowns, tables, chat transcripts,
+   textareas, code blocks — all match. Overflow behavior is untouched:
+   wheel, trackpad, touch, keyboard and dragging keep working. */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-gutter: auto;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
 /*
  * RTL rule: use logical properties / Tailwind logical utilities (ms-*, me-*,
  * ps-*, pe-*, start-*, end-*, text-start/end) so ar locale mirrors automatically.
@@ -10,25 +27,43 @@
  */
 
 body {
-  background-color: var(--color-surface-muted);
+  background-color: var(--color-background);
+  color: var(--color-ink);
   font-family:
     var(--font-inter),
     Inter,
-    var(--font-plex-arabic),
-    'IBM Plex Sans Arabic',
     system-ui,
     sans-serif;
 }
 
-/* Arabic locale renders Plex first; Inter stays as the Latin fallback. */
-html[lang='ar'] body {
+/* Gold selection is a small brand accent; black text keeps it readable in both
+   light and dark mode. */
+::selection {
+  background-color: var(--color-gold);
+  color: var(--color-on-gold);
+}
+
+/* Every interactive element gets one consistent gold-strong ring. The
+   !important wins over component-level `focus-visible:outline-none` utilities
+   so the 2px ring can never disappear. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-gold-strong) !important;
+  outline-offset: 2px !important;
+}
+
+/* Arabic locale renders Tajawal everywhere, including code-like utilities. */
+html[lang='ar'] body,
+html[lang='ar'] .font-sans,
+html[lang='ar'] .font-mono {
   font-family:
-    var(--font-plex-arabic),
-    'IBM Plex Sans Arabic',
-    var(--font-inter),
-    Inter,
+    var(--font-tajawal),
+    Tajawal,
     system-ui,
     sans-serif;
+}
+
+html[lang='ar'] body {
+  line-height: 1.7;
 }
 
 /* Modal open/close motion (opacity + transform only, no literal colors). */
@@ -91,10 +126,43 @@ html[dir='rtl'] .animate-drawer-panel {
   animation-name: drawer-panel-in-rtl;
 }
 
+/* AI assistant panel motion: opacity + 8px translate only. */
+@keyframes ai-agent-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ai-agent-panel-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.animate-ai-agent-panel-in {
+  animation: ai-agent-panel-in 150ms ease-out;
+}
+
+.animate-ai-agent-panel-out {
+  animation: ai-agent-panel-out 150ms ease-in forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-modal-overlay,
   .animate-modal-panel,
-  .animate-drawer-panel {
+  .animate-drawer-panel,
+  .animate-ai-agent-panel-in,
+  .animate-ai-agent-panel-out {
     animation: none;
   }
 }

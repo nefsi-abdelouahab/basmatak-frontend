@@ -44,6 +44,7 @@ export function useExperienceDetailQuery(experienceId: string | null) {
 export function usePatchExperienceVisibilityMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: (variables: { publicVisibility: 'public' | 'private' }) => variables.publicVisibility === 'public' ? 'success.experiencePublic' : 'success.experiencePrivate' },
     mutationFn: ({
       experienceId,
       publicVisibility,
@@ -59,6 +60,7 @@ export function usePatchExperienceVisibilityMutation() {
 
 export function useAttestationDownloadMutation() {
   return useMutation({
+    meta: { successKey: 'success.attestationDownloaded', silent: true },
     mutationFn: (experienceId: string) => tasksApi.downloadAttestation(api, experienceId),
   });
 }

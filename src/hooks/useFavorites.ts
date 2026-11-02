@@ -71,10 +71,20 @@ function invalidateFeedLists(queryClient: QueryClient) {
 export function useToggleOpportunityFavoriteMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, favorited }: { id: string; favorited: boolean }) =>
-      favorited
-        ? favoritesApi.removeOpportunity(api, id).then(() => ({ favorited: false as const }))
-        : favoritesApi.saveOpportunity(api, id),
+    meta: { successKey: (variables: { favorited: boolean }) => variables.favorited ? 'success.favoriteRemoved' : 'success.favoriteAdded' },
+    mutationFn: async ({
+      id,
+      favorited,
+    }: {
+      id: string;
+      favorited: boolean;
+    }): Promise<{ favorited: boolean }> => {
+      if (favorited) {
+        await favoritesApi.removeOpportunity(api, id);
+        return { favorited: false };
+      }
+      return favoritesApi.saveOpportunity(api, id);
+    },
     onSuccess: () => invalidateFeedLists(queryClient),
   });
 }
@@ -82,10 +92,20 @@ export function useToggleOpportunityFavoriteMutation() {
 export function useToggleTalentFavoriteMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ username, favorited }: { username: string; favorited: boolean }) =>
-      favorited
-        ? favoritesApi.removeTalent(api, username).then(() => ({ favorited: false as const }))
-        : favoritesApi.saveTalent(api, username),
+    meta: { successKey: (variables: { favorited: boolean }) => variables.favorited ? 'success.favoriteRemoved' : 'success.favoriteAdded' },
+    mutationFn: async ({
+      username,
+      favorited,
+    }: {
+      username: string;
+      favorited: boolean;
+    }): Promise<{ favorited: boolean }> => {
+      if (favorited) {
+        await favoritesApi.removeTalent(api, username);
+        return { favorited: false };
+      }
+      return favoritesApi.saveTalent(api, username);
+    },
     onSuccess: () => invalidateFeedLists(queryClient),
   });
 }

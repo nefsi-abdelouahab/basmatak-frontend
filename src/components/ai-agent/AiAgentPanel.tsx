@@ -5,6 +5,7 @@ import {
   useId,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode,
 } from 'react';
 import { Plus, RefreshCw, X } from 'lucide-react';
@@ -18,8 +19,9 @@ import {
   retryAfterDescriptor,
   type AiAgentAvailability,
   type AiChatView,
-  type LauncherEdge,
 } from './aiAgentUi';
+
+export type AiAgentPanelSide = 'left' | 'right';
 
 export interface AiAgentPanelProps {
   chat: AiChatView;
@@ -28,7 +30,8 @@ export interface AiAgentPanelProps {
   statusPending: boolean;
   quotaBlocked: boolean;
   quotaRetryAfter: number | undefined;
-  edge: LauncherEdge;
+  side: AiAgentPanelSide;
+  closing?: boolean;
   onClose: () => void;
   onRetryStatus: () => void;
 }
@@ -43,13 +46,44 @@ const DOT_CLASSES: Record<AiAgentAvailability, string> = {
 const BANNER_TONES = {
   neutral: 'border-border bg-surface-muted text-ink',
   pending: 'border-status-pending/30 bg-status-pending/5 text-ink',
-  error: 'border-status-error/30 bg-status-error/5 text-ink',
+  // Unavailable is informational, not an error: keep it warm and calm.
+  error: 'border-gold/40 bg-gold-soft text-ink',
 } as const;
 
 function isMobileViewport(): boolean {
   if (typeof window === 'undefined') return false;
   if (typeof window.matchMedia !== 'function') return false;
-  return window.matchMedia('(max-width: 639px)').matches;
+  return window.matchMedia('(max-width: 479px)').matches;
+}
+
+/**
+ * The panel is anchored to the physical bottom-left or bottom-right corner,
+ * chosen from the launcher position when the panel opens. It never follows the
+ * launcher afterwards, does not flip with the text direction, and grows upward
+ * from a constant bottom margin.
+ */
+function panelPositionStyle(
+  isMobile: boolean,
+  side: AiAgentPanelSide,
+): CSSProperties {
+  const bottom = 'calc(1rem + env(safe-area-inset-bottom, 0px))';
+  if (isMobile) {
+    return {
+      width: 'calc(100vw - 1.5rem)',
+      height:
+        'calc(100dvh - 6rem - env(safe-area-inset-bottom, 0px))',
+      bottom,
+      left: '0.75rem',
+    };
+  }
+  return {
+    width: '400px',
+    height: 'min(640px, calc(100dvh - 7rem))',
+    bottom,
+    ...(side === 'left'
+      ? { left: 'calc(1rem + env(safe-area-inset-left, 0px))' }
+      : { right: 'calc(1rem + env(safe-area-inset-right, 0px))' }),
+  };
 }
 
 interface BannerProps {
@@ -84,7 +118,7 @@ function PanelBanner({
           type="button"
           onClick={onRetry}
           disabled={retryPending}
-          className="mt-2 inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-label-sm font-medium text-ink transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+          className="mt-2 inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-label-sm font-medium text-ink transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
         >
           <RefreshCw
             aria-hidden="true"
@@ -105,7 +139,8 @@ export function AiAgentPanel({
   statusPending,
   quotaBlocked,
   quotaRetryAfter,
-  edge,
+  side,
+  closing = false,
   onClose,
   onRetryStatus,
 }: AiAgentPanelProps) {
@@ -129,7 +164,7 @@ export function AiAgentPanel({
 
   useEffect(() => {
     if (typeof window.matchMedia !== 'function') return;
-    const media = window.matchMedia('(max-width: 639px)');
+    const media = window.matchMedia('(max-width: 479px)');
     const update = (): void => setIsMobile(media.matches);
     update();
     media.addEventListener?.('change', update);
@@ -151,13 +186,13 @@ export function AiAgentPanel({
 
   useEffect(() => {
     if (focusedOnceRef.current) return;
-    focusedOnceRef.current = true;
-    if (isMobile || inputDisabled) {
+    if (inputDisabled) {
       closeRef.current?.focus();
-    } else {
-      textareaRef.current?.focus();
+      return;
     }
-  }, [inputDisabled, isMobile]);
+    focusedOnceRef.current = true;
+    textareaRef.current?.focus();
+  }, [inputDisabled]);
 
   useEffect(() => {
     function handleKeyDown(event: globalThis.KeyboardEvent): void {
@@ -279,7 +314,7 @@ export function AiAgentPanel({
   }
 
   const headerButtonClass =
-    'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40';
+    'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40';
 
   return (
     <div
@@ -288,21 +323,17 @@ export function AiAgentPanel({
       data-testid="ai-agent-panel"
       role="dialog"
       aria-modal={isMobile ? true : undefined}
-      aria-labelledby={titleId}
+      aria-label={t('panel.label')}
       aria-describedby={subtitleId}
       tabIndex={-1}
-      className={`animate-modal-panel fixed inset-0 z-50 flex h-dvh w-full flex-col overflow-hidden bg-surface shadow-modal sm:inset-auto sm:bottom-24 sm:h-auto sm:max-h-[calc(100dvh-7rem)] sm:w-[380px] sm:rounded-lg sm:border sm:border-border ${
-        edge === 'start' ? 'sm:start-4' : 'sm:end-4'
+      className={`fixed z-50 flex flex-col overflow-hidden rounded-[20px] border border-border bg-surface shadow-modal ${
+        closing
+          ? 'animate-ai-agent-panel-out'
+          : 'animate-ai-agent-panel-in'
       }`}
-      style={{
-        paddingTop: 'env(safe-area-inset-top)',
-        paddingBottom: 'env(safe-area-inset-bottom)',
-      }}
+      style={panelPositionStyle(isMobile, side)}
     >
-      <header
-        className="flex items-start gap-3 border-b border-border px-4 pb-3"
-        style={{ paddingTop: '0.75rem' }}
-      >
+      <header className="flex items-center gap-2.5 border-b border-border bg-surface px-4 py-3">
         {/* eslint-disable-next-line @next/next/no-img-element -- local portrait logo */}
         <img
           src={AI_AGENT_ICON_SRC}
@@ -310,23 +341,26 @@ export function AiAgentPanel({
           className="h-9 w-9 shrink-0 rounded-full object-contain"
         />
         <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <h2
               id={titleId}
               className="truncate text-title-sm font-semibold text-ink"
             >
               {t('panel.title')}
             </h2>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-muted px-2 py-0.5 text-label-xs text-ink-muted">
-              <span className="sr-only">{t('panel.statusLabel')}</span>
+            <span className="inline-flex shrink-0 items-center">
+              <span className="sr-only">{t('panel.statusLabel')}: </span>
+              <span className="sr-only">{t(`status.${availability}`)}</span>
               <span
                 aria-hidden="true"
                 className={`h-2 w-2 rounded-full ${DOT_CLASSES[availability]}`}
               />
-              <span>{t(`status.${availability}`)}</span>
             </span>
           </div>
-          <p id={subtitleId} className="mt-0.5 text-body-sm text-ink-muted">
+          <p
+            id={subtitleId}
+            className="truncate text-label-sm text-ink-muted"
+          >
             {t('panel.subtitle')}
           </p>
         </div>
@@ -338,7 +372,7 @@ export function AiAgentPanel({
             aria-label={t('panel.newChat')}
             className={headerButtonClass}
           >
-            <Plus aria-hidden="true" size={18} />
+            <Plus aria-hidden="true" size={16} />
           </button>
           <button
             ref={closeRef}
@@ -347,7 +381,7 @@ export function AiAgentPanel({
             aria-label={t('panel.close')}
             className={headerButtonClass}
           >
-            <X aria-hidden="true" size={18} />
+            <X aria-hidden="true" size={16} />
           </button>
         </div>
       </header>
@@ -378,6 +412,7 @@ export function AiAgentPanel({
         disabled={inputDisabled}
         streaming={chat.isStreaming}
         canContinue={chat.canContinue}
+        isMobile={isMobile}
         maxChars={Math.min(
           chat.limits.messageChars,
           serviceStatus?.limits.messageChars ?? chat.limits.messageChars,
@@ -388,10 +423,6 @@ export function AiAgentPanel({
           void chat.continueChat();
         }}
       />
-
-      <p className="px-4 pb-3 text-center text-label-xs text-ink-muted">
-        {t('disclaimer')}
-      </p>
     </div>
   );
 }

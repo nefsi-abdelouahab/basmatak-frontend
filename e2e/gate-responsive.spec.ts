@@ -22,6 +22,7 @@ const ROUTES = [
   '/talents',
   '/volunteers/testuser',
   '/admin/dashboard',
+  '/admin/audit-logs',
   '/admin/opportunities',
   '/admin/organizations',
   '/admin/reports',

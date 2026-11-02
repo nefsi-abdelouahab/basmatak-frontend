@@ -1,10 +1,10 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 import { Loader } from '@/components/ui/Loader';
+import { SectionCard, VisibilityRow } from '@/components/profile';
 import {
+  PUBLIC_TOGGLE_DEFAULTS,
   PUBLIC_TOGGLE_KEYS,
   type PublicToggleKey,
 } from '@/lib/api/volunteers';
@@ -12,12 +12,11 @@ import {
   usePatchPublicSettingsMutation,
   useVolunteerMeQuery,
 } from '@/hooks/useVolunteerAccount';
-import { SectionError, Toggle } from '../components';
 
-// Opt-out panel (OQ2 copy): every toggle renders ON by default
-// (public-by-default); switching off hides the block. Toggles are read from
-// GET /volunteers/me (no backend GET public-settings) and written via
-// PATCH /volunteers/me/public-settings.
+/**
+ * Visibility panel. State always comes from `publicProfile` on
+ * `GET /volunteers/me`; backend privacy-safe defaults are shown as-is.
+ */
 export function VisibilityToggles() {
   const t = useTranslations('volunteerAccount');
   const meQuery = useVolunteerMeQuery();
@@ -25,9 +24,9 @@ export function VisibilityToggles() {
 
   if (meQuery.isPending) {
     return (
-      <Card title={t('profile.visibilityTitle')}>
+      <SectionCard id="profile-visibility" title={t('profile.visibilityTitle')}>
         <Loader label={t('shared.loading')} />
-      </Card>
+      </SectionCard>
     );
   }
 
@@ -37,43 +36,38 @@ export function VisibilityToggles() {
     try {
       await patch.mutateAsync({ publicProfile: { [key]: next } });
     } catch {
-      // surfaced below via patch.isError
+      // Global mutation meta surfaces the failure toast.
     }
   }
 
   return (
-    <Card title={t('profile.visibilityTitle')}>
-      <div data-testid="profile-visibility" className="flex flex-col gap-3">
-        <p className="text-sm text-ink-muted">{t('profile.visibilityHint')}</p>
+    <SectionCard
+      id="profile-visibility"
+      title={t('profile.visibilityTitle')}
+      description={t('profile.visibilityHint')}
+      testId="profile-visibility"
+    >
+      <div className="flex flex-col gap-3">
         <ul className="flex flex-col gap-2">
           {PUBLIC_TOGGLE_KEYS.map((key) => (
-            <li
+            <VisibilityRow
               key={key}
-              className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2"
-            >
-              <span className="text-sm text-ink">
-                {t('profile.showPublicly', { field: t(`toggles.${key}`) })}
-              </span>
-              <Toggle
-                checked={flags[key] ?? true}
-                onChange={(next) => onToggle(key, next)}
-                label={t('profile.showPublicly', { field: t(`toggles.${key}`) })}
-                testId={`toggle-${key}`}
-              />
-            </li>
+              id={`visibility-${key}`}
+              label={t(`toggles.${key}`)}
+              description={t(`toggleHints.${key}`)}
+              checked={flags[key] ?? PUBLIC_TOGGLE_DEFAULTS[key]}
+              onChange={(next) => onToggle(key, next)}
+              disabled={patch.isPending}
+              testId={`toggle-${key}`}
+            />
           ))}
         </ul>
         {patch.isError ? (
-          <SectionError testId="visibility-error" message={t('shared.genericError')} />
-        ) : null}
-        {patch.isPending ? (
-          <div>
-            <Button type="button" variant="secondary" disabled>
-              {t('shared.saving')}
-            </Button>
-          </div>
+          <p role="alert" className="text-sm text-status-error">
+            {t('shared.genericError')}
+          </p>
         ) : null}
       </div>
-    </Card>
+    </SectionCard>
   );
 }

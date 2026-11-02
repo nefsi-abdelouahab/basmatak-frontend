@@ -53,8 +53,8 @@ const statusFixture: AiAgentStatusResponse = {
   knowledge: { files: 8, chunks: 64 },
   limits: {
     messageChars: 2000,
-    historyMessages: 4,
-    historyChars: 2400,
+    historyMessages: 6,
+    historyChars: 4000,
   },
 };
 
@@ -389,6 +389,7 @@ describe('streamChat errors', () => {
     )) as AiAgentError;
 
     expect(error.code).toBe('AI_AGENT_DISABLED');
+    expect(error.message).toContain('Basma');
     expect(error.message).toMatch(/temporarily unavailable/i);
     expect(error.message).not.toContain('Gemini');
     expect(error.message).not.toContain('AIza');
@@ -561,7 +562,7 @@ describe('streamChat client validation', () => {
       {
         message: 'Hello',
         locale: 'en',
-        history: Array.from({ length: 5 }, () => ({
+        history: Array.from({ length: 7 }, () => ({
           role: 'user',
           content: 'x',
         })),

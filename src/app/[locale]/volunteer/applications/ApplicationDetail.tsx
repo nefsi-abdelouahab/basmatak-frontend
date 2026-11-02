@@ -157,7 +157,7 @@ export function ApplicationDetail({
           <Link
             data-testid="view-task-link"
             href="/volunteer/tasks"
-            className="text-sm font-medium text-primary"
+            className="text-sm font-medium text-gold-strong"
           >
             {t('applications.viewTask')}
           </Link>

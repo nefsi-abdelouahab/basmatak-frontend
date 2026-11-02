@@ -1,6 +1,7 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import orgAr from '../src/messages/orgOnboarding/ar.json';
 import orgEn from '../src/messages/orgOnboarding/en.json';
+import toastEn from '../src/messages/toast/en.json';
 
 type Locale = 'en' | 'ar';
 const catalogs = { en: orgEn, ar: orgAr } as const;
@@ -56,7 +57,11 @@ async function mockOnboarding(
     '/organizations/me': { status: 200, body: opts.org ?? orgRecord },
     '/organizations/me/profile-completion': {
       status: 200,
-      body: opts.completion ?? { percent: 33, missing: ['website', 'coverMediaId'], complete: false },
+      body: opts.completion ?? {
+        percent: 33,
+        missingFields: ['website', 'coverMediaId'],
+        complete: false,
+      },
     },
     '/organizations/me/verification': {
       status: 200,
@@ -117,7 +122,7 @@ for (const width of [1440, 1100, 390]) {
     }
 
     test('complete-profile PATCH drives checklist to 100%', async ({ page }) => {
-      let completion: unknown = { percent: 33, missing: ['website'], complete: false };
+      let completion: unknown = { percent: 33, missingFields: ['website'], complete: false };
       await mockApi(page, {
         '/auth/me': { status: 200, body: verifiedOrgUser },
         '/organizations/me': { status: 200, body: orgRecord },
@@ -132,7 +137,7 @@ for (const width of [1440, 1100, 390]) {
       });
       await page.route('**/api/v1/organizations/me', async (route: Route) => {
         if (route.request().method() === 'PATCH') {
-          completion = { percent: 100, missing: [], complete: true };
+          completion = { percent: 100, missingFields: [], complete: true };
           return route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -148,8 +153,8 @@ for (const width of [1440, 1100, 390]) {
       await page.goto('/en/org/complete-profile');
       await page.getByLabel(orgEn.completeProfile.websiteLabel).fill('https://example.org');
       await page.getByRole('button', { name: orgEn.completeProfile.save }).click();
-      await expect(page.getByTestId('org-form-saved')).toContainText(
-        orgEn.completeProfile.saved,
+      await expect(page.locator('[data-sonner-toast]')).toContainText(
+        toastEn.success.orgProfileUpdated,
       );
       await expect(page.getByTestId('org-checklist')).toContainText('100%');
     });

@@ -54,7 +54,7 @@ export function ForgotPasswordForm() {
             title={t('forgotPassword.successTitle')}
             description={t('forgotPassword.successDescription')}
           />
-          <Link href="/login" className="text-sm font-medium text-primary">
+          <Link href="/login" className="text-sm font-medium text-gold-strong">
             {t('shared.backToLogin')}
           </Link>
         </>
@@ -81,7 +81,7 @@ export function ForgotPasswordForm() {
               t('forgotPassword.submit')
             )}
           </Button>
-          <Link href="/login" className="text-sm font-medium text-primary">
+          <Link href="/login" className="text-sm font-medium text-gold-strong">
             {t('shared.backToLogin')}
           </Link>
         </form>

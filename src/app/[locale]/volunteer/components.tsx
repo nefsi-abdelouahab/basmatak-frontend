@@ -60,7 +60,7 @@ export function Toggle({
       aria-label={label}
       data-testid={testId}
       onClick={() => onChange(!checked)}
-      className={`flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+      className={`flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong ${
         checked ? 'justify-end bg-primary' : 'justify-start bg-border-muted'
       }`}
     >

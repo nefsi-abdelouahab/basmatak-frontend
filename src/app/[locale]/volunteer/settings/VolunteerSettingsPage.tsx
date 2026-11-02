@@ -102,7 +102,7 @@ export function VolunteerSettingsPage({ locale }: { locale: string }) {
                       selected
                         ? danger
                           ? 'bg-status-error/10 font-medium text-status-error'
-                          : 'bg-primary-tint font-medium text-primary'
+                          : 'bg-gold-soft font-medium text-gold-strong'
                         : danger
                           ? 'text-status-error hover:bg-status-error/10'
                           : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
@@ -118,7 +118,7 @@ export function VolunteerSettingsPage({ locale }: { locale: string }) {
             </nav>
             <div className="flex flex-col gap-2 rounded-xl border border-border-muted bg-surface-muted p-4">
               <div className="flex items-center gap-1.5 text-ink">
-                <Scale size={16} aria-hidden="true" className="shrink-0 text-primary" />
+                <Scale size={16} aria-hidden="true" className="shrink-0 text-gold-strong" />
                 <span className="text-label-sm font-semibold">{t('settings.civicNoticeTitle')}</span>
               </div>
               <p className="text-label-xs leading-relaxed text-ink-muted">

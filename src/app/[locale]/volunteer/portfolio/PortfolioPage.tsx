@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -24,6 +24,7 @@ import {
   type PortfolioVisibility,
 } from '@/lib/api/portfolio';
 import type { UploadProgress } from '@/lib/api/media';
+import { notify } from '@/lib/notify';
 import { ProgressBar, RequireVolunteer, SectionError, Toggle } from '../components';
 
 interface PortfolioFormState {
@@ -56,7 +57,7 @@ function MediaList({ item }: { item: PortfolioItem }) {
       {item.media.map((entry) => (
         <li key={entry.mediaId} className="text-sm">
           {entry.type === 'link' && entry.url ? (
-            <a href={entry.url} target="_blank" rel="noreferrer" className="font-medium text-primary">
+            <a href={entry.url} target="_blank" rel="noreferrer" className="font-medium text-gold-strong">
               {entry.filename ?? entry.url}
             </a>
           ) : (
@@ -143,6 +144,7 @@ export function PortfolioPage({ locale }: { locale: string }) {
       setFileError(
         valid.reason === 'type' ? t('portfolio.fileTypeError') : t('portfolio.fileSizeError'),
       );
+      notify.error(valid.reason === 'type' ? 'error.fileTypeNotAllowed' : 'error.fileTooLarge');
       return;
     }
     setProgress({ loaded: 0, total: file.size, percent: 0 });

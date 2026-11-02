@@ -30,6 +30,7 @@ import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import {
   evidenceMediaIdsOf,
   submissionParticipantIdOf,
@@ -254,9 +255,9 @@ function ParticipationFilterTabs({
             aria-selected={selected}
             data-testid={`tab-${tab.value}`}
             onClick={() => onTab(tab.value)}
-            className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-3 text-label-md font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+            className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-3 text-label-md font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong ${
               selected
-                ? 'bg-primary text-white'
+                ? 'bg-primary text-on-primary'
                 : 'bg-surface-muted text-ink-muted hover:bg-border-muted hover:text-ink'
             }`}
           >
@@ -265,7 +266,7 @@ function ParticipationFilterTabs({
             {typeof count === 'number' ? (
               <span
                 className={`rounded px-1.5 py-0.5 text-label-xs font-medium ${
-                  selected ? 'bg-white/20 text-white' : 'bg-border-muted text-ink-muted'
+                  selected ? 'bg-on-primary/20 text-on-primary' : 'bg-border-muted text-ink-muted'
                 }`}
               >
                 {count}
@@ -381,7 +382,7 @@ function ParticipationCard({
 
   const statusMeta = (() => {
     if (row.status === 'accepted')
-      return { label: t('tabs.upcoming'), Icon: CalendarCheck, tone: 'text-primary' };
+      return { label: t('tabs.upcoming'), Icon: CalendarCheck, tone: 'text-gold-strong' };
     if (row.status === 'active')
       return { label: t('tabs.in_progress'), Icon: Hourglass, tone: 'text-status-pending' };
     if (row.status === 'completed')
@@ -419,7 +420,7 @@ function ParticipationCard({
               <span className="truncate">
                 {t('board.roleLabel')}
                 {': '}
-                <span className="font-medium text-primary">{positionName}</span>
+                <span className="font-medium text-gold-strong">{positionName}</span>
               </span>
             </p>
           ) : null}
@@ -455,7 +456,7 @@ function ParticipationCard({
       {deliverables.length > 0 ? (
         <div className="mt-3">
           <p className="flex items-center gap-1.5 text-title-sm font-semibold text-ink">
-            <ListChecks size={16} aria-hidden="true" className="shrink-0 text-primary" />
+            <ListChecks size={16} aria-hidden="true" className="shrink-0 text-gold-strong" />
             <span>{t('board.deliverablesTitle')}</span>
           </p>
           <ul className="mt-1.5 flex flex-col gap-1">
@@ -503,7 +504,7 @@ function ParticipationCard({
           data-testid={`expand-task-${id}`}
           aria-expanded={expanded}
           onClick={onToggle}
-          className="inline-flex items-center gap-1 text-label-md font-medium text-primary hover:text-primary-hover"
+          className="inline-flex items-center gap-1 text-label-md font-medium text-gold-strong hover:text-ink"
         >
           <Eye size={16} aria-hidden="true" />
           <span>{expanded ? t('board.hideDetails') : t('board.viewDetails')}</span>
@@ -527,7 +528,7 @@ function ParticipationCard({
             <Link
               data-testid={`submit-participation-${id}`}
               href={`/volunteer/tasks/${id}/submit`}
-              className="inline-flex h-10 items-center gap-1.5 rounded-md bg-primary px-4 text-label-md font-medium text-white hover:bg-primary-hover"
+              className="inline-flex h-10 items-center gap-1.5 rounded-md bg-primary px-4 text-label-md font-medium text-on-primary hover:bg-primary-hover"
             >
               <Upload size={16} aria-hidden="true" />
               <span>{t('board.submitContribution')}</span>
@@ -538,7 +539,7 @@ function ParticipationCard({
               <Link
                 data-testid={`open-participation-${id}`}
                 href={href}
-                className="inline-flex h-10 items-center gap-1.5 rounded-md bg-primary px-4 text-label-md font-medium text-white hover:bg-primary-hover"
+                className="inline-flex h-10 items-center gap-1.5 rounded-md bg-primary px-4 text-label-md font-medium text-on-primary hover:bg-primary-hover"
               >
                 <Eye size={16} aria-hidden="true" />
                 <span>{t('board.openOpportunity')}</span>
@@ -650,7 +651,7 @@ function CompletedBlock({
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/volunteer/experiences"
-            className="inline-flex h-10 items-center gap-1.5 rounded-md bg-primary px-4 text-label-md font-medium text-white hover:bg-primary-hover"
+            className="inline-flex h-10 items-center gap-1.5 rounded-md bg-primary px-4 text-label-md font-medium text-on-primary hover:bg-primary-hover"
           >
             <Eye size={16} aria-hidden="true" />
             <span>{t('board.viewVerified')}</span>
@@ -823,8 +824,12 @@ export function VolunteerTasksPage({ locale }: { locale: string }) {
             visually hidden scrollbars (the Shell sidebar is the first
             column and already scrolls independently). Below xl the layout
             collapses to a single column and the document scrolls normally. */}
-        <div className="grid min-w-0 grid-cols-1 items-start gap-6 xl:h-[calc(100dvh-7rem)] xl:grid-cols-3 xl:items-stretch xl:overflow-hidden">
-          <div className="flex min-w-0 flex-col gap-4 xl:col-span-2 xl:min-h-0 xl:overflow-y-auto xl:[-ms-overflow-style:none] xl:[scrollbar-width:none] xl:[&::-webkit-scrollbar]:hidden">
+        <div className="grid min-w-0 grid-cols-1 items-start gap-6 xl:h-[calc(100dvh-7rem)] xl:grid-cols-3 xl:grid-rows-[minmax(0,1fr)] xl:items-stretch xl:overflow-hidden">
+          <ScrollFade
+            className="min-w-0 xl:col-span-2 xl:min-h-0"
+            viewportClassName="flex flex-col gap-4 xl:overflow-y-auto"
+            tone="background"
+          >
             <section className="min-w-0 rounded-xl border border-border bg-surface p-4 shadow-sm sm:p-5">
               <h1 className="break-words text-headline-lg text-ink">
                 {t('participations.title')}
@@ -847,7 +852,7 @@ export function VolunteerTasksPage({ locale }: { locale: string }) {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder={t('board.searchPlaceholder')}
-                  className="h-10 w-full rounded-md border border-border bg-surface-muted pe-3 ps-9 text-body-md text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                  className="h-10 w-full rounded-md border border-border bg-surface-muted pe-3 ps-9 text-body-md text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
                 />
               </div>
 
@@ -886,7 +891,7 @@ export function VolunteerTasksPage({ locale }: { locale: string }) {
               </p>
             ) : null}
             {listQuery.data && visibleItems.length === 0 ? (
-              <Empty title={t('board.empty')} />
+              <Empty title={t('board.empty')} pattern />
             ) : null}
             <ul className="flex min-w-0 flex-col gap-4">
               {visibleItems.map((row) => {
@@ -923,9 +928,14 @@ export function VolunteerTasksPage({ locale }: { locale: string }) {
                 </Button>
               </div>
             ) : null}
-          </div>
+          </ScrollFade>
 
-          <aside className="flex min-w-0 flex-col gap-4 xl:min-h-0 xl:overflow-y-auto xl:[-ms-overflow-style:none] xl:[scrollbar-width:none] xl:[&::-webkit-scrollbar]:hidden">
+          <ScrollFade
+            as="aside"
+            className="min-w-0 xl:min-h-0"
+            viewportClassName="flex flex-col gap-4 xl:overflow-y-auto"
+            tone="background"
+          >
             <section
               aria-labelledby="participations-overview-title"
               data-testid="participation-overview"
@@ -936,17 +946,17 @@ export function VolunteerTasksPage({ locale }: { locale: string }) {
                   id="participations-overview-title"
                   className="inline-flex items-center gap-2 text-title-md font-semibold text-ink"
                 >
-                  <ListChecks size={18} aria-hidden="true" className="shrink-0 text-primary" />
+                  <ListChecks size={18} aria-hidden="true" className="shrink-0 text-gold-strong" />
                   <span>{t('board.overviewTitle')}</span>
                 </h2>
-                <span className="text-headline-md font-semibold text-primary">
+                <span className="text-headline-md font-semibold text-gold-strong">
                   {allCountQuery.data ? allCountQuery.data.total : '—'}
                 </span>
               </div>
               <ul className="divide-y divide-border-muted">
                 <li className="flex items-center justify-between gap-2 py-2.5 text-body-md">
                   <span className="inline-flex min-w-0 items-center gap-2 text-ink">
-                    <CalendarCheck size={16} aria-hidden="true" className="shrink-0 text-primary" />
+                    <CalendarCheck size={16} aria-hidden="true" className="shrink-0 text-gold-strong" />
                     <span className="truncate">{t('board.overviewUpcoming')}</span>
                   </span>
                   <span className="shrink-0 font-semibold text-ink">
@@ -1027,7 +1037,7 @@ export function VolunteerTasksPage({ locale }: { locale: string }) {
                         ? `/volunteer/tasks/${rowId(nextAction.row)}/submit`
                         : `/volunteer/tasks/${rowId(nextAction.row)}`
                     }
-                    className="mt-1 inline-flex items-center gap-1 border-t border-border-muted pt-2 text-label-md font-semibold text-primary hover:text-primary-hover"
+                    className="mt-1 inline-flex items-center gap-1 border-t border-border-muted pt-2 text-label-md font-semibold text-gold-strong hover:text-ink"
                   >
                     <span>
                       {nextAction.kind === 'evidence'
@@ -1049,7 +1059,7 @@ export function VolunteerTasksPage({ locale }: { locale: string }) {
                 id="participations-flow-title"
                 className="inline-flex items-center gap-2 text-title-md font-semibold text-ink"
               >
-                <Info size={18} aria-hidden="true" className="shrink-0 text-primary" />
+                <Info size={18} aria-hidden="true" className="shrink-0 text-gold-strong" />
                 <span>{t('board.flowTitle')}</span>
               </h2>
               <p className="mt-1 text-label-md text-ink-muted">{t('board.flowSubtitle')}</p>
@@ -1061,13 +1071,13 @@ export function VolunteerTasksPage({ locale }: { locale: string }) {
                       <span
                         aria-hidden="true"
                         className={`flex h-6 w-6 shrink-0 items-center justify-center rounded text-label-xs font-semibold ${
-                          last ? 'bg-primary text-white' : 'bg-surface-muted text-ink'
+                          last ? 'bg-primary text-on-primary' : 'bg-surface-muted text-ink'
                         }`}
                       >
                         {index + 1}
                       </span>
                       <div className="min-w-0">
-                        <p className={`text-body-md font-semibold ${last ? 'text-primary' : 'text-ink'}`}>
+                        <p className={`text-body-md font-semibold ${last ? 'text-gold-strong' : 'text-ink'}`}>
                           {step.title}
                         </p>
                         <p className="text-body-sm text-ink-muted">{step.desc}</p>
@@ -1080,7 +1090,7 @@ export function VolunteerTasksPage({ locale }: { locale: string }) {
                 {t('board.flowNote')}
               </p>
             </section>
-          </aside>
+          </ScrollFade>
         </div>
       </div>
     </RequireTasks>

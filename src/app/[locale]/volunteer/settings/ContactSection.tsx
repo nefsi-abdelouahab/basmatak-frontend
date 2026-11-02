@@ -71,8 +71,8 @@ export function ContactSection() {
 
   return (
     <div data-testid="settings-contact" className="flex flex-col gap-3">
-      <div className="flex items-start gap-3 rounded-lg bg-primary-tint p-3.5">
-        <BadgeCheck size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
+      <div className="flex items-start gap-3 rounded-lg bg-gold-soft p-3.5">
+        <BadgeCheck size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-gold-strong" />
         <div className="flex min-w-0 flex-col gap-0.5">
           <span className="text-label-sm font-semibold text-ink">{t('settings.statusTitle')}</span>
           <span className="break-words text-body-sm text-ink-muted">
@@ -150,7 +150,7 @@ export function ContactSection() {
         {emailChanged ? (
           <div data-testid="verify-notice" className="flex flex-col gap-1">
             <p className="text-body-sm text-ink">{t('settings.verifyNotice')}</p>
-            <Link href="/verify-email" className="text-body-sm font-medium text-primary">
+            <Link href="/verify-email" className="text-body-sm font-medium text-gold-strong">
               {t('settings.verifyCta')}
             </Link>
           </div>

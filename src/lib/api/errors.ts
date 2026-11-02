@@ -68,10 +68,11 @@ export function mapToApiError(err: unknown): ApiError {
         hasBackendMessage,
       });
     }
+    const timedOut = err.code === 'ECONNABORTED' || err.code === 'ETIMEDOUT';
     return new ApiError({
       statusCode: 0,
-      code: 'NETWORK_ERROR',
-      message: 'Could not reach the server.',
+      code: timedOut ? 'TIMEOUT' : 'NETWORK_ERROR',
+      message: timedOut ? 'The request took too long.' : 'Could not reach the server.',
     });
   }
   return new ApiError({
@@ -113,6 +114,20 @@ export function backendMessageOf(err: unknown): string | null {
     const data = err.response?.data as Partial<ApiErrorShape> | undefined;
     if (typeof data?.message === 'string' && data.message.trim().length > 0) {
       return data.message;
+    }
+  }
+  return null;
+}
+
+// Business code extracted from the same envelope (never display copy). Raw
+// axios rejections and mapped ApiErrors both resolve; transport-level codes
+// such as ECONNABORTED stay out of the business-code space.
+export function backendCodeOf(err: unknown): string | null {
+  if (err instanceof ApiError) return err.code || null;
+  if (isAxiosError(err)) {
+    const data = err.response?.data as Partial<ApiErrorShape> | undefined;
+    if (typeof data?.code === 'string' && data.code.trim().length > 0) {
+      return data.code;
     }
   }
   return null;

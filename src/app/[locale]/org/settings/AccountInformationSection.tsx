@@ -27,7 +27,8 @@ import { SectionError } from './components';
 // the only real name fields — no single-name backend field exists), account
 // email + phone (PATCH /users/me, email change re-verifies), and portal URL
 // (PATCH /organizations/me website). One Save/Discard row writes whichever
-// source changed; inline states only, no toasts. Validate + diff goes
+// source changed; field errors stay inline and the global toast confirms the
+// save. Validate + diff goes
 // through the pure diffAccountForm helper (normalize-then-validate for
 // phone, partial payloads for both PATCH endpoints).
 export function AccountInformationSection() {
@@ -213,7 +214,7 @@ export function AccountInformationSection() {
             label={t('profile.websiteLabel')}
             type="url"
             inputMode="url"
-            placeholder="https://"
+            placeholder={t('profile.websitePlaceholder')}
             value={formValues.website}
             onChange={(e) => setWebsite(e.target.value)}
             error={errors.website}
@@ -222,7 +223,7 @@ export function AccountInformationSection() {
         {emailChanged ? (
           <div data-testid="verify-notice" className="flex flex-col gap-1">
             <p className="text-sm text-ink">{t('settings.verifyNotice')}</p>
-            <Link href="/verify-email" className="text-sm font-medium text-primary">
+            <Link href="/verify-email" className="text-sm font-medium text-gold-strong">
               {t('settings.verifyCta')}
             </Link>
           </div>

@@ -30,6 +30,7 @@ export function useUsersMeQuery() {
 export function usePatchUsersMeMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.contactUpdated', silent: true },
     mutationFn: (input: UpdateUsersMe) => usersApi.patchUsersMe(api, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
@@ -40,6 +41,7 @@ export function usePatchUsersMeMutation() {
 
 export function useChangePasswordMutation() {
   return useMutation({
+    meta: { successKey: 'success.passwordChanged', silent: true },
     mutationFn: (input: { currentPassword: string; newPassword: string }) =>
       changePassword(api, input),
   });
@@ -57,6 +59,7 @@ export function useMySessionsQuery() {
 export function useDeleteMySessionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.sessionRevoked', silent: true },
     mutationFn: (sessionId: string) => usersApi.deleteMySession(api, sessionId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
@@ -68,6 +71,7 @@ export function useDeleteMySessionMutation() {
 export function useLogoutOthersMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.otherSessionsSignedOut', silent: true },
     mutationFn: () => logoutOthers(api),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
@@ -88,6 +92,7 @@ export function useNotificationPreferencesQuery() {
 export function usePatchNotificationPreferencesMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.notificationPrefsUpdated', silent: true },
     mutationFn: (prefs: NotificationPrefs) =>
       notificationsApi.patchNotificationPreferences(api, prefs),
     onSuccess: () => {
@@ -100,6 +105,7 @@ export function usePatchNotificationPreferencesMutation() {
 export function useDeleteAccountMutation() {
   const router = useRouter();
   return useMutation({
+    meta: { successKey: 'success.accountDeleted', silent: true },
     mutationFn: () => usersApi.deleteUsersMe(api),
     onSuccess: () => {
       defaultTokenHooks.clearTokens();

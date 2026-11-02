@@ -169,16 +169,61 @@ export function safeSourceHref(path: string | undefined): string | null {
 
 export type ChatContentSegment =
   | { type: 'text'; text: string }
-  | { type: 'link'; text: string; href: string };
+  | {
+      type: 'link';
+      text: string;
+      href: string;
+      kind: 'entity' | 'inline';
+    };
+
+const ARABIC_SCRIPT_PATTERN =
+  /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/u;
+
+/**
+ * Message direction is a property of the message, not the UI locale. Any
+ * Arabic-script content makes the whole bubble RTL; everything else stays LTR.
+ */
+export function detectTextDirection(text: string): 'rtl' | 'ltr' {
+  return ARABIC_SCRIPT_PATTERN.test(text) ? 'rtl' : 'ltr';
+}
+
+function isEntityChatHref(href: string): boolean {
+  const segments = href.split('/').filter((segment) => segment !== '');
+  if (segments[0] === 'en' || segments[0] === 'ar') segments.shift();
+  const section = segments[0];
+  return (
+    section === 'opportunities' ||
+    section === 'orgs' ||
+    section === 'volunteers'
+  );
+}
 
 const CHAT_LINK_PATTERN =
   /\[([^\]\n]{1,200})\]\(([^()\s]*(?:\([^()\s]*\)[^()\s]*)*)\)/g;
 const CHAT_LOCALES = new Set(['en', 'ar']);
+const ABSOLUTE_HTTP_PATTERN = /^https?:\/\//i;
+
+/**
+ * Remove a leading locale segment, and any repeated ones, from an internal
+ * chat path. next-intl's `Link` adds the active locale itself, so passing a
+ * locale-prefixed path (for example `/en/opportunities/x`) to it produces
+ * `/en/en/opportunities/x`.
+ */
+export function stripChatLocalePrefix(href: string): string {
+  const segments = String(href ?? '')
+    .split('/')
+    .filter((segment) => segment !== '');
+  while (segments.length > 0 && CHAT_LOCALES.has(segments[0] ?? '')) {
+    segments.shift();
+  }
+  return segments.length === 0 ? '/' : `/${segments.join('/')}`;
+}
 
 /**
  * Validate an assistant Markdown link and return a locale-prefixed internal
- * path. Anything external, protocol-relative, or outside the public chat routes
- * is rejected and will be rendered as plain text by the caller.
+ * path. Absolute same-site URLs lose their origin, and repeated locale
+ * segments collapse to exactly one. Anything protocol-relative, non-HTTP, or
+ * outside the public chat routes is rejected and rendered as plain text.
  */
 export function safeChatHref(
   path: string | undefined,
@@ -186,26 +231,35 @@ export function safeChatHref(
 ): string | null {
   if (typeof path !== 'string') return null;
   const trimmed = path.trim();
-  if (
-    trimmed === '' ||
-    trimmed.length > 2048 ||
-    !trimmed.startsWith('/') ||
-    trimmed.startsWith('//') ||
-    trimmed.includes('\\') ||
-    /^[a-z][a-z0-9+.-]*:/i.test(trimmed)
-  ) {
+  if (trimmed === '' || trimmed.length > 2048 || trimmed.includes('\\')) {
     return null;
   }
 
-  let parsed: URL;
-  try {
-    parsed = new URL(trimmed, SAFE_SOURCE_BASE);
-  } catch {
-    return null;
-  }
-  if (parsed.origin !== SAFE_SOURCE_BASE) return null;
+  let pathname: string;
+  if (ABSOLUTE_HTTP_PATTERN.test(trimmed)) {
+    // Absolute URLs are accepted only for their path. The origin is discarded,
+    // so an old localhost link can never escape to another site.
+    let absolute: URL;
+    try {
+      absolute = new URL(trimmed);
+    } catch {
+      return null;
+    }
+    pathname = absolute.pathname;
+  } else {
+    if (!trimmed.startsWith('/') || trimmed.startsWith('//')) return null;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return null;
 
-  const pathname = parsed.pathname;
+    let parsed: URL;
+    try {
+      parsed = new URL(trimmed, SAFE_SOURCE_BASE);
+    } catch {
+      return null;
+    }
+    if (parsed.origin !== SAFE_SOURCE_BASE) return null;
+    pathname = parsed.pathname;
+  }
+
   if (pathname.includes('\0')) return null;
   if (/(?:^|\/)\.\.(?:\/|$)/u.test(pathname)) return null;
   if (/(?:^|\/)\.(?:\/|$)/u.test(pathname)) return null;
@@ -213,7 +267,7 @@ export function safeChatHref(
 
   const segments = pathname.split('/').filter((segment) => segment !== '');
   if (segments.length === 0) return null;
-  if (segments[0] !== undefined && CHAT_LOCALES.has(segments[0])) {
+  while (segments.length > 0 && CHAT_LOCALES.has(segments[0] ?? '')) {
     segments.shift();
   }
   if (segments.length === 0) return null;
@@ -261,7 +315,12 @@ export function parseChatContent(
     segments.push(
       href === null
         ? { type: 'text', text }
-        : { type: 'link', text, href },
+        : {
+            type: 'link',
+            text,
+            href,
+            kind: isEntityChatHref(href) ? 'entity' : 'inline',
+          },
     );
     lastIndex = index + match[0].length;
   }

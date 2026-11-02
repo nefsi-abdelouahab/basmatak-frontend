@@ -38,6 +38,7 @@ function useInvalidatePortfolio() {
 export function useCreatePortfolioItemMutation() {
   const invalidate = useInvalidatePortfolio();
   return useMutation({
+    meta: { successKey: 'success.portfolioItemAdded', silent: true },
     mutationFn: (input: CreatePortfolioItem) => portfolioApi.createPortfolioItem(api, input),
     onSuccess: () => invalidate(),
   });
@@ -46,6 +47,7 @@ export function useCreatePortfolioItemMutation() {
 export function usePatchPortfolioItemMutation() {
   const invalidate = useInvalidatePortfolio();
   return useMutation({
+    meta: { successKey: 'success.portfolioItemUpdated', silent: true },
     mutationFn: ({ itemId, input }: { itemId: string; input: UpdatePortfolioItem }) =>
       portfolioApi.patchPortfolioItem(api, itemId, input),
     onSuccess: () => invalidate(),
@@ -55,6 +57,7 @@ export function usePatchPortfolioItemMutation() {
 export function useDeletePortfolioItemMutation() {
   const invalidate = useInvalidatePortfolio();
   return useMutation({
+    meta: { successKey: 'success.portfolioItemDeleted', silent: true },
     mutationFn: (itemId: string) => portfolioApi.deletePortfolioItem(api, itemId),
     onSuccess: () => invalidate(),
   });
@@ -63,6 +66,7 @@ export function useDeletePortfolioItemMutation() {
 export function useReorderPortfolioMutation() {
   const invalidate = useInvalidatePortfolio();
   return useMutation({
+    meta: { successKey: 'success.portfolioReordered', silent: true },
     mutationFn: (itemIds: string[]) => portfolioApi.reorderPortfolio(api, { itemIds }),
     onSuccess: () => invalidate(),
   });
@@ -76,6 +80,7 @@ export function usePortfolioUploadMutation(opts?: {
   onProgress?: (p: UploadProgress) => void;
 }) {
   return useMutation({
+    meta: { successKey: 'success.fileUploaded', silent: true },
     mutationFn: async (file: { name: string; type: string; size: number; bytes: unknown }) => {
       const putBytes = (url: string, body: unknown, onProgress?: (p: UploadProgress) => void) =>
         putPresignedBytes(url, body, file.type, file.size, onProgress);

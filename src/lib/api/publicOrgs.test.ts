@@ -57,7 +57,8 @@ const profile = {
   website: 'https://example.org',
   foundedYear: 2018,
   verificationStatus: 'verified',
-  contact: { email: 'contact@example.org', phone: '+213555123456' },
+  // Guest contract: the backend omits the phone key entirely.
+  contact: { email: 'contact@example.org' },
   focusDisciplines: ['culture'],
   stats: { opportunitiesActive: 4, opportunitiesCompleted: 9, verifiedHours: 1420 },
 };
@@ -165,6 +166,15 @@ describe('publicOrgs endpoint functions', () => {
     const parsed = await getPublicOrgProfile(client, 'timimoun cultural');
     expect(get).toHaveBeenCalledWith('/organizations/timimoun%20cultural');
     expect(PublicOrgProfileSchema.parse(parsed).slug).toBe('timimoun-cultural');
+    expect(PublicOrgProfileSchema.parse(parsed).contact).toEqual({
+      email: 'contact@example.org',
+    });
+    expect(
+      PublicOrgProfileSchema.parse({
+        ...profile,
+        contact: { email: 'contact@example.org', phone: '+213555123456' },
+      }).contact?.phone,
+    ).toBe('+213555123456');
   });
 
   it('reads per-status archives with counts', async () => {

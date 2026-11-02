@@ -101,7 +101,7 @@ export function OrgApplicationsPage({ locale }: { locale: string }) {
           </div>
           <Link
             href="/org/opportunities"
-            className="mt-1 inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary transition-colors hover:underline"
+            className="mt-1 inline-flex shrink-0 items-center gap-1 text-sm font-medium text-gold-strong transition-colors hover:underline"
           >
             <span>{t('applications.viewOpportunities')}</span>
             <ArrowRight size={16} aria-hidden="true" />
@@ -127,7 +127,7 @@ export function OrgApplicationsPage({ locale }: { locale: string }) {
                 onClick={() => setTab(value)}
                 className={`shrink-0 pb-2.5 text-sm transition-colors ${
                   active
-                    ? 'border-b-2 border-primary font-semibold text-primary'
+                    ? 'border-b-2 border-gold-strong font-semibold text-gold-strong'
                     : 'font-medium text-ink-muted hover:text-ink'
                 }`}
               >
@@ -157,7 +157,7 @@ export function OrgApplicationsPage({ locale }: { locale: string }) {
               placeholder={t('applications.searchPlaceholder')}
               value={q}
               onChange={(event) => setQ(event.target.value)}
-              className="h-10 w-full rounded-lg border border-border bg-surface py-2 pe-3 ps-9 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+              className="h-10 w-full rounded-lg border border-border bg-surface py-2 pe-3 ps-9 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
             />
           </div>
           <div className="relative md:col-span-4">
@@ -167,7 +167,7 @@ export function OrgApplicationsPage({ locale }: { locale: string }) {
               aria-label={t('shared.opportunityLabel')}
               value={opportunityId}
               onChange={(event) => setOpportunityId(event.target.value)}
-              className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-primary focus:outline-none"
+              className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-gold-strong focus:outline-none"
             >
               <option value="">{t('shared.allOpportunities')}</option>
               {(oppsQuery.data?.items ?? []).map((opp) => {
@@ -192,7 +192,7 @@ export function OrgApplicationsPage({ locale }: { locale: string }) {
               aria-label={t('contributions.sortLabel')}
               value={sort}
               onChange={(event) => setSort(event.target.value)}
-              className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-primary focus:outline-none"
+              className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-gold-strong focus:outline-none"
             >
               <option value="newest">{t('applications.sortNewest')}</option>
               <option value="oldest">{t('applications.sortOldest')}</option>
@@ -314,7 +314,7 @@ function QueueCard({
     <li data-testid="application-row">
       <article
         className={`p-4 transition-colors ${
-          active ? 'border-s-2 border-primary bg-primary-tint' : 'hover:bg-surface-muted'
+          active ? 'border-s-2 border-gold-strong bg-gold-soft' : 'hover:bg-surface-muted'
         }`}
       >
         <div className="flex items-start gap-3">
@@ -356,7 +356,7 @@ function QueueCard({
                 </span>
                 <Link
                   href="/org/participants"
-                  className="font-medium text-primary hover:underline"
+                  className="font-medium text-gold-strong hover:underline"
                 >
                   {t('applications.viewParticipants')} →
                 </Link>
@@ -367,7 +367,7 @@ function QueueCard({
               </p>
             ) : null}
             {active ? (
-              <span className="mt-2.5 flex items-center justify-end gap-0.5 text-sm font-medium text-primary">
+              <span className="mt-2.5 flex items-center justify-end gap-0.5 text-sm font-medium text-gold-strong">
                 <Link
                   href={`/org/applications/${encodeURIComponent(id)}`}
                   className="inline-flex items-center gap-0.5 hover:underline"

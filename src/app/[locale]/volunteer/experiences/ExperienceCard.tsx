@@ -22,6 +22,7 @@ import {
 } from '@/hooks/useExperiences';
 import { useVerificationQuery } from '@/hooks/useOrgInbox';
 import { orgDisplayName, type EnrichedExperience } from '@/lib/api/experiences';
+import { notify } from '@/lib/notify';
 import {
   hoursFromMinutes,
   humanExperienceSkillLabels,
@@ -130,7 +131,7 @@ function EvidenceGallery({ experienceId }: { experienceId: string }) {
                   href={file.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1 text-label-sm font-medium text-primary hover:underline"
+                  className="inline-flex shrink-0 items-center gap-1 text-label-sm font-medium text-gold-strong hover:underline"
                 >
                   <span>{t('experiences.evidenceOpen')}</span>
                   <ExternalLink size={14} aria-hidden="true" className="rtl:rotate-180" />
@@ -165,7 +166,7 @@ function EvidenceGallery({ experienceId }: { experienceId: string }) {
                   href={file.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex max-w-full items-center gap-1 font-medium text-primary hover:underline"
+                  className="inline-flex max-w-full items-center gap-1 font-medium text-gold-strong hover:underline"
                 >
                   <span className="truncate">
                     {t('experiences.evidenceOpen')}: {file.filename}
@@ -268,6 +269,8 @@ export function ExperienceCard({
 
   const onCopy = async () => {
     const ok = await copyVerificationLink(experience.verificationCode, deepLink);
+    if (ok) notify.success('success.linkCopied');
+    else notify.error('error.copyFailed');
     setCopyState(ok ? 'done' : 'fallback');
   };
 
@@ -296,7 +299,7 @@ export function ExperienceCard({
           {orgSlug !== '' ? (
             <Link
               href={`/orgs/${orgSlug}`}
-              className="inline-flex shrink-0 items-center gap-0.5 text-label-sm font-medium text-primary hover:underline"
+              className="inline-flex shrink-0 items-center gap-0.5 text-label-sm font-medium text-gold-strong hover:underline"
             >
               <span>{t('experiences.viewOrganization')}</span>
               <ArrowUpRight size={14} aria-hidden="true" className="rtl:rotate-180" />

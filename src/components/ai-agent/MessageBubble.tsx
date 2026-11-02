@@ -1,16 +1,18 @@
 'use client';
 
 import { Fragment } from 'react';
-import { ArrowDown, RotateCcw } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, RotateCcw } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import type { AiAgentError } from '@/lib/api/aiAgent';
 import type { AiChatMessage } from '@/hooks/useAiChat';
 import { TypingIndicator, type TypingPhase } from './TypingIndicator';
 import {
+  detectTextDirection,
   errorMessageKey,
   parseChatContent,
   retryAfterDescriptor,
+  stripChatLocalePrefix,
 } from './aiAgentUi';
 
 export interface MessageBubbleProps {
@@ -24,10 +26,16 @@ export interface MessageBubbleProps {
 }
 
 const ACTION_CLASSES =
-  'inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-label-sm font-medium text-ink transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
+  'inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-label-sm font-medium text-ink transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
 
 const LINK_CLASSES =
-  'underline underline-offset-2 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
+  'text-gold-strong underline underline-offset-2 hover:text-gold-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
+
+const USER_LINK_CLASSES =
+  'underline underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary focus-visible:ring-offset-2 focus-visible:ring-offset-primary';
+
+const CARD_LINK_CLASSES =
+  'my-1 inline-flex max-w-full items-center gap-2 rounded-[10px] border border-border bg-surface px-3 py-2 text-start text-body-sm font-medium text-gold-strong transition-colors hover:border-gold-strong/40 hover:bg-gold-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
 
 export function MessageBubble({
   message,
@@ -43,6 +51,9 @@ export function MessageBubble({
   const isUser = message.role === 'user';
   const retryAfter = retryAfterDescriptor(error?.retryAfterSeconds);
   const segments = parseChatContent(message.content, locale);
+  const direction = detectTextDirection(message.content);
+  const waitingForFirstToken =
+    message.status === 'streaming' && message.content.length === 0;
 
   return (
     <article
@@ -55,27 +66,50 @@ export function MessageBubble({
       </span>
 
       <div
-        className={`max-w-[85%] rounded-lg px-3 py-2 ${
+        className={`max-w-[85%] rounded-[16px] px-3.5 py-2.5 ${
           isUser
-            ? 'bg-primary text-white'
-            : 'border border-border bg-surface-muted text-ink'
+            ? 'rounded-ee-[6px] bg-primary text-on-primary'
+            : 'rounded-es-[6px] border border-border bg-surface text-ink'
         }`}
       >
         {message.content.length > 0 ? (
           <div aria-hidden={message.status === 'streaming' ? true : undefined}>
             <p
-              dir="auto"
+              dir={direction}
               className="whitespace-pre-wrap break-words text-start text-body-md"
             >
               {segments.map((segment, index) =>
                 segment.type === 'link' ? (
-                  <Link
-                    key={`${segment.href}-${index}`}
-                    href={segment.href}
-                    className={LINK_CLASSES}
-                  >
-                    {segment.text}
-                  </Link>
+                  isUser || segment.kind === 'inline' ? (
+                    <Link
+                      key={`${segment.href}-${index}`}
+                      href={stripChatLocalePrefix(segment.href)}
+                      className={
+                        isUser ? USER_LINK_CLASSES : LINK_CLASSES
+                      }
+                    >
+                      {segment.text}
+                    </Link>
+                  ) : (
+                    <Link
+                      key={`${segment.href}-${index}`}
+                      href={stripChatLocalePrefix(segment.href)}
+                      data-link-card="true"
+                      className={CARD_LINK_CLASSES}
+                    >
+                      <span
+                        dir="auto"
+                        className="min-w-0 flex-1 break-words"
+                      >
+                        {segment.text}
+                      </span>
+                      <ArrowUpRight
+                        aria-hidden="true"
+                        size={14}
+                        className="shrink-0 text-ink-muted rtl:-scale-x-100"
+                      />
+                    </Link>
+                  )
                 ) : (
                   <Fragment key={`text-${index}`}>{segment.text}</Fragment>
                 ),
@@ -84,10 +118,8 @@ export function MessageBubble({
           </div>
         ) : null}
 
-        {message.status === 'streaming' ? (
-          <div className={message.content.length > 0 ? 'mt-2' : ''}>
-            <TypingIndicator phase={typingPhase} />
-          </div>
+        {waitingForFirstToken ? (
+          <TypingIndicator phase={typingPhase} />
         ) : null}
 
         {message.status === 'aborted' ? (

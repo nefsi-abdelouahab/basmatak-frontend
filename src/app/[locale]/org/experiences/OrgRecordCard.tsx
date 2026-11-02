@@ -18,6 +18,7 @@ import {
   copyOrgVerificationLink,
   useOrgAttestationDownloadMutation,
 } from '@/hooks/useOrgRecords';
+import { notify } from '@/lib/notify';
 import {
   buildVerifyDeepLink,
   type OrgExperienceRow,
@@ -54,11 +55,11 @@ export function OrgRecordCard({
     <li data-testid="org-record-card" data-id={record.id}>
       <article
         className={`relative rounded-xl border bg-surface p-4 shadow-sm transition-colors ${
-          selected ? 'border-primary' : 'border-border hover:bg-surface-muted'
+          selected ? 'border-gold-strong' : 'border-border hover:bg-surface-muted'
         }`}
       >
         {selected ? (
-          <span aria-hidden="true" className="absolute inset-y-3 start-0 w-1 rounded-e bg-primary" />
+          <span aria-hidden="true" className="absolute inset-y-3 start-0 w-1 rounded-e bg-gold" />
         ) : null}
         <button
           type="button"
@@ -72,7 +73,7 @@ export function OrgRecordCard({
               {record.title}
             </span>
             {selected ? (
-              <span className="shrink-0 text-xs font-medium text-primary">
+              <span className="shrink-0 text-xs font-medium text-gold-strong">
                 {t('list.selected')}
               </span>
             ) : null}
@@ -148,6 +149,8 @@ export function OrgExperienceDetail({
 
   const onCopy = async () => {
     const ok = await copyOrgVerificationLink(record.verificationCode, deepLink);
+    if (ok) notify.success('success.linkCopied');
+    else notify.error('error.copyFailed');
     setCopyState(ok ? 'done' : 'fallback');
   };
 
@@ -187,7 +190,7 @@ export function OrgExperienceDetail({
         className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm md:p-6"
       >
         <h3 className="flex items-center gap-2 text-base font-semibold text-ink">
-          <BadgeCheck size={18} aria-hidden="true" className="text-primary" />
+          <BadgeCheck size={18} aria-hidden="true" className="text-gold-strong" />
           <span>{t('detail.verificationTitle')}</span>
         </h3>
         <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">

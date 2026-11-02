@@ -31,6 +31,7 @@ import { Container } from '@/components/ui/Container';
 import { Empty } from '@/components/ui/Empty';
 import { Input } from '@/components/ui/Input';
 import { Loader } from '@/components/ui/Loader';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import {
   isAdminUserStatus,
   type AdminVolunteerRow,
@@ -110,9 +111,9 @@ function expRegistryOf(registryId: string | null | undefined): string {
 }
 
 function statusDot(status: string): string {
-  if (status === 'active') return 'bg-emerald-600';
-  if (status === 'suspended') return 'bg-rose-600';
-  return 'bg-zinc-400';
+  if (status === 'active') return 'bg-status-success';
+  if (status === 'suspended') return 'bg-status-error';
+  return 'bg-ink-muted';
 }
 
 function SectionError({ message, testId }: { message: string; testId: string }) {
@@ -187,7 +188,7 @@ function FilterSelect({
         title={label}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-10 w-full appearance-none rounded-lg border border-border bg-surface ps-9 pe-8 text-sm text-ink focus:border-primary focus:outline-none"
+        className="h-10 w-full appearance-none rounded-lg border border-border bg-surface ps-9 pe-8 text-sm text-ink focus:border-gold-strong focus:outline-none"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -366,7 +367,7 @@ function VolunteerDetail({
                 <CheckCircle2
                   size={16}
                   aria-hidden="true"
-                  className="shrink-0 text-emerald-600"
+                  className="shrink-0 text-status-success"
                 />
               ) : null}
             </h2>
@@ -419,7 +420,7 @@ function VolunteerDetail({
             size="sm"
             data-testid="admin-volunteer-status-open"
             onClick={() => setStatusOpen(true)}
-            className="text-rose-700"
+            className="text-status-error"
           >
             <Ban size={14} aria-hidden="true" />
             {targetStatus === 'suspended'
@@ -458,9 +459,9 @@ function VolunteerDetail({
           </dt>
           <dd className="flex items-center gap-1 text-xs font-medium text-ink">
             {emailVerified ? (
-              <CheckCircle2 size={14} aria-hidden="true" className="text-emerald-600" />
+              <CheckCircle2 size={14} aria-hidden="true" className="text-status-success" />
             ) : (
-              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-zinc-400" />
+              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-ink-muted" />
             )}
             {emailVerified
               ? t('volunteers.emailVerified')
@@ -547,7 +548,7 @@ function VolunteerDetail({
                   ? t('volunteers.completedOn', { date: formatDate(latestVerifiedAt, locale) })
                   : '—'}
               </span>
-              <span className="font-medium text-primary">
+              <span className="font-medium text-gold-strong">
                 {formatMinutes(latestDuration, (key, values) =>
                   t(key, values as Record<string, string | number>),
                 )}
@@ -842,7 +843,7 @@ export function AdminVolunteersPage({
                 setQ(event.target.value);
                 resetPage();
               }}
-              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
             />
           </div>
           <Button
@@ -970,7 +971,7 @@ export function AdminVolunteersPage({
                 setFrom(event.target.value);
                 resetPage();
               }}
-              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink focus:border-primary focus:outline-none"
+              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
             />
           </div>
           <div className="relative min-w-[10rem] flex-1">
@@ -989,7 +990,7 @@ export function AdminVolunteersPage({
                 setTo(event.target.value);
                 resetPage();
               }}
-              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink focus:border-primary focus:outline-none"
+              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
             />
           </div>
           <FilterSelect
@@ -1024,7 +1025,7 @@ export function AdminVolunteersPage({
 
       <div className="grid min-w-0 grid-cols-1 items-start gap-6 xl:grid-cols-3">
         <Card className="min-w-0 p-0 xl:col-span-2">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" tabIndex={0}>
             <table className="w-full text-start">
               <thead>
                 <tr className="border-b border-border text-start text-xs uppercase tracking-wider text-ink-muted">
@@ -1064,7 +1065,7 @@ export function AdminVolunteersPage({
                       onClick={() => setSelectedId(rowId(row))}
                       aria-selected={selectedRow}
                       className={`cursor-pointer transition-colors hover:bg-surface-muted ${
-                        selectedRow ? 'bg-primary-tint/40' : ''
+                        selectedRow ? 'bg-gold-soft/40' : ''
                       }`}
                     >
                       <td className="px-4 py-3">
@@ -1185,7 +1186,7 @@ export function AdminVolunteersPage({
                       setLimit(Number(event.target.value) || 25);
                       resetPage();
                     }}
-                    className="rounded-md border border-border bg-surface px-2 py-1 text-sm text-ink focus:border-primary focus:outline-none"
+                    className="rounded-md border border-border bg-surface px-2 py-1 text-sm text-ink focus:border-gold-strong focus:outline-none"
                   >
                     <option value="20">20</option>
                     <option value="25">25</option>
@@ -1204,16 +1205,19 @@ export function AdminVolunteersPage({
               onClick={() => setSelectedId(undefined)}
               className="fixed inset-0 z-30 bg-ink/40 xl:hidden"
             />
-            <aside
+            <ScrollFade
+              as="aside"
+              role="region"
               aria-label={t('volunteers.detailTitle')}
-              className="fixed inset-y-0 end-0 z-40 w-[min(92vw,26rem)] overflow-y-auto border-s border-border bg-surface p-4 shadow-modal xl:sticky xl:top-20 xl:z-auto xl:col-span-1 xl:w-auto xl:self-start xl:overflow-visible xl:rounded-xl xl:border xl:p-4 xl:shadow-sm"
+              className="fixed inset-y-0 end-0 z-40 w-[min(92vw,26rem)] border-s border-border bg-surface p-4 shadow-modal xl:sticky xl:top-20 xl:z-auto xl:col-span-1 xl:w-auto xl:self-start xl:rounded-xl xl:border xl:p-4 xl:shadow-sm"
+              viewportClassName="overflow-y-auto xl:overflow-visible"
             >
               <VolunteerDetail
                 row={selected}
                 onChanged={() => void listQuery.refetch()}
                 onClose={() => setSelectedId(undefined)}
               />
-            </aside>
+            </ScrollFade>
           </>
         ) : null}
       </div>

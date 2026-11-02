@@ -18,6 +18,7 @@ import {
   Users,
 } from 'lucide-react';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { notify } from '@/lib/notify';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Container } from '@/components/ui/Container';
@@ -116,9 +117,11 @@ function ShareButton() {
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(window.location.href);
+          notify.success('success.linkCopied');
           setCopied(true);
           window.setTimeout(() => setCopied(false), 2000);
         } catch {
+          notify.error('error.copyFailed');
           setCopied(false);
         }
       }}
@@ -232,7 +235,7 @@ function PositionCard({
           <Link
             href={`/volunteer/opportunities/${idOrSlug}`}
             data-testid="apply-cta"
-            className="inline-flex items-center self-start rounded-md bg-primary px-4 py-2 text-sm font-medium text-white"
+            className="inline-flex items-center self-start rounded-md bg-primary px-4 py-2 text-sm font-medium text-on-primary"
           >
             {t('oppDetails.apply')}
           </Link>
@@ -297,7 +300,7 @@ export function PublicOpportunityDetailsPage({
             title={t('oppDetails.notFoundTitle')}
             description={t('oppDetails.notFoundBody')}
             action={
-              <Link href="/" className="text-sm font-medium text-primary">
+              <Link href="/" className="text-sm font-medium text-gold-strong">
                 {t('oppDetails.backToLanding')}
               </Link>
             }
@@ -447,7 +450,7 @@ export function PublicOpportunityDetailsPage({
         {detail.prerequisites && detail.prerequisites.length > 0 ? (
           <div className="mt-4">
             <h2 className="mb-2 inline-flex items-center gap-1.5 text-lg font-semibold text-ink">
-              <ListChecks size={18} aria-hidden="true" className="text-primary" />
+              <ListChecks size={18} aria-hidden="true" className="text-gold-strong" />
               {t('oppDetails.prerequisites')}
             </h2>
             <ul className="flex list-disc flex-col gap-1 ps-5 text-sm text-ink">
@@ -461,7 +464,7 @@ export function PublicOpportunityDetailsPage({
 
       <div className="flex flex-col gap-3">
         <h2 className="inline-flex items-center gap-1.5 text-lg font-semibold text-ink">
-          <Users size={18} aria-hidden="true" className="text-primary" />
+          <Users size={18} aria-hidden="true" className="text-gold-strong" />
           {t('oppDetails.positions')}
         </h2>
         {positions.length === 0 ? (
@@ -483,7 +486,7 @@ export function PublicOpportunityDetailsPage({
       <Card>
         <div data-testid="detail-org" className="flex flex-col gap-1">
           <h2 className="inline-flex items-center gap-1.5 text-lg font-semibold text-ink">
-            <Building2 size={18} aria-hidden="true" className="text-primary" />
+            <Building2 size={18} aria-hidden="true" className="text-gold-strong" />
             {t('oppDetails.publisher')}
           </h2>
           {detail.organization ? (
@@ -498,7 +501,7 @@ export function PublicOpportunityDetailsPage({
               {orgSlug ? (
                 <Link
                   href={`/orgs/${orgSlug}`}
-                  className="inline-flex items-center gap-1 text-sm font-medium text-primary"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-gold-strong"
                 >
                   {t('oppDetails.viewOrg')}
                   <ArrowRight size={16} aria-hidden="true" className="rtl:rotate-180" />
@@ -535,7 +538,7 @@ export function PublicOpportunityDetailsPage({
                       <p className="text-base font-semibold text-ink">{item.title ?? ''}</p>
                       <Link
                         href={`/opportunities/${oppSlugOf(item)}`}
-                        className="inline-flex items-center gap-1 text-sm font-medium text-primary"
+                        className="inline-flex items-center gap-1 text-sm font-medium text-gold-strong"
                       >
                         {t('oppDetails.viewOpp')}
                         <ArrowRight size={16} aria-hidden="true" className="rtl:rotate-180" />

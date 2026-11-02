@@ -137,7 +137,7 @@ function OppRow({
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             {category ? (
-              <span className="rounded-full bg-primary-tint px-2.5 py-0.5 text-label-xs font-medium text-primary">
+              <span className="rounded-full bg-gold-soft px-2.5 py-0.5 text-label-xs font-medium text-gold-strong">
                 {category}
               </span>
             ) : null}
@@ -153,7 +153,7 @@ function OppRow({
           {orgName ? (
             <p className="flex flex-wrap items-center gap-x-2 text-body-sm text-ink-muted">
               {orgSlug ? (
-                <Link href={`/orgs/${orgSlug}`} className="font-medium text-primary">
+                <Link href={`/orgs/${orgSlug}`} className="font-medium text-gold-strong">
                   {orgName}
                 </Link>
               ) : (
@@ -185,7 +185,7 @@ function OppRow({
           <Link
             href={applyHref}
             data-testid="apply-cta"
-            className="group inline-flex h-9 items-center gap-1.5 rounded-md bg-primary-tint px-4 text-label-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
+            className="group inline-flex h-9 items-center gap-1.5 rounded-md bg-gold-soft px-4 text-label-sm font-medium text-gold-strong transition-colors hover:bg-primary hover:text-on-primary"
           >
             {t('landing.apply')}
             <ArrowIcon size={16} />
@@ -275,7 +275,7 @@ function TalentCard({
           <TalentAvatar avatar={sample.avatar} name={name} />
           <div>
             <h3 className="text-title-md font-semibold text-ink">
-              <Link href={`/volunteers/${sample.username}`} className="hover:text-primary">
+              <Link href={`/volunteers/${sample.username}`} className="hover:text-gold-strong">
                 {name}
               </Link>
             </h3>
@@ -297,7 +297,7 @@ function TalentCard({
         ) : null}
       </div>
       <div className="mt-6 flex items-center justify-between border-t border-border-muted pt-4">
-        <span className="inline-flex items-center gap-1 text-label-xs font-medium text-primary">
+        <span className="inline-flex items-center gap-1 text-label-xs font-medium text-gold-strong">
           <BadgeCheck aria-hidden="true" size={16} />
           <span>{t('talents.expCount', { count: expCount })}</span>
         </span>
@@ -335,7 +335,7 @@ function RecordCard({
     <div data-testid="sample-record-card" className="rounded-lg bg-surface-muted p-6 shadow-sm sm:p-8">
       <div className="flex items-center justify-between border-b border-border-muted pb-4">
         <p className="flex items-center gap-2 text-label-sm font-semibold text-ink">
-          <IdCard aria-hidden="true" size={20} className="text-primary" />
+          <IdCard aria-hidden="true" size={20} className="text-gold-strong" />
           <span>{t('showcase.recordTitle')}</span>
         </p>
         {code !== '' ? (
@@ -352,7 +352,7 @@ function RecordCard({
             <dt className="text-label-xs text-ink-muted">{t('showcase.orgLabel')}</dt>
             <dd className="mt-0.5 text-title-sm font-medium text-ink">
               {orgSlug ? (
-                <Link href={`/orgs/${orgSlug}`} className="text-primary hover:text-primary-hover">
+                <Link href={`/orgs/${orgSlug}`} className="text-gold-strong hover:text-ink">
                   {orgName}
                 </Link>
               ) : (
@@ -390,9 +390,9 @@ function RecordCard({
           </div>
         ) : null}
       </dl>
-      <div className="mt-4 flex items-center justify-between rounded-md bg-primary-tint p-3">
+      <div className="mt-4 flex items-center justify-between rounded-md bg-gold-soft p-3">
         <p className="flex items-center gap-2 text-label-sm font-medium text-ink">
-          <BadgeCheck aria-hidden="true" size={18} className="text-primary" />
+          <BadgeCheck aria-hidden="true" size={18} className="text-gold-strong" />
           <span>{t('landing.verified')}</span>
         </p>
         {code !== '' ? (
@@ -474,7 +474,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
         <Container className="grid grid-cols-1 items-center gap-12 py-12 lg:grid-cols-12 lg:gap-16 lg:py-20">
           <div className="flex flex-col items-start lg:col-span-7">
             <p className="inline-flex items-center gap-2 rounded-full bg-surface-muted px-3 py-1 text-label-xs text-ink-muted">
-              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-primary" />
+              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-gold" />
               <span>{t('hero.eyebrow')}</span>
             </p>
             <h1 className="mt-6 text-display-lg font-semibold tracking-tight text-ink">
@@ -486,7 +486,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             <div className="mt-8 flex w-full flex-wrap items-center gap-4 sm:w-auto">
               <Link
                 href="/opportunities"
-                className="group inline-flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-6 text-label-md font-medium text-white transition-colors hover:bg-primary-hover"
+                className="group inline-flex h-11 items-center justify-center gap-2 rounded-md bg-gold px-6 text-label-md font-medium text-on-gold transition-colors hover:bg-gold-hover"
               >
                 <span>{t('hero.ctaPrimary')}</span>
                 <ArrowIcon size={18} />
@@ -499,7 +499,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
               </Link>
             </div>
             <p className="mt-10 flex items-center gap-2 border-t border-border-muted pt-6 text-label-sm text-ink-muted">
-              <ShieldCheck aria-hidden="true" size={18} className="shrink-0 text-primary" />
+              <ShieldCheck aria-hidden="true" size={18} className="shrink-0 text-gold-strong" />
               <span>{t('hero.note')}</span>
             </p>
           </div>
@@ -513,7 +513,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
                 priority
                 className="h-full w-full object-cover"
               />
-              <div className="absolute inset-x-3 bottom-3 flex items-center justify-between rounded-md bg-surface/90 px-3 py-1.5 backdrop-blur-sm">
+              <div className="absolute inset-x-3 bottom-3 flex items-center justify-between rounded-md bg-surface px-3 py-1.5">
                 <span className="text-label-xs font-medium text-ink">{t('hero.captionTitle')}</span>
                 <span className="text-label-xs text-ink-muted">{t('hero.captionMeta')}</span>
               </div>
@@ -535,7 +535,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             {PHILOSOPHY_CARDS.map((card) => (
               <div key={card.titleKey} className="flex flex-col justify-between rounded-lg bg-surface p-8 shadow-sm">
                 <div>
-                  <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-md bg-surface-muted text-primary">
+                  <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-md bg-surface-muted text-gold-strong">
                     <card.icon aria-hidden="true" size={22} />
                   </div>
                   <h3 className="text-title-lg font-semibold text-ink">{t(`philosophy.${card.titleKey}`)}</h3>
@@ -568,11 +568,11 @@ export function PublicLandingPage({ locale }: { locale: string }) {
               <div
                 key={step.num}
                 className={`flex h-full flex-col justify-between rounded-md p-5 ${
-                  index === HOW_STEPS.length - 1 ? 'bg-primary-tint' : 'bg-surface-muted'
+                  index === HOW_STEPS.length - 1 ? 'bg-gold-soft' : 'bg-surface-muted'
                 }`}
               >
                 <div>
-                  <span className="text-label-sm font-semibold text-primary">{step.num}</span>
+                  <span className="text-label-sm font-semibold text-gold-strong">{step.num}</span>
                   <h4 className="mt-2 text-title-sm font-semibold text-ink">
                     {t(`how.${step.titleKey}`)}
                   </h4>
@@ -600,7 +600,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             </div>
             <Link
               href="/opportunities"
-              className="group inline-flex items-center gap-1 text-label-md font-medium text-primary hover:text-primary-hover"
+              className="group inline-flex items-center gap-1 text-label-md font-medium text-gold-strong hover:text-ink"
             >
               <span>{t('opps.viewAll')}</span>
               <ArrowIcon size={18} />
@@ -650,7 +650,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             <ul className="space-y-3 pt-4 text-body-sm text-ink">
               {[t('showcase.b1'), t('showcase.b2'), t('showcase.b3')].map((bullet) => (
                 <li key={bullet} className="flex items-start gap-2.5">
-                  <CircleCheck aria-hidden="true" size={20} className="shrink-0 text-primary" />
+                  <CircleCheck aria-hidden="true" size={20} className="shrink-0 text-gold-strong" />
                   <span>{bullet}</span>
                 </li>
               ))}
@@ -699,7 +699,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             </div>
             <Link
               href="/talents"
-              className="group inline-flex items-center gap-1 text-label-md font-medium text-primary hover:text-primary-hover"
+              className="group inline-flex items-center gap-1 text-label-md font-medium text-gold-strong hover:text-ink"
             >
               <span>{t('talents.discover')}</span>
               <ArrowIcon size={18} />
@@ -758,7 +758,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             <div className="grid grid-cols-1 gap-4 pt-2 sm:grid-cols-3">
               {ORG_MINIS.map((mini) => (
                 <div key={mini.titleKey} className="rounded-md bg-surface-muted p-4">
-                  <mini.icon aria-hidden="true" size={20} className="text-primary" />
+                  <mini.icon aria-hidden="true" size={20} className="text-gold-strong" />
                   <h4 className="mt-2 text-title-sm font-semibold text-ink">
                     {t(`orgCta.${mini.titleKey}`)}
                   </h4>
@@ -769,7 +769,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
             <div className="flex flex-wrap gap-4 pt-4">
               <Link
                 href="/create-account?type=organization"
-                className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-label-md font-medium text-white transition-colors hover:bg-primary-hover"
+                className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-label-md font-medium text-on-primary transition-colors hover:bg-primary-hover"
               >
                 {t('orgCta.registerCta')}
               </Link>
@@ -797,7 +797,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
               <div key={card.num} className="space-y-2 rounded-lg bg-surface p-6 shadow-sm">
                 <p
                   aria-hidden="true"
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-muted text-label-sm font-semibold text-primary"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-muted text-label-sm font-semibold text-gold-strong"
                 >
                   {card.num}
                 </p>
@@ -818,7 +818,7 @@ export function PublicLandingPage({ locale }: { locale: string }) {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/opportunities"
-              className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-label-md font-medium text-white transition-colors hover:bg-primary-hover"
+              className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-label-md font-medium text-on-primary transition-colors hover:bg-primary-hover"
             >
               {t('cta.exploreCta')}
             </Link>

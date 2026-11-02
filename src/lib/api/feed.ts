@@ -179,6 +179,13 @@ export type LatestVerifiedExperience = z.infer<typeof LatestVerifiedExperienceSc
 export const VolunteerHomeDashboardSchema = z
   .object({
     completionPercent: z.number(),
+    completion: z
+      .object({
+        percent: z.number(),
+        missingFields: z.array(z.string()),
+        complete: z.boolean(),
+      })
+      .optional(),
     stats: z.record(z.string(), z.unknown()).nullable().optional(),
     latestVerifiedExperience: LatestVerifiedExperienceSchema.nullable().optional(),
   })

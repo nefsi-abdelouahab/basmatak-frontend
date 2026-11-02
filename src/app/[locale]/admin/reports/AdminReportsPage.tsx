@@ -29,6 +29,7 @@ import { Card } from '@/components/ui/Card';
 import { Container } from '@/components/ui/Container';
 import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import {
   MODERATION_ACTION_TYPES,
   buildResolveActionPayload,
@@ -88,11 +89,11 @@ function shortReportId(reportId: string): string {
 }
 
 function statusDot(status: string): string {
-  if (status === 'open') return 'bg-amber-500';
-  if (status === 'in_review') return 'bg-sky-600';
-  if (status === 'resolved') return 'bg-emerald-600';
-  if (status === 'dismissed') return 'bg-zinc-400';
-  return 'bg-zinc-400';
+  if (status === 'open') return 'bg-status-pending';
+  if (status === 'in_review') return 'bg-status-pending';
+  if (status === 'resolved') return 'bg-status-success';
+  if (status === 'dismissed') return 'bg-ink-muted';
+  return 'bg-ink-muted';
 }
 
 function statusLabelOf(
@@ -168,7 +169,7 @@ function FilterSelect({
         title={label}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-10 w-full appearance-none rounded-lg border border-border bg-surface ps-9 pe-8 text-sm text-ink focus:border-primary focus:outline-none"
+        className="h-10 w-full appearance-none rounded-lg border border-border bg-surface ps-9 pe-8 text-sm text-ink focus:border-gold-strong focus:outline-none"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -553,7 +554,7 @@ function ReportDetail({
             id={`admin-resolve-action-${reportId}`}
             value={actionType}
             onChange={(event) => setActionType(event.target.value as ModerationActionType | '')}
-            className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink focus:border-primary focus:outline-none"
+            className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
           >
             <option value="">{t('reports.noAction')}</option>
             {compatibleActions.map((candidate) => (
@@ -572,7 +573,7 @@ function ReportDetail({
           </label>
           <textarea
             id={`admin-resolve-resolution-${reportId}`}
-            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
             rows={3}
             placeholder={t('reports.resolutionPlaceholder')}
             value={resolution}
@@ -593,7 +594,7 @@ function ReportDetail({
               </label>
               <input
                 id={`admin-resolve-notice-user-${reportId}`}
-                className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink focus:border-primary focus:outline-none"
+                className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
                 value={noticeUserId}
                 onChange={(event) => setNoticeUserId(event.target.value)}
               />
@@ -607,7 +608,7 @@ function ReportDetail({
               </label>
               <input
                 id={`admin-resolve-notice-message-${reportId}`}
-                className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink focus:border-primary focus:outline-none"
+                className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
                 value={noticeMessage}
                 onChange={(event) => setNoticeMessage(event.target.value)}
               />
@@ -745,7 +746,7 @@ function ReportDetail({
             </label>
             <input
               id={`admin-assign-${reportId}`}
-              className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+              className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
               placeholder={t('reports.assigneePlaceholder')}
               value={assignee}
               onChange={(event) => setAssignee(event.target.value)}
@@ -792,7 +793,7 @@ function ReportDetail({
           </label>
           <input
             id={`admin-notice-user-${reportId}`}
-            className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink focus:border-primary focus:outline-none"
+            className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
             value={standaloneUserId}
             onChange={(event) => setStandaloneUserId(event.target.value)}
           />
@@ -806,7 +807,7 @@ function ReportDetail({
           </label>
           <input
             id={`admin-notice-message-${reportId}`}
-            className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink focus:border-primary focus:outline-none"
+            className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
             value={standaloneMessage}
             onChange={(event) => setStandaloneMessage(event.target.value)}
           />
@@ -1100,7 +1101,7 @@ export function AdminReportsPage({ locale }: { locale: string }) {
                   setQ(event.target.value);
                   resetPage();
                 }}
-                className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
               />
             </div>
             <Button
@@ -1278,7 +1279,7 @@ export function AdminReportsPage({ locale }: { locale: string }) {
                   setFrom(event.target.value);
                   resetPage();
                 }}
-                className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink focus:border-primary focus:outline-none"
+                className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
               />
             </div>
             <div className="relative min-w-[10rem] flex-1">
@@ -1297,7 +1298,7 @@ export function AdminReportsPage({ locale }: { locale: string }) {
                   setTo(event.target.value);
                   resetPage();
                 }}
-                className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink focus:border-primary focus:outline-none"
+                className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
               />
             </div>
             <div className="relative min-w-[10rem] flex-1">
@@ -1316,7 +1317,7 @@ export function AdminReportsPage({ locale }: { locale: string }) {
                   setAssignedAdminId(event.target.value);
                   resetPage();
                 }}
-                className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
               />
             </div>
             <Button type="button" variant="ghost" size="sm" onClick={clearFilters} className="h-10">
@@ -1333,7 +1334,7 @@ export function AdminReportsPage({ locale }: { locale: string }) {
 
         <div className="grid min-w-0 grid-cols-1 items-start gap-6 xl:grid-cols-3">
           <Card className="min-w-0 p-0 xl:col-span-2">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" tabIndex={0}>
               <table className="w-full text-start">
                 <thead>
                   <tr className="border-b border-border text-start text-xs uppercase tracking-wider text-ink-muted">
@@ -1380,7 +1381,7 @@ export function AdminReportsPage({ locale }: { locale: string }) {
                         onClick={() => setSelectedId(id)}
                         aria-selected={rowSelected}
                         className={`cursor-pointer transition-colors hover:bg-surface-muted ${
-                          rowSelected ? 'bg-primary-tint/40' : ''
+                          rowSelected ? 'bg-gold-soft/40' : ''
                         }`}
                       >
                         <td className="max-w-[14rem] px-4 py-3">
@@ -1499,7 +1500,7 @@ export function AdminReportsPage({ locale }: { locale: string }) {
                         setLimit(Number(event.target.value) || 20);
                         resetPage();
                       }}
-                      className="rounded-md border border-border bg-surface px-2 py-1 text-sm text-ink focus:border-primary focus:outline-none"
+                      className="rounded-md border border-border bg-surface px-2 py-1 text-sm text-ink focus:border-gold-strong focus:outline-none"
                     >
                       <option value="20">20</option>
                       <option value="25">25</option>
@@ -1518,9 +1519,12 @@ export function AdminReportsPage({ locale }: { locale: string }) {
                 onClick={() => setSelectedId(undefined)}
                 className="fixed inset-0 z-30 bg-ink/40 xl:hidden"
               />
-              <aside
+              <ScrollFade
+                as="aside"
+                role="region"
                 aria-label={t('reports.detailTitle')}
-                className="fixed inset-y-0 end-0 z-40 w-[min(94vw,30rem)] overflow-y-auto border-s border-border bg-surface p-4 shadow-modal xl:sticky xl:top-20 xl:z-auto xl:col-span-1 xl:w-auto xl:self-start xl:overflow-visible xl:rounded-xl xl:border xl:p-4 xl:shadow-sm"
+                className="fixed inset-y-0 end-0 z-40 w-[min(94vw,30rem)] border-s border-border bg-surface p-4 shadow-modal xl:sticky xl:top-20 xl:z-auto xl:col-span-1 xl:w-auto xl:self-start xl:rounded-xl xl:border xl:p-4 xl:shadow-sm"
+                viewportClassName="overflow-y-auto xl:overflow-visible"
               >
                 <ReportDetail
                   key={reportIdOf(selected)}
@@ -1535,7 +1539,7 @@ export function AdminReportsPage({ locale }: { locale: string }) {
                   }}
                   onClose={() => setSelectedId(undefined)}
                 />
-              </aside>
+              </ScrollFade>
             </>
           ) : null}
         </div>

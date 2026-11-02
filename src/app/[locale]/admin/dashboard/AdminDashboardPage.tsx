@@ -102,10 +102,12 @@ const SERIES_LABEL_KEYS: Record<SeriesField, string> = {
   verifications: 'series.verifications',
 };
 
+// Chart series read the live theme variables so the gold/black identity (and
+// dark mode) applies without duplicating literals in the component.
 const CHART_COLORS: Record<SeriesField, string> = {
-  signups: '#6d28d9',
-  applications: '#7b7486',
-  verifications: '#8f4200',
+  signups: 'var(--color-gold)',
+  applications: 'var(--color-ink-muted)',
+  verifications: 'var(--color-success)',
 };
 
 function SectionError({ testId }: { testId: string }) {
@@ -235,7 +237,7 @@ function DashboardHeader({
                 onClick={() => onDays(option)}
                 className={`rounded-md px-2.5 py-1.5 text-label-sm transition-colors ${
                   active
-                    ? 'bg-surface-muted font-semibold text-primary'
+                    ? 'bg-surface-muted font-semibold text-gold-strong'
                     : 'text-ink-muted hover:text-ink'
                 }`}
               >
@@ -356,6 +358,7 @@ function StatsRow() {
     <section
       aria-label={t('stats.label')}
       data-testid="stats-row"
+      tabIndex={0}
       className="overflow-x-auto rounded-xl border border-border bg-surface shadow-sm"
     >
       <ul className="grid min-w-[760px] grid-cols-2 gap-px bg-border-muted md:grid-cols-3 lg:grid-cols-6">
@@ -453,12 +456,6 @@ function SeriesPanel({ days }: { days: number }) {
             viewBox="0 0 720 220"
             className="h-auto w-full overflow-visible text-ink"
           >
-            <defs>
-              <linearGradient id="admin-series-signups" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={CHART_COLORS.signups} stopOpacity="0.12" />
-                <stop offset="100%" stopColor={CHART_COLORS.signups} stopOpacity="0" />
-              </linearGradient>
-            </defs>
             {gridFractions.map((fraction) => {
               const y = 16 + (1 - fraction) * (195 - 16);
               return (
@@ -483,7 +480,8 @@ function SeriesPanel({ days }: { days: number }) {
             ))}
             <path
               d={`${chartPath(points, 'signups', max)} L 700 195 L 40 195 Z`}
-              fill="url(#admin-series-signups)"
+              fill={CHART_COLORS.signups}
+              fillOpacity={0.08}
             />
             <path
               d={chartPath(points, 'signups', max)}
@@ -600,7 +598,7 @@ function QueuePanel() {
         <Link
           data-testid="queue-view-all"
           href="/admin/verifications"
-          className="shrink-0 text-label-sm font-medium text-primary hover:underline"
+          className="shrink-0 text-label-sm font-medium text-gold-strong hover:underline"
         >
           {t('queue.viewQueue', { count: queue.data.pendingVerifications })}
         </Link>
@@ -641,7 +639,7 @@ function QueuePanel() {
                 </div>
                 <Link
                   href="/admin/verifications"
-                  className="inline-flex shrink-0 items-center gap-1 ps-2 text-label-md font-medium text-primary transition-colors hover:underline"
+                  className="inline-flex shrink-0 items-center gap-1 ps-2 text-label-md font-medium text-gold-strong transition-colors hover:underline"
                 >
                   <span>{t('queue.review')}</span>
                   <ArrowRight size={16} aria-hidden="true" className="shrink-0 rtl:rotate-180" />
@@ -686,7 +684,7 @@ function QueuePanel() {
                 </div>
                 <Link
                   href="/admin/reports"
-                  className="inline-flex shrink-0 items-center gap-1 ps-2 text-label-md font-medium text-primary transition-colors hover:underline"
+                  className="inline-flex shrink-0 items-center gap-1 ps-2 text-label-md font-medium text-gold-strong transition-colors hover:underline"
                 >
                   <span>{t('queue.review')}</span>
                   <ArrowRight size={16} aria-hidden="true" className="shrink-0 rtl:rotate-180" />
@@ -810,7 +808,7 @@ function HealthCard() {
           </div>
           <span
             aria-hidden="true"
-            className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${operational ? 'bg-emerald-600' : 'bg-amber-500'}`}
+            className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${operational ? 'bg-status-success' : 'bg-status-pending'}`}
           />
         </div>
         {status.version ? (

@@ -38,8 +38,8 @@ import { OrgExperienceDetail, OrgRecordCard } from './OrgRecordCard';
 // download (GET /experiences/:experienceId/attestation). Copy action targets
 // the real inline /verify/:verificationCode proof (no standalone page).
 // Layout reuses the shared MasterDetail split (independent scroll on lg,
-// list->detail navigation on mobile) inside one shared Container. No toasts —
-// all states render inline.
+// list->detail navigation on mobile) inside one shared Container. Failures
+// render inline; downloads confirm through the global success toast.
 
 function formatHoursLabel(totalMinutes: number): string {
   const hours = totalMinutes / 60;
@@ -221,7 +221,7 @@ export function OrgExperiencesPage({ locale }: { locale: string }) {
               className="flex flex-wrap items-center gap-x-8 gap-y-3"
             >
               <div className="flex items-center gap-2.5">
-                <BadgeCheck size={20} aria-hidden="true" className="shrink-0 text-primary" />
+                <BadgeCheck size={20} aria-hidden="true" className="shrink-0 text-gold-strong" />
                 <div className="flex flex-col">
                   <dt className="text-xs uppercase tracking-wider text-ink-muted">
                     {t('stats.verifiedLabel')}
@@ -266,7 +266,7 @@ export function OrgExperiencesPage({ locale }: { locale: string }) {
                     placeholder={t('archive.searchPlaceholder')}
                     value={q}
                     onChange={(event) => setQ(event.target.value)}
-                    className="h-10 w-full rounded-lg border border-border bg-surface py-2 pe-3 ps-9 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                    className="h-10 w-full rounded-lg border border-border bg-surface py-2 pe-3 ps-9 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
                   />
                 </div>
               </div>
@@ -280,7 +280,7 @@ export function OrgExperiencesPage({ locale }: { locale: string }) {
                     data-testid="org-records-opportunity"
                     value={opportunityId}
                     onChange={(event) => setOpportunityId(event.target.value)}
-                    className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-primary focus:outline-none"
+                    className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-gold-strong focus:outline-none"
                   >
                     <option value="">{t('archive.allOpportunities')}</option>
                     {opportunityOptions.map((option) => (
@@ -306,7 +306,7 @@ export function OrgExperiencesPage({ locale }: { locale: string }) {
                     data-testid="org-records-visibility"
                     value={visibility}
                     onChange={(event) => setVisibility(event.target.value)}
-                    className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-primary focus:outline-none"
+                    className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-gold-strong focus:outline-none"
                   >
                     <option value="">{t('archive.allVisibilities')}</option>
                     <option value="public">{t('archive.visibilityPublic')}</option>
@@ -329,7 +329,7 @@ export function OrgExperiencesPage({ locale }: { locale: string }) {
                     data-testid="org-records-sort"
                     value={sort}
                     onChange={(event) => setSort(event.target.value)}
-                    className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-primary focus:outline-none"
+                    className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-gold-strong focus:outline-none"
                   >
                     <option value="newest">{t('archive.sortNewest')}</option>
                     <option value="oldest">{t('archive.sortOldest')}</option>

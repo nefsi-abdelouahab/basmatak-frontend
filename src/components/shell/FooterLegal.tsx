@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Info, Lock, Mail, MapPin, Phone, ScrollText } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 type DocId = 'terms' | 'privacy' | 'about';
 
@@ -83,9 +84,9 @@ function LegalModal({ docId, onClose }: { docId: DocId; onClose: () => void }) {
 
   return (
     <Modal testId={`legal-modal-${docId}`} label={raw.title} onClose={onClose}>
-      <div className="max-h-[70vh] overflow-y-auto p-6 sm:p-8">
+      <ScrollFade viewportClassName="max-h-[70vh] overflow-y-auto p-6 sm:p-8">
         <div className="flex items-start gap-4 pe-10">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-surface-muted text-primary">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-surface-muted text-gold-strong">
             <Icon aria-hidden="true" size={22} />
           </div>
           <div>
@@ -124,22 +125,22 @@ function LegalModal({ docId, onClose }: { docId: DocId; onClose: () => void }) {
             <p className="mt-1 text-body-sm font-medium text-ink">{raw.owner.name}</p>
             <ul className="mt-3 space-y-2 text-body-sm text-ink-muted">
               <li className="flex items-start gap-2">
-                <MapPin aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-primary" />
+                <MapPin aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-gold-strong" />
                 <span>
                   {raw.owner.addressLabel}: {raw.owner.address}
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <Phone aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-primary" />
+                <Phone aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-gold-strong" />
                 <span>
                   {raw.owner.phoneLabel}: <span dir="ltr">{raw.owner.phone}</span>
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <Mail aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-primary" />
+                <Mail aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-gold-strong" />
                 <span>
                   {raw.owner.emailLabel}:{' '}
-                  <a dir="ltr" href={`mailto:${raw.owner.email}`} className="font-medium text-primary hover:text-primary-hover">
+                  <a dir="ltr" href={`mailto:${raw.owner.email}`} className="font-medium text-gold-strong hover:text-ink">
                     {raw.owner.email}
                   </a>
                 </span>
@@ -147,7 +148,7 @@ function LegalModal({ docId, onClose }: { docId: DocId; onClose: () => void }) {
             </ul>
           </div>
         ) : null}
-      </div>
+      </ScrollFade>
     </Modal>
   );
 }

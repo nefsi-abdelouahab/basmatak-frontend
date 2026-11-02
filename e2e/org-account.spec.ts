@@ -1,6 +1,7 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import en from '../src/messages/org-account/en.json';
 import ar from '../src/messages/org-account/ar.json';
+import toastEn from '../src/messages/toast/en.json';
 
 type Locale = 'en' | 'ar';
 const catalogs = { en, ar } as const;
@@ -34,7 +35,11 @@ const orgRecord = {
   publicProfile: { enabled: true },
 };
 
-const completion = { percent: 62, missing: ['coverMediaId', 'logoMediaId'], complete: false };
+const completion = {
+  percent: 62,
+  missingFields: ['coverMediaId', 'logoMediaId'],
+  complete: false,
+};
 
 const usersMe = {
   id: 'u2',
@@ -151,9 +156,10 @@ for (const width of [1440, 1100, 390]) {
         await expect(page.getByTestId('cover-empty')).toBeVisible();
         await expect(page.getByTestId('logo-empty')).toBeVisible();
         await expect(page.getByTestId('report-empty')).toBeVisible();
-        // Neutral surface: no statute/legal/directory copy anywhere.
+        // Neutral surface: no statute/legal/directory copy in the profile
+        // content. The app sidebar legitimately links to Discover Talents.
         await expect(page.locator('body')).not.toContainText(/Law 12-06/i);
-        await expect(page.locator('body')).not.toContainText(/Discover Talents/i);
+        await expect(page.getByTestId('org-profile')).not.toContainText(/Discover Talents/i);
         await expect(page.locator('body')).not.toContainText(/statute/i);
       });
 
@@ -194,7 +200,9 @@ for (const width of [1440, 1100, 390]) {
       await page.goto('/en/org/profile');
       await page.getByLabel(en.profile.websiteLabel).fill('https://new.example.org');
       await page.getByTestId('org-profile-facts').getByRole('button', { name: en.shared.save }).click();
-      await expect(page.getByTestId('profile-saved')).toBeVisible();
+      await expect(page.locator('[data-sonner-toast]')).toContainText(
+        toastEn.success.orgProfileUpdated,
+      );
       const patch = captured.find(
         (c) => c.path.endsWith('/organizations/me') && c.method === 'PATCH',
       );
@@ -209,6 +217,21 @@ for (const width of [1440, 1100, 390]) {
       await page.getByTestId('org-profile-facts').getByRole('button', { name: en.shared.save }).click();
       await expect(page.getByText(en.profile.invalidPhone)).toBeVisible();
       expect(captured.find((c) => c.method === 'PATCH')).toBeUndefined();
+    });
+
+    test('local phone normalizes to canonical +213 form on save', async ({ page }) => {
+      const captured: Captured[] = [];
+      await mockApi(page, baseHandlers(), captured);
+      await page.goto('/en/org/profile');
+      await page.getByLabel(en.profile.contactPhoneLabel).fill('0550 12 34 56');
+      await page.getByTestId('org-profile-facts').getByRole('button', { name: en.shared.save }).click();
+      await expect(page.locator('[data-sonner-toast]')).toContainText(
+        toastEn.success.orgProfileUpdated,
+      );
+      const patch = captured.find(
+        (c) => c.path.endsWith('/organizations/me') && c.method === 'PATCH',
+      );
+      expect(patch?.body).toMatchObject({ contact: { phone: '+213550123456' } });
     });
 
     test('cover rejects wrong file type before any upload', async ({ page }) => {
@@ -443,8 +466,10 @@ for (const width of [1440, 1100, 390]) {
       await mockApi(page, baseHandlers(), captured);
       await page.goto('/en/org/settings');
       await page.getByLabel(en.settings.phoneLabel).fill('555 123');
-      await page.getByTestId('settings-contact').getByRole('button', { name: en.shared.save }).click();
-      await expect(page.getByText(en.shared.phoneInvalid)).toBeVisible();
+      // Invalid input keeps the account form clean, so saving stays disabled.
+      await expect(
+        page.getByTestId('settings-contact').getByRole('button', { name: en.shared.save }),
+      ).toBeDisabled();
       expect(captured.find((c) => c.method === 'PATCH')).toBeUndefined();
     });
   });

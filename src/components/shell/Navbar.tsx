@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Bell, Building2, Search, User } from 'lucide-react';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { Container } from '@/components/ui/Container';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import { useSessionQuery } from '@/hooks/useSession';
 import { useLogoutMutation } from '@/hooks/useAuth';
 import { useVolunteerMeQuery, useVolunteerMediaQuery } from '@/hooks/useVolunteerAccount';
@@ -24,6 +25,7 @@ import {
   useUnreadCountQuery,
 } from '@/hooks/useNotifications';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { ThemeToggle } from './ThemeToggle';
 
 type Menu = 'bell' | 'avatar' | null;
 
@@ -52,7 +54,7 @@ function OrgSearch() {
         placeholder={t('nav.searchPlaceholder')}
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        className="w-56 rounded-md border border-border bg-surface-muted py-1.5 pe-3 ps-9 text-body-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none lg:w-72"
+        className="w-56 rounded-md border border-border bg-surface-muted py-1.5 pe-3 ps-9 text-body-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none lg:w-72"
       />
     </form>
   );
@@ -87,7 +89,7 @@ function AdminSearch() {
         placeholder={t('search.placeholder')}
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        className="w-56 rounded-md border border-border bg-surface-muted py-1.5 pe-3 ps-9 text-body-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none lg:w-72"
+        className="w-56 rounded-md border border-border bg-surface-muted py-1.5 pe-3 ps-9 text-body-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none lg:w-72"
       />
     </form>
   );
@@ -118,7 +120,7 @@ function VolunteerSearch() {
         placeholder={t('nav.searchPlaceholder')}
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        className="w-56 rounded-md border border-border bg-surface-muted py-1.5 pe-3 ps-9 text-body-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none lg:w-72"
+        className="w-56 rounded-md border border-border bg-surface-muted py-1.5 pe-3 ps-9 text-body-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none lg:w-72"
       />
     </form>
   );
@@ -141,7 +143,7 @@ function NotificationRow({
   return (
     <div className="flex items-start gap-2 px-3 py-2.5">
       {!item.isRead ? (
-        <span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
+        <span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-gold" />
       ) : null}
       <div className="min-w-0 flex-1">
         <p className="truncate text-body-sm font-medium text-ink">
@@ -155,7 +157,7 @@ function NotificationRow({
           data-testid={`navbar-notification-read-${id}`}
           disabled={reading}
           onClick={() => onRead(id)}
-          className="shrink-0 rounded-md px-2 py-1 text-label-sm font-medium text-primary hover:bg-surface-muted disabled:opacity-50"
+          className="shrink-0 rounded-md px-2 py-1 text-label-sm font-medium text-gold-strong hover:bg-surface-muted disabled:opacity-50"
         >
           {t('nav.markRead')}
         </button>
@@ -190,7 +192,7 @@ function NotificationBell({ open, onToggle }: { open: boolean; onToggle: () => v
           <span
             data-testid="navbar-bell-count"
             aria-hidden="true"
-            className="absolute end-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-label-xs font-medium text-white"
+            className="absolute end-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-label-xs font-medium text-on-gold"
           >
             {unread > 99 ? '99+' : unread}
           </span>
@@ -210,7 +212,7 @@ function NotificationBell({ open, onToggle }: { open: boolean; onToggle: () => v
               data-testid="navbar-notifications-read-all"
               disabled={markAll.isPending || unread === 0}
               onClick={() => markAll.mutate()}
-              className="rounded-md px-2 py-1 text-label-sm font-medium text-primary hover:bg-surface-muted disabled:opacity-50"
+              className="rounded-md px-2 py-1 text-label-sm font-medium text-gold-strong hover:bg-surface-muted disabled:opacity-50"
             >
               {t('nav.markAllRead')}
             </button>
@@ -224,18 +226,23 @@ function NotificationBell({ open, onToggle }: { open: boolean; onToggle: () => v
           ) : (listQuery.data?.items ?? []).length === 0 ? (
             <p className="px-3 py-4 text-body-sm text-ink-muted">{t('nav.notificationsEmpty')}</p>
           ) : (
-            <ul className="max-h-80 divide-y divide-border-muted overflow-y-auto overscroll-contain max-sm:max-h-[50dvh]">
-              {(listQuery.data?.items ?? []).map((item) => (
-                <li key={notificationIdOf(item)}>
-                  <NotificationRow
-                    item={item}
-                    locale={locale}
-                    reading={markRead.isPending}
-                    onRead={(id) => markRead.mutate(id)}
-                  />
-                </li>
-              ))}
-            </ul>
+            <ScrollFade
+              className="min-w-0"
+              viewportClassName="max-h-80 overflow-y-auto overscroll-contain max-sm:max-h-[50dvh]"
+            >
+              <ul className="divide-y divide-border-muted">
+                {(listQuery.data?.items ?? []).map((item) => (
+                  <li key={notificationIdOf(item)}>
+                    <NotificationRow
+                      item={item}
+                      locale={locale}
+                      reading={markRead.isPending}
+                      onRead={(id) => markRead.mutate(id)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </ScrollFade>
           )}
         </div>
       ) : null}
@@ -569,7 +576,7 @@ export function Navbar() {
     <header data-testid="shell-navbar" className="sticky top-0 z-40 border-b border-border bg-surface">
       <Container className="flex h-16 items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-6">
-          <Link href="/" className="shrink-0 text-lg font-bold text-primary">
+          <Link href="/" className="shrink-0 text-lg font-bold text-ink">
             <Image
               src="/logo.png"
               alt={t('appName')}
@@ -588,10 +595,11 @@ export function Navbar() {
           {isOrg ? <OrgSearch /> : null}
           {isAdmin ? <AdminSearch /> : null}
           {!isAuthed ? (
-            <Link href="/" className="rounded-md px-2 py-2 text-sm text-ink hover:text-primary">
+            <Link href="/" className="rounded-md px-2 py-2 text-sm text-ink hover:text-gold-strong">
               {t('nav.home')}
             </Link>
           ) : null}
+          <ThemeToggle />
           <LanguageSwitcher />
           {isAuthed ? (
             <>

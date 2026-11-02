@@ -77,7 +77,7 @@ export function PrivacySection() {
             </span>
             <span className="text-body-sm text-ink-muted">{t('settings.privacyLockedBody')}</span>
           </div>
-          <span className="mt-1 shrink-0 rounded bg-primary-tint px-2 py-1 text-label-xs font-medium text-primary">
+          <span className="mt-1 shrink-0 rounded bg-gold-soft px-2 py-1 text-label-xs font-medium text-gold-strong">
             {t('settings.privacyEnforced')}
           </span>
         </div>

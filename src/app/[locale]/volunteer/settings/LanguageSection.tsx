@@ -57,23 +57,23 @@ export function LanguageSection() {
                   onClick={() => switchLocale(code)}
                   className={`flex items-start gap-3 rounded-lg p-3.5 text-start transition-colors ${
                     selected
-                      ? 'bg-primary-tint text-primary'
+                      ? 'bg-gold-soft text-gold-strong'
                       : 'bg-surface-muted text-ink hover:bg-border-muted'
                   }`}
                 >
                   <span
                     aria-hidden="true"
                     className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-                      selected ? 'border-primary' : 'border-border'
+                      selected ? 'border-gold-strong' : 'border-border'
                     }`}
                   >
-                    {selected ? <Check size={12} className="text-primary" /> : null}
+                    {selected ? <Check size={12} className="text-gold-strong" /> : null}
                   </span>
                   <span className="flex min-w-0 flex-col">
                     <span className="inline-flex flex-wrap items-center gap-2 text-label-md font-semibold text-ink">
                       {name}
                       {selected ? (
-                        <span className="rounded bg-surface px-2 py-0.5 text-label-xs font-medium text-primary">
+                        <span className="rounded bg-surface px-2 py-0.5 text-label-xs font-medium text-gold-strong">
                           {t('settings.languageActive')}
                         </span>
                       ) : null}

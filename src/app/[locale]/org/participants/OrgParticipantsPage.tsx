@@ -308,7 +308,7 @@ function Lifecycle({ status, submissionState }: { status: string; submissionStat
               <Icon
                 size={18}
                 aria-hidden="true"
-                className={stage.done || stage.current ? 'mt-0.5 shrink-0 text-primary' : 'mt-0.5 shrink-0 text-ink-muted'}
+                className={stage.done || stage.current ? 'mt-0.5 shrink-0 text-gold-strong' : 'mt-0.5 shrink-0 text-ink-muted'}
               />
               <span className="flex flex-col">
                 <span className={`text-sm font-semibold ${stage.done || stage.current ? 'text-ink' : 'text-ink-muted'}`}>
@@ -317,7 +317,7 @@ function Lifecycle({ status, submissionState }: { status: string; submissionStat
                 {stage.note ? <span className="text-xs text-ink-muted">{stage.note}</span> : null}
               </span>
             </span>
-            <span className={`shrink-0 text-xs ${stage.current ? 'font-semibold text-primary' : 'text-ink-muted'}`}>
+            <span className={`shrink-0 text-xs ${stage.current ? 'font-semibold text-gold-strong' : 'text-ink-muted'}`}>
               {stateLabel}
             </span>
           </div>
@@ -368,7 +368,7 @@ function DeliverableCard({ mediaId }: { mediaId: string }) {
         <span className="truncate text-xs text-ink-muted">
           {[size, mime].filter(Boolean).join(' · ')}
         </span>
-        <a href={url} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-primary underline">
+        <a href={url} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-gold-strong underline">
           <Eye size={14} aria-hidden="true" />
           <span>{t('participants.inspectFiles')}</span>
         </a>
@@ -447,7 +447,7 @@ function ParticipantDetail({
             <Link
               href={`/org/volunteers/${username}`}
               data-testid={`${testIdPrefix}-public-profile`}
-              className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
+              className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-gold-strong hover:underline"
             >
               <span>{t('participants.viewPublicProfile')}</span>
               <ArrowUpRight size={14} aria-hidden="true" className="rtl:rotate-180" />
@@ -524,7 +524,7 @@ function ParticipantDetail({
           <Link
             href="/org/contributions"
             data-testid={`${testIdPrefix}-review`}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover"
           >
             <span>{t('participants.reviewContribution')}</span>
             <ArrowRight size={16} aria-hidden="true" className="rtl:rotate-180" />
@@ -655,7 +655,7 @@ function RawFileRow({ mediaId, testIdPrefix }: { mediaId: string; testIdPrefix: 
   const filename = textOf(media.filename) ?? mediaId;
   return (
     <li data-testid={`${testIdPrefix}-raw-${mediaId}`} className="truncate text-xs">
-      <a href={url} target="_blank" rel="noreferrer" className="font-medium text-primary underline">
+      <a href={url} target="_blank" rel="noreferrer" className="font-medium text-gold-strong underline">
         {filename}
       </a>
     </li>
@@ -680,7 +680,7 @@ function PriorExperienceRow({
   const verifiedLabel = verifiedAt && formatDate(verifiedAt, locale) ? t('participants.verifiedOn', { date: formatDate(verifiedAt, locale) as string }) : null;
   return (
     <li data-testid={`${testIdPrefix}-experience`} className="flex items-start gap-2 rounded-lg bg-surface-muted p-3">
-      <BadgeCheck size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
+      <BadgeCheck size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-gold-strong" />
       <span className="flex min-w-0 flex-col">
         <span className="text-sm font-medium text-ink">{title}</span>
         <span className="text-xs text-ink-muted">
@@ -800,7 +800,7 @@ export function OrgParticipantsPage({
             <h1 className="text-2xl font-bold tracking-tight text-ink">{t('participants.title')}</h1>
             <p className="text-sm text-ink-muted">{t('participants.subtitle')}</p>
             <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 pt-1 text-sm text-ink-muted">
-              <Users size={16} aria-hidden="true" className="text-primary" />
+              <Users size={16} aria-hidden="true" className="text-gold-strong" />
               <span>{t('participants.count', { total })}</span>
             </p>
           </div>
@@ -825,7 +825,7 @@ export function OrgParticipantsPage({
                     placeholder={t('shared.searchPlaceholder')}
                     value={q}
                     onChange={(event) => setQ(event.target.value)}
-                    className="h-10 w-full rounded-lg border border-border bg-surface py-2 pe-3 ps-9 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                    className="h-10 w-full rounded-lg border border-border bg-surface py-2 pe-3 ps-9 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
                   />
                 </div>
               </div>
@@ -839,7 +839,7 @@ export function OrgParticipantsPage({
                     data-testid="participants-opportunity"
                     value={opportunityId}
                     onChange={(event) => setOpportunityId(event.target.value)}
-                    className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-primary focus:outline-none"
+                    className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 pe-8 text-sm text-ink focus:border-gold-strong focus:outline-none"
                   >
                     <option value="">{t('shared.allOpportunities')}</option>
                     {opportunityOptions.map((option) => (
@@ -920,11 +920,11 @@ export function OrgParticipantsPage({
                         <li key={id} data-testid="participant-row">
                           <article
                             className={`relative rounded-xl border bg-surface p-4 shadow-sm transition-colors ${
-                              isOpen ? 'border-primary' : 'border-border hover:bg-surface-muted'
+                              isOpen ? 'border-gold-strong' : 'border-border hover:bg-surface-muted'
                             }`}
                           >
                             {isOpen ? (
-                              <span aria-hidden="true" className="absolute inset-y-3 start-0 w-1 rounded-e bg-primary" />
+                              <span aria-hidden="true" className="absolute inset-y-3 start-0 w-1 rounded-e bg-gold" />
                             ) : null}
                             <button
                               type="button"
@@ -938,7 +938,7 @@ export function OrgParticipantsPage({
                                 <span className="flex items-center justify-between gap-2">
                                   <span className="truncate text-base font-semibold text-ink">{name}</span>
                                   {isOpen ? (
-                                    <span className="shrink-0 text-xs font-medium text-primary">
+                                    <span className="shrink-0 text-xs font-medium text-gold-strong">
                                       {t('participants.selected')}
                                     </span>
                                   ) : (
@@ -957,9 +957,9 @@ export function OrgParticipantsPage({
                                   {submissionState ? (
                                     <span className="flex items-center gap-1.5 text-xs font-medium text-ink">
                                       {['approved', 'verified', 'completed'].includes(submissionState) ? (
-                                        <BadgeCheck size={15} aria-hidden="true" className="text-primary" />
+                                        <BadgeCheck size={15} aria-hidden="true" className="text-gold-strong" />
                                       ) : ['submitted', 'under_review'].includes(submissionState) ? (
-                                        <Hourglass size={15} aria-hidden="true" className="text-primary" />
+                                        <Hourglass size={15} aria-hidden="true" className="text-gold-strong" />
                                       ) : (
                                         <ClipboardCheck size={15} aria-hidden="true" className="text-ink-muted" />
                                       )}

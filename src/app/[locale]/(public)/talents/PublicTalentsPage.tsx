@@ -132,7 +132,7 @@ function FilterSelect({
           id={id}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="h-9 w-full cursor-pointer appearance-none rounded-md border border-border bg-surface pe-8 ps-3 text-sm text-ink focus:border-primary focus:outline-none"
+          className="h-9 w-full cursor-pointer appearance-none rounded-md border border-border bg-surface pe-8 ps-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
         >
           {children}
         </select>
@@ -325,7 +325,7 @@ export function PublicTalentsPage({
                 apply(draft);
               }
             }}
-            className="h-11 w-full rounded-lg border border-border bg-surface pe-4 ps-11 text-sm text-ink transition-colors placeholder:text-ink-muted focus:border-primary focus:outline-none"
+            className="h-11 w-full rounded-lg border border-border bg-surface pe-4 ps-11 text-sm text-ink transition-colors placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
           />
         </div>
         <div className="grid grid-cols-1 items-center gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -469,7 +469,7 @@ export function PublicTalentsPage({
                     aria-current={current ? 'page' : undefined}
                     className={`flex h-9 w-9 items-center justify-center rounded-md text-sm font-medium transition-colors disabled:cursor-not-allowed ${
                       current
-                        ? 'bg-primary font-semibold text-white'
+                        ? 'bg-primary font-semibold text-on-primary'
                         : 'border border-border bg-surface text-ink hover:bg-surface-muted disabled:opacity-50'
                     }`}
                   >
@@ -494,7 +494,7 @@ export function PublicTalentsPage({
       <aside className="mt-2 w-full rounded-xl border border-border bg-surface p-6 shadow-sm">
         <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
           <div className="flex items-start gap-4">
-            <div className="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-muted text-primary">
+            <div className="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-muted text-gold-strong">
               <Landmark aria-hidden="true" size={26} />
             </div>
             <div className="flex max-w-2xl flex-col gap-1">
@@ -507,7 +507,7 @@ export function PublicTalentsPage({
           <div className="flex w-full shrink-0 flex-wrap items-center gap-3 lg:w-auto">
             <Link
               href="/create-account?type=organization"
-              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover lg:flex-none"
+              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover lg:flex-none"
             >
               <BadgeCheck aria-hidden="true" size={18} />
               {t('discover.registerOrganization')}

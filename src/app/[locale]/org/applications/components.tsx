@@ -15,6 +15,7 @@ import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Loader } from '@/components/ui/Loader';
 import { Pill, type PillTone } from '@/components/ui/Pill';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import { usePublicMediaQuery } from '@/hooks/usePublicTalent';
 import { mediaUrlOf } from '@/lib/api/publicTalent';
 import { useSessionQuery, getLoginHref } from '@/hooks/useSession';
@@ -92,9 +93,9 @@ export function TabBar({
           aria-selected={active === tab.value}
           data-testid={`tab-${tab.value}`}
           onClick={() => onTab(tab.value)}
-          className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+          className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong ${
             active === tab.value
-              ? 'border-primary bg-primary text-white'
+              ? 'border-gold-strong bg-primary text-on-primary'
               : 'border-border bg-surface text-ink hover:bg-surface-muted'
           }`}
         >
@@ -139,9 +140,9 @@ export function StatusFilterTabs({
             aria-selected={selected}
             data-testid={`tab-${tab.value}`}
             onClick={() => onTab(tab.value)}
-            className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-3 text-label-md font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+            className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-3 text-label-md font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong ${
               selected
-                ? 'bg-primary text-white'
+                ? 'bg-primary text-on-primary'
                 : 'bg-surface-muted text-ink-muted hover:bg-border-muted hover:text-ink'
             }`}
           >
@@ -185,34 +186,49 @@ export function MasterDetail({
   onBack: () => void;
   backLabel: string;
 }) {
+  const listTone = /\bbg-surface\b/.test(listClassName) ? 'surface' : 'background';
+  const detailTone = /\bbg-surface\b/.test(detailClassName) ? 'surface' : 'background';
+
   return (
-    <div className="grid min-w-0 grid-cols-1 items-start gap-6 lg:h-[calc(100dvh-7rem)] lg:grid-cols-12 lg:items-stretch lg:overflow-hidden">
+    <div className="grid min-w-0 grid-cols-1 items-start gap-6 lg:h-[calc(100dvh-7rem)] lg:grid-cols-12 lg:grid-rows-[minmax(0,1fr)] lg:items-stretch lg:overflow-hidden">
       <section
         aria-label={listLabel}
-        className={`min-w-0 lg:col-span-5 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden ${listClassName} ${
+        className={`min-w-0 lg:col-span-5 lg:min-h-0 ${listClassName} ${
           hasSelection ? 'hidden lg:block' : ''
         }`}
       >
-        {list}
+        <ScrollFade
+          className="h-full"
+          viewportClassName="h-full overflow-y-auto overscroll-contain"
+          tone={listTone}
+        >
+          {list}
+        </ScrollFade>
       </section>
       <div
         aria-label={detailLabel}
-        className={`min-w-0 lg:col-span-7 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden ${detailClassName} ${
+        className={`min-w-0 lg:col-span-7 lg:min-h-0 ${detailClassName} ${
           hasSelection ? '' : 'hidden lg:block'
         }`}
       >
-        {hasSelection ? (
-          <button
-            type="button"
-            onClick={onBack}
-            data-testid="master-detail-back"
-            className="mb-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline lg:hidden"
-          >
-            <ArrowLeft size={16} aria-hidden="true" className="rtl:rotate-180" />
-            <span>{backLabel}</span>
-          </button>
-        ) : null}
-        {detail}
+        <ScrollFade
+          className="h-full"
+          viewportClassName="h-full overflow-y-auto overscroll-contain"
+          tone={detailTone}
+        >
+          {hasSelection ? (
+            <button
+              type="button"
+              onClick={onBack}
+              data-testid="master-detail-back"
+              className="mb-3 inline-flex items-center gap-1 text-sm font-medium text-gold-strong hover:underline lg:hidden"
+            >
+              <ArrowLeft size={16} aria-hidden="true" className="rtl:rotate-180" />
+              <span>{backLabel}</span>
+            </button>
+          ) : null}
+          {detail}
+        </ScrollFade>
       </div>
     </div>
   );
@@ -267,7 +283,7 @@ export function ReasonDialog({
         value={reason}
         onChange={(event) => onReason(event.target.value)}
         placeholder={reasonPlaceholder}
-        className="w-full rounded-md border border-border bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+        className="w-full rounded-md border border-border bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
       />
       {!valid ? (
         <p data-testid={`${testId}-required`} className="mt-1 text-sm text-status-error">

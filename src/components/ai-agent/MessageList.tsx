@@ -7,6 +7,8 @@ import type {
   AiAgentStatusEvent,
 } from '@/lib/api/aiAgent';
 import type { AiChatMessage } from '@/hooks/useAiChat';
+import { FingerprintPattern } from '@/components/ui/FingerprintPattern';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import { MessageBubble } from './MessageBubble';
 import type { TypingPhase } from './TypingIndicator';
 
@@ -27,7 +29,6 @@ const SUGGESTION_KEYS = [
   'suggestion1',
   'suggestion2',
   'suggestion3',
-  'suggestion4',
 ] as const;
 
 export function MessageList({
@@ -92,16 +93,27 @@ export function MessageList({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {messages.length === 0 ? (
-        <div className="flex flex-1 flex-col justify-center gap-4 px-4 py-6">
-          <div className="space-y-1 text-center">
+        <ScrollFade
+          className="flex min-h-0 flex-1 flex-col"
+          viewportClassName="relative flex flex-1 flex-col justify-center gap-4 overflow-x-hidden overflow-y-auto px-4 py-6"
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 overflow-hidden"
+          >
+            <FingerprintPattern variant="corner" />
+          </div>
+          <div className="relative space-y-1 text-center">
             <p className="text-title-sm font-semibold text-ink">
               {t('empty.title')}
             </p>
-            <p className="text-body-sm text-ink-muted">{t('empty.body')}</p>
+            <p className="text-body-sm text-ink-muted">
+              {t('empty.body')}
+            </p>
           </div>
           <ul
             aria-label={t('empty.suggestionsLabel')}
-            className="grid gap-2"
+            className="relative grid gap-2"
           >
             {SUGGESTION_KEYS.map((key) => {
               const suggestion = t(`empty.${key}`);
@@ -111,7 +123,7 @@ export function MessageList({
                     type="button"
                     disabled={!canChat}
                     onClick={() => onSuggestion(suggestion)}
-                    className="w-full rounded-md border border-border bg-surface px-3 py-2 text-start text-body-sm text-ink transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full rounded-[12px] border border-border bg-surface px-3 py-2.5 text-start text-body-sm text-ink transition-colors hover:border-gold-strong/30 hover:bg-gold-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {suggestion}
                   </button>
@@ -119,15 +131,16 @@ export function MessageList({
               );
             })}
           </ul>
-        </div>
+        </ScrollFade>
       ) : (
-        <div
+        <ScrollFade
           ref={scrollRef}
           role="log"
           aria-live="polite"
           aria-relevant="additions"
           aria-label={t('panel.messagesLabel')}
-          className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4"
+          className="min-h-0 flex-1"
+          viewportClassName="space-y-4 overflow-y-auto px-4 py-4"
         >
           {messages.map((message, index) => {
             const isLast = index === messages.length - 1;
@@ -144,7 +157,7 @@ export function MessageList({
               />
             );
           })}
-        </div>
+        </ScrollFade>
       )}
 
       <div

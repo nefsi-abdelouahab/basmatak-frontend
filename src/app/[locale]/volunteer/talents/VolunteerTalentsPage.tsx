@@ -20,6 +20,7 @@ import { usePathname, useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Loader } from '@/components/ui/Loader';
 import { Pagination } from '@/components/ui/Pagination';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import {
   useFeedSkillsQuery,
   useFeedWilayasQuery,
@@ -166,14 +167,14 @@ function QuickFilter({
       aria-pressed={active}
       className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
         active
-          ? 'bg-primary/10 font-medium text-primary'
+          ? 'bg-gold-soft font-medium text-gold-strong'
           : 'font-normal text-ink hover:bg-surface-muted'
       }`}
     >
       <Icon
         aria-hidden="true"
         size={16}
-        className={`shrink-0 ${active ? 'text-primary' : 'text-ink-muted'}`}
+        className={`shrink-0 ${active ? 'text-gold-strong' : 'text-ink-muted'}`}
       />
       <span className="min-w-0 truncate">{label}</span>
     </button>
@@ -315,7 +316,7 @@ function RefineFilters({
           <button
             type="button"
             onClick={onToggleSkills}
-            className="self-start text-xs font-medium text-primary hover:underline"
+            className="self-start text-xs font-medium text-gold-strong hover:underline"
           >
             {skillsExpanded
               ? t('talents.showLessSkills')
@@ -345,7 +346,7 @@ function RefineFilters({
           <button
             type="button"
             onClick={onToggleLocations}
-            className="self-start text-xs font-medium text-primary hover:underline"
+            className="self-start text-xs font-medium text-gold-strong hover:underline"
           >
             {locationsExpanded
               ? t('talents.showLessLocations')
@@ -483,7 +484,12 @@ function FilterDrawer({
             <X aria-hidden="true" size={20} />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">{children}</div>
+        <ScrollFade
+          className="min-h-0 flex-1"
+          viewportClassName="overflow-y-auto overscroll-contain p-4"
+        >
+          {children}
+        </ScrollFade>
       </div>
     </div>
   );
@@ -697,7 +703,7 @@ export function VolunteerTalentsPage({
                 placeholder={t('talents.searchPlaceholder')}
                 value={queryText}
                 onChange={(e) => setQueryText(e.target.value)}
-                className="h-11 w-full rounded-lg bg-surface-muted pe-10 ps-11 text-sm text-ink transition-colors placeholder:text-ink-muted focus:bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="h-11 w-full rounded-lg bg-surface-muted pe-10 ps-11 text-sm text-ink transition-colors placeholder:text-ink-muted focus:bg-surface focus:outline-none focus:ring-2 focus:ring-gold-strong/20"
               />
               {queryText !== '' ? (
                 <button
@@ -715,7 +721,7 @@ export function VolunteerTalentsPage({
               <button
                 type="button"
                 onClick={resetAll}
-                className="inline-flex items-center gap-1 text-sm text-ink-muted transition-colors hover:text-primary"
+                className="inline-flex items-center gap-1 text-sm text-ink-muted transition-colors hover:text-gold-strong"
               >
                 <RotateCcw aria-hidden="true" size={16} />
                 {t('talents.resetFilters')}
@@ -737,7 +743,7 @@ export function VolunteerTalentsPage({
                     id="talent-sort"
                     value={applied.sort}
                     onChange={(e) => togglePatch({ sort: e.target.value })}
-                    className="max-w-full cursor-pointer appearance-none rounded-lg border border-border bg-surface py-1.5 pe-8 ps-2.5 text-sm text-ink shadow-sm focus:border-primary focus:outline-none"
+                    className="max-w-full cursor-pointer appearance-none rounded-lg border border-border bg-surface py-1.5 pe-8 ps-2.5 text-sm text-ink shadow-sm focus:border-gold-strong focus:outline-none"
                   >
                     <option value="experiences_desc">{t('talents.sortVerified')}</option>
                     <option value="newest">{t('talents.sortRecent')}</option>
@@ -831,7 +837,11 @@ export function VolunteerTalentsPage({
         </div>
 
         {/* Right column: refine sidebar on xl+, drawer below (sticky, DESIGN.md top:80px pattern) */}
-        <aside className="hidden w-full min-w-0 flex-col xl:sticky xl:top-20 xl:flex xl:self-start xl:max-h-[calc(100dvh-7rem)] xl:overflow-y-auto xl:overscroll-contain">
+        <ScrollFade
+          as="aside"
+          className="hidden w-full min-w-0 xl:sticky xl:top-20 xl:flex xl:max-h-[calc(100dvh-7rem)] xl:flex-col xl:self-start"
+          viewportClassName="min-h-0 xl:flex-1 xl:overflow-y-auto xl:overscroll-contain"
+        >
           <section
             aria-label={t('talents.refineTitle')}
             className="flex flex-col gap-5 rounded-xl border border-border bg-surface p-4 shadow-sm sm:p-6"
@@ -841,7 +851,7 @@ export function VolunteerTalentsPage({
               <button
                 type="button"
                 onClick={resetAll}
-                className="text-sm text-ink-muted transition-colors hover:text-primary"
+                className="text-sm text-ink-muted transition-colors hover:text-gold-strong"
               >
                 {t('talents.clearAll')}
               </button>
@@ -849,7 +859,7 @@ export function VolunteerTalentsPage({
 
             {renderRefineFilters('talent-verification')}
           </section>
-        </aside>
+        </ScrollFade>
       </div>
 
       {drawerOpen ? (

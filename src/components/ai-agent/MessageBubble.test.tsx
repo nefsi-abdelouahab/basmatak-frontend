@@ -15,13 +15,27 @@ import type { AiChatMessage } from '@/hooks/useAiChat';
 import { MessageBubble } from './MessageBubble';
 
 vi.mock('@/i18n/navigation', () => ({
+  // Simulate next-intl's locale-aware Link, which prepends the active locale
+  // to every internal href. A double-prefixed href therefore becomes visible.
   Link: ({
     href,
     children,
+    className,
+    'data-link-card': linkCard,
   }: {
     href: string;
     children: ReactNode;
-  }) => <a href={href}>{children}</a>,
+    className?: string;
+    'data-link-card'?: string;
+  }) => (
+    <a
+      href={`/en${href}`}
+      className={className}
+      data-link-card={linkCard}
+    >
+      {children}
+    </a>
+  ),
 }));
 
 function message(overrides: Partial<AiChatMessage> = {}): AiChatMessage {
@@ -72,7 +86,7 @@ describe('MessageBubble', () => {
     expect(screen.getByText(aiAgentEn.message.you)).toBeDefined();
   });
 
-  it('renders an internal Markdown link with the current locale prefix', () => {
+  it('renders an internal entity link as a link card with the locale prefix', () => {
     renderBubble({
       message: message({
         content: 'See [Beach cleanup](/opportunities/beach-cleanup).',
@@ -82,6 +96,62 @@ describe('MessageBubble', () => {
     expect(link.getAttribute('href')).toBe(
       '/en/opportunities/beach-cleanup',
     );
+    expect(link.getAttribute('data-link-card')).toBe('true');
+    expect(link.className).toContain('rounded-[10px]');
+  });
+
+  it('does not add a second locale prefix to an already-prefixed link', () => {
+    renderBubble({
+      message: message({
+        content: 'See [Beach cleanup](/en/opportunities/beach-cleanup).',
+      }),
+    });
+    const link = screen.getByRole('link', { name: 'Beach cleanup' });
+    expect(link.getAttribute('href')).toBe(
+      '/en/opportunities/beach-cleanup',
+    );
+  });
+
+  it('normalizes a stored absolute link with a doubled locale', () => {
+    renderBubble({
+      message: message({
+        content:
+          'See [Beach cleanup](http://localhost:3000/en/en/opportunities/beach-cleanup).',
+      }),
+    });
+    const link = screen.getByRole('link', { name: 'Beach cleanup' });
+    expect(link.getAttribute('href')).toBe(
+      '/en/opportunities/beach-cleanup',
+    );
+    expect(screen.queryByText(/\[Beach cleanup\]\(/)).toBeNull();
+  });
+
+  it('keeps non-entity internal links as normal text links', () => {
+    renderBubble({
+      message: message({
+        content: 'Browse [talents](/talents).',
+      }),
+    });
+    const link = screen.getByRole('link', { name: 'talents' });
+    expect(link.getAttribute('href')).toBe('/en/talents');
+    expect(link.hasAttribute('data-link-card')).toBe(false);
+  });
+
+  it('sets bubble direction from the message script, not the UI locale', () => {
+    const { unmount } = renderBubble({
+      message: message({ content: 'مرحبا كيف أساعد؟' }),
+    });
+    expect(
+      screen.getByText('مرحبا كيف أساعد؟').getAttribute('dir'),
+    ).toBe('rtl');
+    unmount();
+
+    renderBubble({
+      message: message({ content: 'How can I help?' }),
+    });
+    expect(
+      screen.getByText('How can I help?').getAttribute('dir'),
+    ).toBe('ltr');
   });
 
   it('strips external links to plain text', () => {
@@ -119,14 +189,23 @@ describe('MessageBubble', () => {
     expect(screen.queryByText(aiAgentEn.sources.title)).toBeNull();
   });
 
-  it('shows localized typing state and hides streaming text from assistive tech', () => {
-    renderBubble({
-      message: message({ content: 'Partial answer', status: 'streaming' }),
+  it('shows the typing dots only while waiting for the first token', () => {
+    const { unmount } = renderBubble({
+      message: message({ content: '', status: 'streaming' }),
       typingPhase: 'searching',
     });
     expect(
       screen.getByText(aiAgentEn.message.typing.searching),
     ).toBeDefined();
+    unmount();
+
+    renderBubble({
+      message: message({ content: 'Partial answer', status: 'streaming' }),
+      typingPhase: 'searching',
+    });
+    expect(
+      screen.queryByText(aiAgentEn.message.typing.searching),
+    ).toBeNull();
     const content = screen.getByText('Partial answer');
     expect(content.closest('[aria-hidden="true"]')).not.toBeNull();
   });

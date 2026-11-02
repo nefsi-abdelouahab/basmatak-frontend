@@ -92,6 +92,38 @@ describe('Composer', () => {
     await waitFor(() => expect(input.value).toBe('Try again'));
   });
 
+  it('shows the character counter only above 80% of the limit', () => {
+    const { input } = renderComposer({ maxChars: 100 });
+    expect(screen.queryByText('0 of 100 characters')).toBeNull();
+
+    type(input, 'x'.repeat(80));
+    expect(screen.queryByText('80 of 100 characters')).toBeNull();
+
+    type(input, 'x'.repeat(81));
+    expect(screen.getByText('81 of 100 characters')).toBeDefined();
+  });
+
+  it('shows the keyboard hint only while focused with content on desktop', () => {
+    const { input } = renderComposer();
+    expect(screen.queryByText(aiAgentEn.composer.hint)).toBeNull();
+
+    fireEvent.focus(input);
+    expect(screen.queryByText(aiAgentEn.composer.hint)).toBeNull();
+
+    type(input, 'Hello');
+    expect(screen.getByText(aiAgentEn.composer.hint)).toBeDefined();
+
+    fireEvent.blur(input);
+    expect(screen.queryByText(aiAgentEn.composer.hint)).toBeNull();
+  });
+
+  it('hides the keyboard hint on mobile', () => {
+    const { input } = renderComposer({ isMobile: true });
+    fireEvent.focus(input);
+    type(input, 'Hello');
+    expect(screen.queryByText(aiAgentEn.composer.hint)).toBeNull();
+  });
+
   it('blocks over-limit text with an explicit error', () => {
     const { input, onSend } = renderComposer({ maxChars: 5 });
     type(input, '123456');
@@ -119,16 +151,18 @@ describe('Composer', () => {
     ).toBe(true);
   });
 
-  it('swaps send for stop while streaming and calls onStop', () => {
+  it('keeps send disabled while streaming and offers stop', () => {
     const { onStop } = renderComposer({ streaming: true });
+    expect(
+      screen
+        .getByRole('button', { name: aiAgentEn.composer.send })
+        .hasAttribute('disabled'),
+    ).toBe(true);
     const stop = screen.getByRole('button', {
       name: aiAgentEn.composer.stop,
     });
     fireEvent.click(stop);
     expect(onStop).toHaveBeenCalledTimes(1);
-    expect(
-      screen.queryByRole('button', { name: aiAgentEn.composer.send }),
-    ).toBeNull();
   });
 
   it('offers continue when a completed answer was shortened', () => {

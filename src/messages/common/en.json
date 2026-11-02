@@ -67,6 +67,11 @@
     "english": "English",
     "arabic": "Arabic"
   },
+  "theme": {
+    "label": "Theme",
+    "switchToDark": "Switch to dark theme",
+    "switchToLight": "Switch to light theme"
+  },
   "home": {
     "title": "Welcome to Basmatak",
     "description": "Civic engagement platform. This is the foundation shell every screen builds on."

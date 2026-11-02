@@ -155,7 +155,7 @@ export function TalentCard({
   return (
     <article
       data-testid="talent-card"
-      className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm transition-shadow hover:shadow-md sm:p-6"
+      className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm sm:p-6"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
@@ -163,7 +163,7 @@ export function TalentCard({
           <div className="flex min-w-0 flex-col">
             <div className="flex flex-wrap items-center gap-1.5">
               <h3 className="min-w-0 break-words text-base font-semibold text-ink">
-                <Link href={profileHref} className="transition-colors hover:text-primary">
+                <Link href={profileHref} className="transition-colors hover:text-gold-strong">
                   {name}
                 </Link>
               </h3>
@@ -229,7 +229,7 @@ export function TalentCard({
               <Link
                 key={portfolioItem.id}
                 href={`${profileHref}#portfolio`}
-                className="inline-flex items-center gap-1.5 rounded bg-surface px-3 py-1.5 text-sm text-ink shadow-sm transition-colors hover:text-primary"
+                className="inline-flex items-center gap-1.5 rounded bg-surface px-3 py-1.5 text-sm text-ink shadow-sm transition-colors hover:text-gold-strong"
               >
                 <PortfolioItemIcon item={portfolioItem} />
                 <span>{portfolioItem.title ?? portfolioItem.typeLabel ?? t('talents.portfolioItemFallback')}</span>
@@ -250,7 +250,7 @@ export function TalentCard({
           href={profileHref}
           aria-label={t('talents.viewProfile')}
           title={t('talents.viewProfile')}
-          className="inline-flex items-center justify-center rounded-lg p-2 text-primary transition-colors hover:bg-primary/10 sm:ms-auto"
+          className="inline-flex items-center justify-center rounded-lg p-2 text-gold-strong transition-colors hover:bg-surface-muted sm:ms-auto"
         >
           <ArrowRight aria-hidden="true" size={20} className="rtl:rotate-180" />
         </Link>

@@ -129,13 +129,20 @@ async function batchFacts(
 const norm = (value: string) => value.trim().toLowerCase().replace(/\s+/g, ' ');
 
 // Systematic token pairs that are always allowed (recorded above).
+// Left = design code.html palette; right = Basmatak warm light identity.
 const ALLOWED_STYLE_PAIRS = new Set([
-  'rgb(20, 27, 43)|rgb(17, 24, 39)', // A-ink headings
-  'rgb(74, 68, 85)|rgb(100, 116, 139)', // A-ink muted
-  'rgb(241, 243, 255)|rgb(248, 250, 252)', // A-canvas low
-  'rgb(233, 237, 255)|rgb(248, 250, 252)', // A-canvas container
-  'rgb(233, 237, 255)|rgb(245, 243, 255)', // A-tint: row CTA fill maps to primary-tint
+  'rgb(20, 27, 43)|rgb(20, 17, 13)', // A-ink headings -> ink
+  'rgb(74, 68, 85)|rgb(92, 85, 72)', // A-ink muted -> ink-muted
+  'rgb(249, 249, 255)|rgb(255, 255, 255)', // A-canvas cards -> surface
+  'rgb(241, 243, 255)|rgb(244, 240, 230)', // A-canvas low -> surface-muted
+  'rgb(233, 237, 255)|rgb(244, 240, 230)', // A-canvas container -> surface-muted
+  'rgb(233, 237, 255)|rgb(246, 236, 203)', // A-tint row CTA -> gold-soft
+  'rgb(109, 40, 217)|rgb(212, 166, 42)', // A-cta primary -> gold fill
+  'rgb(109, 40, 217)|rgb(20, 17, 13)', // A-cta primary -> near-black fill
+  'rgb(109, 40, 217)|rgb(138, 101, 8)', // A-link -> gold-strong
+  'rgb(255, 255, 255)|rgb(20, 17, 13)', // A-cta text -> on-gold
   '44px|30px', // A-type hero h1
+  '896|1280', // A-layout: CTA text block (max-w-4xl) inside the page Container
 ]);
 
 // Sections whose counts legitimately differ (mock 3 rows vs 1 API row, etc.).
@@ -260,8 +267,7 @@ async function mockLanding(page: Page) {
 
 test('landing structural fidelity table (code.html vs /en)', async ({ page }) => {
   // Baseline: original design file.
-  await page.goto(CODE_URL);
-  await page.waitForLoadState('load');
+  await page.goto(CODE_URL, { waitUntil: 'domcontentloaded' });
   const codeH1Size = await page.$eval('main section h1', (el) => getComputedStyle(el).fontSize);
   const styled = codeH1Size === '44px';
   const codeHeadFamily = styled
@@ -385,7 +391,9 @@ test('landing structural fidelity table (code.html vs /en)', async ({ page }) =>
       if (!c.headFamily.includes('Inter')) unlisted.push(`${route}: baseline heading is not Inter`);
       if (!r.headFamily.includes('Inter')) unlisted.push(`${route}: route heading is not Inter`);
     }
-    if (Math.abs(c.boxW - r.boxW) > 1) unlisted.push(`${route}: container width ${c.boxW} vs ${r.boxW}`);
+    if (Math.abs(c.boxW - r.boxW) > 1 && !ALLOWED_STYLE_PAIRS.has(`${c.boxW}|${r.boxW}`)) {
+      unlisted.push(`${route}: container width ${c.boxW} vs ${r.boxW}`);
+    }
   });
 
   lines.push('--- footer ---');
@@ -422,8 +430,7 @@ test('landing structural fidelity table (code.html vs /en)', async ({ page }) =>
 
 test('landing pixel signal (informational only, never gates)', async ({ page }) => {
   await mockLanding(page);
-  await page.goto(CODE_URL);
-  await page.waitForLoadState('load');
+  await page.goto(CODE_URL, { waitUntil: 'domcontentloaded' });
   await page.setViewportSize({ width: 1440, height: 900 });
   const baseline = await page.screenshot({ timeout: 60000 });
   await page.goto('/en');

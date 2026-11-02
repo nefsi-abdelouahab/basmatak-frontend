@@ -36,6 +36,7 @@
     "deleteCta": "حذف المنظمة",
     "deleteConfirm": "نعم، احذفها",
     "deleteCancel": "إلغاء",
+    "deleting": "جارٍ الحذف…",
     "deleted": "تم حذف منظمتك."
   },
   "dossier": {

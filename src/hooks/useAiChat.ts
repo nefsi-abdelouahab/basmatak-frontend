@@ -28,7 +28,7 @@ import {
 } from '../lib/auth/storage';
 
 /**
- * Chat state for the floating Basmatak assistant.
+ * Chat state for the floating Basma assistant.
  *
  * This is deliberately not a React Query cache: a chat transcript is local,
  * append-only client state, and a global store would outlive the widget. The
@@ -37,7 +37,7 @@ import {
 
 export const AI_AGENT_STORAGE_KEY = 'basmatak.aiAgent.history';
 
-// Session 11 renders the assistant avatar/icon. Use the existing Basmatak logo,
+// Render Basma's avatar/icon from the existing Basmatak logo,
 // not a generic robot/sparkle glyph. Kept here as the single source of truth so
 // the UI session does not hard-code a different asset.
 export const AI_AGENT_ICON_SRC = '/logo.png';
@@ -454,7 +454,7 @@ function totalContentChars(messages: Array<{ content: string }>): number {
  * - only completed, non-empty messages;
  * - no trailing user message without a completed assistant answer;
  * - newest messages, oldest first;
- * - at most four messages and 2,400 UTF-16 code units.
+ * - at most six messages and 4,000 UTF-16 code units.
  */
 export function buildRequestHistory(
   messages: AiChatMessage[],

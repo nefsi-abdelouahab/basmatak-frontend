@@ -223,8 +223,8 @@ describe('useAiChat successful turns', () => {
     expect(result.current.canContinue).toBe(false);
     expect(result.current.limits).toEqual({
       messageChars: 2000,
-      historyMessages: 4,
-      historyChars: 2400,
+      historyMessages: 6,
+      historyChars: 4000,
     });
 
     await waitFor(() => {
@@ -465,8 +465,8 @@ describe('useAiChat errors, abort, retry, and continue', () => {
 });
 
 describe('useAiChat request history limits', () => {
-  it('never sends more than four messages or 2,400 characters', async () => {
-    const stored = Array.from({ length: 6 }, (_, index) =>
+  it('never sends more than six messages or 4,000 characters', async () => {
+    const stored = Array.from({ length: 8 }, (_, index) =>
       makeMessage({
         id: `stored-${index}`,
         role: index % 2 === 0 ? 'user' : 'assistant',
@@ -480,7 +480,7 @@ describe('useAiChat request history limits', () => {
     const { result } = renderHook(() => useAiChat({ storage, locale: 'en' }));
 
     await waitFor(() => {
-      expect(result.current.messages).toHaveLength(6);
+      expect(result.current.messages).toHaveLength(8);
     });
     await act(async () => {
       await result.current.send('Now');
@@ -488,10 +488,10 @@ describe('useAiChat request history limits', () => {
 
     const request = streamChatMock.mock.calls[0]?.[0];
     expect(request).toBeDefined();
-    expect(request?.history?.length ?? 0).toBeLessThanOrEqual(4);
+    expect(request?.history?.length ?? 0).toBeLessThanOrEqual(6);
     const historyChars =
       request?.history?.reduce((total, message) => total + message.content.length, 0) ?? 0;
-    expect(historyChars).toBeLessThanOrEqual(2400);
+    expect(historyChars).toBeLessThanOrEqual(4000);
     expect(request?.history?.some((message) => message.content === 'Now')).toBe(false);
     expect(request).not.toHaveProperty('conversationId');
   });
@@ -540,8 +540,10 @@ describe('buildRequestHistory', () => {
     );
 
     const history = buildRequestHistory(messages);
-    expect(history).toHaveLength(4);
+    expect(history).toHaveLength(6);
     expect(history.map((message) => message.content)).toEqual([
+      'm2',
+      'm3',
       'm4',
       'm5',
       'm6',
@@ -551,33 +553,33 @@ describe('buildRequestHistory', () => {
 
   it('drops oldest messages first when the character cap is exceeded', () => {
     const messages = [
-      makeMessage({ role: 'user', content: 'a'.repeat(500) }),
-      makeMessage({ role: 'assistant', content: 'b'.repeat(1000) }),
-      makeMessage({ role: 'user', content: 'c'.repeat(1000) }),
-      makeMessage({ role: 'assistant', content: 'd'.repeat(400) }),
+      makeMessage({ role: 'user', content: 'a'.repeat(1000) }),
+      makeMessage({ role: 'assistant', content: 'b'.repeat(2000) }),
+      makeMessage({ role: 'user', content: 'c'.repeat(1500) }),
+      makeMessage({ role: 'assistant', content: 'd'.repeat(500) }),
     ];
 
     const history = buildRequestHistory(messages);
     expect(history.map((message) => message.content.length)).toEqual([
-      1000, 1000, 400,
+      2000, 1500, 500,
     ]);
     expect(history[0]?.content.startsWith('b')).toBe(true);
     expect(
       history.reduce((total, message) => total + message.content.length, 0),
-    ).toBe(2400);
+    ).toBe(4000);
   });
 
   it('keeps the tail of a single remaining message over the character cap', () => {
     const messages = [
       makeMessage({ role: 'user', content: 'Question' }),
-      makeMessage({ role: 'assistant', content: 'a'.repeat(3000) }),
+      makeMessage({ role: 'assistant', content: 'a'.repeat(5000) }),
     ];
 
     const history = buildRequestHistory(messages);
     expect(history).toHaveLength(1);
     expect(history[0]?.role).toBe('assistant');
-    expect(history[0]?.content.length).toBe(2400);
-    expect(history[0]?.content).toBe('a'.repeat(3000).slice(-2400));
+    expect(history[0]?.content.length).toBe(4000);
+    expect(history[0]?.content).toBe('a'.repeat(5000).slice(-4000));
   });
 
   it('respects custom limits and ignores empty completed content', () => {
@@ -778,7 +780,7 @@ describe('useAiChat persistence', () => {
     });
   });
 
-  it('exposes the Basmatak logo as the assistant icon asset', () => {
+  it('exposes the Basmatak logo as Basma icon asset', () => {
     expect(AI_AGENT_ICON_SRC).toBe('/logo.png');
   });
 });

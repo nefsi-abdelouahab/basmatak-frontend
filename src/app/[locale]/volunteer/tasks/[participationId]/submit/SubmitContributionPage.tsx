@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/navigation';
+import { notify } from '@/lib/notify';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Checkbox } from '@/components/ui/Checkbox';
@@ -244,11 +245,11 @@ function LifecycleRail({ status }: { status: string }) {
                   state === 'done'
                     ? 'border-status-success bg-status-success'
                     : state === 'current'
-                      ? 'border-primary bg-primary'
+                      ? 'border-gold-strong bg-primary'
                       : 'border-border bg-surface'
                 }`}
               >
-                <span className={`h-1.5 w-1.5 rounded-full ${state === 'todo' ? 'bg-border' : 'bg-white'}`} />
+                <span className={`h-1.5 w-1.5 rounded-full ${state === 'todo' ? 'bg-border' : 'bg-on-primary'}`} />
               </span>
               <span className="min-w-0">
                 <span
@@ -467,6 +468,7 @@ export function SubmitContributionPage({
     const check = validateEvidenceFile({ name: f.name, type: f.type, size: f.size });
     if (!check.ok) {
       setFileError(check.reason === 'type' ? t('evidence.typeError') : t('evidence.sizeError'));
+      notify.error(check.reason === 'type' ? 'error.fileTypeNotAllowed' : 'error.fileTooLarge');
       return;
     }
     setUploading(true);
@@ -612,7 +614,7 @@ export function SubmitContributionPage({
             {opportunityHref ? (
               <Link
                 href={opportunityHref}
-                className="mt-1 inline-flex items-center gap-1 text-label-md font-medium text-primary hover:underline sm:justify-end"
+                className="mt-1 inline-flex items-center gap-1 text-label-md font-medium text-gold-strong hover:underline sm:justify-end"
               >
                 <span>{t('context.viewDetails')}</span>
                 <ArrowRight size={14} aria-hidden="true" className="shrink-0 rtl:rotate-180" />
@@ -708,7 +710,7 @@ export function SubmitContributionPage({
                       disabled={!editable}
                       rows={5}
                       onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-                      className="w-full rounded-md border border-border bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                      className="w-full rounded-md border border-border bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
                     />
                     <p className="mt-1 text-sm text-ink-muted">{t('draft.descriptionHint')}</p>
                   </div>
@@ -795,7 +797,7 @@ export function SubmitContributionPage({
                         <button
                           type="button"
                           onClick={() => fileRef.current?.click()}
-                          className="flex w-full flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-border bg-surface-muted/50 px-4 py-6 text-center transition-colors hover:border-primary"
+                          className="flex w-full flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-border bg-surface-muted/50 px-4 py-6 text-center transition-colors hover:border-gold-strong"
                         >
                           <CirclePlus size={24} aria-hidden="true" className="shrink-0 text-ink-muted" />
                           <span className="text-label-md font-semibold text-ink">{t('evidence.pickFile')}</span>
@@ -916,7 +918,7 @@ export function SubmitContributionPage({
               {opportunityHref ? (
                 <Link
                   href={opportunityHref}
-                  className="mt-2 inline-flex items-center gap-1 text-label-md font-medium text-primary hover:underline"
+                  className="mt-2 inline-flex items-center gap-1 text-label-md font-medium text-gold-strong hover:underline"
                 >
                   <span>{t('context.viewDetails')}</span>
                   <ArrowRight size={14} aria-hidden="true" className="shrink-0 rtl:rotate-180" />
@@ -959,7 +961,7 @@ export function SubmitContributionPage({
               <p className="mt-2 truncate text-title-sm font-semibold text-ink">{organizationName}</p>
               <a
                 href={`mailto:${contactEmail}`}
-                className="mt-1 inline-flex items-center gap-1.5 text-label-md font-medium text-primary hover:underline"
+                className="mt-1 inline-flex items-center gap-1.5 text-label-md font-medium text-gold-strong hover:underline"
               >
                 <Mail size={14} aria-hidden="true" className="shrink-0" />
                 <span>{t('rail.emailCta')}</span>

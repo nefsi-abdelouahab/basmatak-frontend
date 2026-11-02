@@ -43,9 +43,9 @@ export function NavIconLink({
       scroll={scroll}
       onClick={onClick}
       aria-label={label}
-      className={`group relative h-9 w-9 items-center justify-center rounded-md transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+      className={`group relative h-9 w-9 items-center justify-center rounded-md transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong ${
         tone === 'primary'
-          ? 'text-primary hover:bg-surface-muted'
+          ? 'text-gold-strong hover:bg-surface-muted'
           : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
       } ${className}`}
     >

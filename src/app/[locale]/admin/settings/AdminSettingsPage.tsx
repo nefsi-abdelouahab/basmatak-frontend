@@ -434,7 +434,7 @@ function SettingsContent() {
                   rows={3}
                   value={draftFor('platform.summary')}
                   onChange={(event) => onDraft('platform.summary', event.target.value)}
-                  className="w-full rounded-md border border-border bg-surface px-3 py-2 leading-relaxed text-ink focus:border-primary focus:outline-none"
+                  className="w-full rounded-md border border-border bg-surface px-3 py-2 leading-relaxed text-ink focus:border-gold-strong focus:outline-none"
                 />
               </div>
             </div>

@@ -1,24 +1,125 @@
 /* Central theme variables — the ONLY stylesheet that may contain literal values.
    Every other stylesheet/component MUST use var(--*) or Tailwind theme utilities.
-   Source: design/system-design.md. */
+   Source: design/system-design.md, restyled to the warm Basmatak identity.
+
+   Light is the default and does not follow the operating-system color scheme.
+   Dark is an explicit opt-in set by html[data-theme='dark'] (persisted by
+   ThemeToggle).
+
+   Each colour is exposed twice:
+   - --color-* is the readable hex value for direct CSS use.
+   - --color-*-rgb is the space-separated channel value Tailwind consumes, so
+     opacity modifiers keep working and the explicit dark theme swaps through
+     one variable set. */
 
 :root {
-  --color-primary: #6d28d9;
-  --color-primary-hover: #5b21b6;
-  --color-primary-tint: #f5f3ff;
+  color-scheme: light;
+
+  --color-background: #fbf9f4;
+  --color-background-rgb: 251 249 244;
   --color-surface: #ffffff;
-  --color-surface-muted: #f8fafc;
-  --color-border: #e2e8f0;
-  --color-border-muted: #f1f5f9;
-  --color-success: #16a34a;
+  --color-surface-rgb: 255 255 255;
+  --color-surface-muted: #f4f0e6;
+  --color-surface-muted-rgb: 244 240 230;
+  --color-border: #e9e3d3;
+  --color-border-rgb: 233 227 211;
+  --color-border-muted: #f2ede2;
+  --color-border-muted-rgb: 242 237 226;
+  --color-primary: #14110d;
+  --color-primary-rgb: 20 17 13;
+  --color-primary-hover: #2a251e;
+  --color-primary-hover-rgb: 42 37 30;
+  --color-on-primary: #ffffff;
+  --color-on-primary-rgb: 255 255 255;
+  --color-gold: #d4a62a;
+  --color-gold-rgb: 212 166 42;
+  --color-gold-hover: #c29622;
+  --color-gold-hover-rgb: 194 150 34;
+  --color-gold-strong: #8a6508;
+  --color-gold-strong-rgb: 138 101 8;
+  --color-gold-soft: #f6eccb;
+  --color-gold-soft-rgb: 246 236 203;
+  --color-on-gold: #14110d;
+  --color-on-gold-rgb: 20 17 13;
+  --color-success: #2d6a4f;
+  --color-success-rgb: 45 106 79;
+  --color-on-success: #ffffff;
+  --color-on-success-rgb: 255 255 255;
   --color-pending: #f59e0b;
+  --color-pending-rgb: 245 158 11;
   --color-error: #dc2626;
-  --color-ink: #111827;
-  --color-ink-muted: #64748b;
+  --color-error-rgb: 220 38 38;
+  --color-error-warm: #b44034;
+  --color-error-warm-rgb: 180 64 52;
+  --color-on-error: #ffffff;
+  --color-on-error-rgb: 255 255 255;
+  --color-ink: #14110d;
+  --color-ink-rgb: 20 17 13;
+  --color-ink-muted: #5c5548;
+  --color-ink-muted-rgb: 92 85 72;
+  --color-overlay: #14110d;
+  --color-overlay-rgb: 20 17 13;
+  --color-on-overlay: #ffffff;
+  --color-on-overlay-rgb: 255 255 255;
+
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --shadow-sm: 0 1px 2px 0 rgba(17, 24, 39, 0.04);
   --shadow-raised: 0 4px 6px -1px rgba(17, 24, 39, 0.07), 0 2px 4px -2px rgba(17, 24, 39, 0.05);
   --shadow-modal: 0 10px 15px -3px rgba(17, 24, 39, 0.08);
+  --header-height: 4rem;
+}
+
+/* Dark theme uses the same variable names, so every utility follows along.
+   This is opt-in only: no automatic system-preference media query exists. */
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-background: #14110d;
+  --color-background-rgb: 20 17 13;
+  --color-surface: #211d17;
+  --color-surface-rgb: 33 29 23;
+  --color-surface-muted: #1b1712;
+  --color-surface-muted-rgb: 27 23 18;
+  --color-border: #3a342a;
+  --color-border-rgb: 58 52 42;
+  --color-border-muted: #2c2820;
+  --color-border-muted-rgb: 44 40 32;
+  --color-primary: #f5f0e6;
+  --color-primary-rgb: 245 240 230;
+  --color-primary-hover: #ffffff;
+  --color-primary-hover-rgb: 255 255 255;
+  --color-on-primary: #14110d;
+  --color-on-primary-rgb: 20 17 13;
+  --color-gold: #e4bc4e;
+  --color-gold-rgb: 228 188 78;
+  --color-gold-hover: #efcb6b;
+  --color-gold-hover-rgb: 239 203 107;
+  --color-gold-strong: #e0b84a;
+  --color-gold-strong-rgb: 224 184 74;
+  --color-gold-soft: #2a251d;
+  --color-gold-soft-rgb: 42 37 29;
+  --color-on-gold: #14110d;
+  --color-on-gold-rgb: 20 17 13;
+  --color-success: #7fc49a;
+  --color-success-rgb: 127 196 154;
+  --color-on-success: #14110d;
+  --color-on-success-rgb: 20 17 13;
+  --color-pending: #f59e0b;
+  --color-pending-rgb: 245 158 11;
+  --color-error: #f87171;
+  --color-error-rgb: 248 113 113;
+  --color-error-warm: #ee9a8b;
+  --color-error-warm-rgb: 238 154 139;
+  --color-on-error: #14110d;
+  --color-on-error-rgb: 20 17 13;
+  --color-ink: #f5f0e6;
+  --color-ink-rgb: 245 240 230;
+  --color-ink-muted: #b8ad9b;
+  --color-ink-muted-rgb: 184 173 155;
+  --color-overlay: #14110d;
+  --color-overlay-rgb: 20 17 13;
+  --color-on-overlay: #ffffff;
+  --color-on-overlay-rgb: 255 255 255;
 }

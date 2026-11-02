@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -188,7 +188,7 @@ export function ExperiencesPage({ locale }: { locale: string }) {
             <Link
               href={`/volunteer/talents/${username}`}
               data-testid="experiences-view-profile"
-              className="inline-flex shrink-0 items-center gap-1 text-label-sm font-medium text-primary hover:underline"
+              className="inline-flex shrink-0 items-center gap-1 text-label-sm font-medium text-gold-strong hover:underline"
             >
               <span>{t('experiences.viewPublicProfile')}</span>
               <ArrowRight size={14} aria-hidden="true" className="rtl:rotate-180" />
@@ -215,7 +215,7 @@ export function ExperiencesPage({ locale }: { locale: string }) {
                 }}
                 className={`shrink-0 rounded-md px-3 py-1 text-label-sm font-medium transition-colors ${
                   categoryId === ''
-                    ? 'bg-primary-tint text-primary'
+                    ? 'bg-gold-soft text-gold-strong'
                     : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
                 }`}
               >
@@ -236,7 +236,7 @@ export function ExperiencesPage({ locale }: { locale: string }) {
                     }}
                     className={`shrink-0 rounded-md px-3 py-1 text-label-sm font-medium transition-colors ${
                       active
-                        ? 'bg-primary-tint text-primary'
+                        ? 'bg-gold-soft text-gold-strong'
                         : 'text-ink-muted hover:bg-surface-muted hover:text-ink'
                     }`}
                   >
@@ -327,7 +327,7 @@ export function ExperiencesPage({ locale }: { locale: string }) {
         ) : null}
 
         {listQuery.data && items.length === 0 ? (
-          <Empty title={t('experiences.empty')} description={t('experiences.emptyBody')} />
+          <Empty title={t('experiences.empty')} description={t('experiences.emptyBody')} pattern />
         ) : null}
 
         {items.length > 0 ? (

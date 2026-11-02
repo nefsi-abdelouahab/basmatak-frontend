@@ -48,7 +48,7 @@ export function Modal({
           onClick={onClose}
           aria-label={label}
           autoFocus
-          className="absolute end-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink"
+          className="absolute end-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink"
         >
           <X aria-hidden="true" size={20} />
         </button>

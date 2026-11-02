@@ -10,6 +10,7 @@ import { SessionExpiredScreen } from '@/components/system/SessionExpiredScreen';
 import { ServerErrorScreen } from '@/components/system/ServerErrorScreen';
 import { errorStateFor, mapToApiError } from '@/lib/api/errors';
 import { DOSSIER_MIMES, validateUploadFile } from '@/lib/api/organizations';
+import { notify } from '@/lib/notify';
 import { useSessionQuery } from '@/hooks/useSession';
 import {
   isEmailNotVerifiedError,
@@ -79,7 +80,7 @@ export function VerificationDossierForm() {
             <p className="mb-4 text-ink-muted">{t('gate.unverifiedDescription')}</p>
             <Link
               href="/verify-email?status=unverified"
-              className="text-sm font-medium text-primary"
+              className="text-sm font-medium text-gold-strong"
             >
               {t('gate.verifyEmailCta')}
             </Link>
@@ -102,7 +103,7 @@ export function VerificationDossierForm() {
           <p className="mb-4 text-ink-muted">{t('gate.unverifiedDescription')}</p>
           <Link
             href="/verify-email?status=unverified"
-            className="text-sm font-medium text-primary"
+            className="text-sm font-medium text-gold-strong"
           >
             {t('gate.verifyEmailCta')}
           </Link>
@@ -120,6 +121,9 @@ export function VerificationDossierForm() {
     const next: PendingFile[] = [];
     for (const file of Array.from(list)) {
       const check = validateUploadFile({ type: file.type, size: file.size }, DOSSIER_MIMES);
+      if (!check.ok) {
+        notify.error(check.reason === 'size' ? 'error.fileTooLarge' : 'error.fileTypeNotAllowed');
+      }
       fileKey += 1;
       next.push({
         key: fileKey,
@@ -265,7 +269,7 @@ export function VerificationDossierForm() {
                           onClick={() =>
                             setFiles((prev) => prev.filter((f) => f.key !== file.key))
                           }
-                          className="font-medium text-primary"
+                          className="font-medium text-gold-strong"
                         >
                           {t('dossier.removeFile')}
                         </button>
@@ -274,7 +278,7 @@ export function VerificationDossierForm() {
                       <button
                         type="button"
                         onClick={() => setFiles((prev) => prev.filter((f) => f.key !== file.key))}
-                        className="shrink-0 font-medium text-primary"
+                        className="shrink-0 font-medium text-gold-strong"
                       >
                         {t('dossier.removeFile')}
                       </button>
@@ -307,7 +311,7 @@ export function VerificationDossierForm() {
               </Button>
               <Link
                 href="/org/complete-profile"
-                className="text-sm font-medium text-primary"
+                className="text-sm font-medium text-gold-strong"
               >
                 {t('dossier.completeProfileCta')}
               </Link>

@@ -18,7 +18,7 @@ function renderLauncher(
 ) {
   const onToggle = props.onToggle ?? vi.fn();
   const onEdgeChange = props.onEdgeChange ?? vi.fn();
-  render(
+  const view = render(
     <NextIntlClientProvider locale="en" messages={{ aiAgent: aiAgentEn }}>
       <AiAgentLauncher
         open={false}
@@ -32,11 +32,8 @@ function renderLauncher(
   return {
     onToggle,
     onEdgeChange,
-    button: screen.getByRole('button', {
-      name: props.open
-        ? aiAgentEn.launcher.close
-        : aiAgentEn.launcher.open,
-    }),
+    button: screen.getByTestId('ai-agent-launcher'),
+    ...view,
   };
 }
 
@@ -88,16 +85,64 @@ describe('AiAgentLauncher', () => {
     const { button, onToggle } = renderLauncher();
     expect(button.getAttribute('aria-expanded')).toBe('false');
     expect(button.getAttribute('aria-controls')).toBe('ai-agent-panel');
+    expect(button.getAttribute('aria-label')).toBe(aiAgentEn.launcher.open);
+    expect(button.getAttribute('title')).toBe(aiAgentEn.launcher.open);
     fireEvent.click(button);
     expect(onToggle).toHaveBeenCalledTimes(1);
   });
 
   it('reports the expanded state and reads the close label', () => {
     renderLauncher({ open: true });
-    const button = screen.getByRole('button', {
-      name: aiAgentEn.launcher.close,
-    });
+    const button = screen.getByTestId('ai-agent-launcher');
     expect(button.getAttribute('aria-expanded')).toBe('true');
+    expect(button.getAttribute('aria-label')).toBe(aiAgentEn.launcher.close);
+    expect(button.getAttribute('title')).toBe(aiAgentEn.launcher.close);
+  });
+
+  it('hides at its stored position while open and returns when closed', async () => {
+    window.localStorage.setItem(
+      AI_AGENT_LAUNCHER_STORAGE_KEY,
+      JSON.stringify({ version: 1, edge: 'end', y: 500 }),
+    );
+    const { button, rerender } = renderLauncher();
+
+    await waitFor(() => {
+      expect(button.style.top).toBe('500px');
+    });
+
+    rerender(
+      <NextIntlClientProvider locale="en" messages={{ aiAgent: aiAgentEn }}>
+        <AiAgentLauncher
+          open
+          availability="online"
+          onToggle={vi.fn()}
+        />
+      </NextIntlClientProvider>,
+    );
+
+    const opened = screen.getByTestId('ai-agent-launcher');
+    expect(opened.style.top).toBe('500px');
+    expect(opened.style.insetInlineEnd).toBe('16px');
+    expect(opened.style.visibility).toBe('hidden');
+    expect(opened.style.pointerEvents).toBe('none');
+    expect(opened.getAttribute('aria-expanded')).toBe('true');
+
+    rerender(
+      <NextIntlClientProvider locale="en" messages={{ aiAgent: aiAgentEn }}>
+        <AiAgentLauncher
+          open={false}
+          availability="online"
+          onToggle={vi.fn()}
+        />
+      </NextIntlClientProvider>,
+    );
+
+    const closed = screen.getByTestId('ai-agent-launcher');
+    expect(closed.style.top).toBe('500px');
+    expect(closed.style.insetInlineEnd).toBe('16px');
+    expect(closed.style.visibility).toBe('');
+    expect(closed.style.pointerEvents).toBe('');
+    expect(closed.getAttribute('aria-expanded')).toBe('false');
   });
 
   it('drags, snaps to the nearest edge, persists, and suppresses the click', async () => {

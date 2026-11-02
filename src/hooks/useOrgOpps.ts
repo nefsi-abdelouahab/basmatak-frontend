@@ -79,6 +79,7 @@ export function useOwnOpportunityQuery(id: string | undefined) {
 export function useCreateOpportunityMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.opportunityCreated', silent: true },
     mutationFn: (input: CreateOpportunityInput) => orgOppsApi.createOpportunity(api, input),
     onSuccess: () => {
       invalidateOppScope(queryClient);
@@ -89,6 +90,7 @@ export function useCreateOpportunityMutation() {
 export function usePatchOpportunityMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.opportunitySaved', silent: true },
     mutationFn: ({ opportunityId, input }: { opportunityId: string; input: UpdateOpportunityInput }) =>
       orgOppsApi.patchOpportunity(api, opportunityId, input),
     onSuccess: (_data, vars) => {
@@ -101,6 +103,7 @@ export function usePatchOpportunityMutation() {
 export function useDeleteDraftOpportunityMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.draftDeleted', silent: true },
     mutationFn: (opportunityId: string) => orgOppsApi.deleteDraftOpportunity(api, opportunityId),
     onSuccess: () => {
       invalidateOppScope(queryClient);
@@ -111,6 +114,7 @@ export function useDeleteDraftOpportunityMutation() {
 export function useLifecycleActionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: (variables: { action: 'publish' | 'close' | 'cancel' | 'complete' }) => (({ publish: 'success.opportunityPublished', close: 'success.opportunityClosed', cancel: 'success.opportunityCancelled', complete: 'success.opportunityCompleted' }) as const)[variables.action], silent: true },
     mutationFn: ({ opportunityId, action }: { opportunityId: string; action: LifecycleAction }) =>
       orgOppsApi.runLifecycleAction(api, opportunityId, action),
     onSuccess: (_data, vars) => {
@@ -123,6 +127,7 @@ export function useLifecycleActionMutation() {
 export function useCreatePositionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.positionCreated', silent: true },
     mutationFn: ({ opportunityId, input }: { opportunityId: string; input: CreatePositionInput }) =>
       orgOppsApi.createPosition(api, opportunityId, input),
     onSuccess: (_data, vars) => {
@@ -134,6 +139,7 @@ export function useCreatePositionMutation() {
 export function usePatchPositionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.positionUpdated', silent: true },
     mutationFn: ({
       opportunityId,
       positionId,
@@ -152,6 +158,7 @@ export function usePatchPositionMutation() {
 export function useDeletePositionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.positionDeleted', silent: true },
     mutationFn: ({ opportunityId, positionId }: { opportunityId: string; positionId: string }) =>
       orgOppsApi.deletePosition(api, opportunityId, positionId),
     onSuccess: (_data, vars) => {
@@ -163,6 +170,7 @@ export function useDeletePositionMutation() {
 export function useDuplicateOpportunityMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.opportunityDuplicated', silent: true },
     mutationFn: (id: string) => orgOppsApi.duplicateOpportunity(api, id),
     onSuccess: () => {
       invalidateOppScope(queryClient);

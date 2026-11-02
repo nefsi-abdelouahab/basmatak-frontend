@@ -36,6 +36,7 @@
     "deleteCta": "Delete organization",
     "deleteConfirm": "Yes, delete it",
     "deleteCancel": "Cancel",
+    "deleting": "Deleting…",
     "deleted": "Your organization has been deleted."
   },
   "dossier": {

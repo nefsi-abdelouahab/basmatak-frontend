@@ -169,7 +169,7 @@ function EvidenceMain({ mediaId, testIdPrefix }: { mediaId: string; testIdPrefix
   if (!image) {
     const Icon = manifestIcon(textOf(media.mimeType), url);
     return (
-      <div className="flex items-center justify-between gap-3 rounded-xl bg-inverse-surface p-6 text-inverse-on-surface">
+      <div className="flex items-center justify-between gap-3 rounded-xl bg-primary p-6 text-on-primary">
         <span className="flex min-w-0 items-center gap-3">
           <Icon size={28} aria-hidden="true" className="shrink-0" />
           <span className="truncate text-sm font-medium">{filename}</span>
@@ -188,7 +188,7 @@ function EvidenceMain({ mediaId, testIdPrefix }: { mediaId: string; testIdPrefix
   }
 
   return (
-    <div ref={frameRef} className="relative w-full overflow-hidden rounded-xl bg-inverse-surface">
+    <div ref={frameRef} className="relative w-full overflow-hidden rounded-xl bg-primary">
       {/* eslint-disable-next-line @next/next/no-img-element -- owning-org evidence URL */}
       <img
         src={url}
@@ -197,7 +197,7 @@ function EvidenceMain({ mediaId, testIdPrefix }: { mediaId: string; testIdPrefix
         className={`max-h-[400px] w-full object-cover transition-transform ${zoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'}`}
         onClick={() => setZoomed((value) => !value)}
       />
-      <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 rounded-lg bg-inverse-surface/80 p-3 text-inverse-on-surface backdrop-blur">
+      <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 rounded-lg bg-overlay/80 p-3 text-on-overlay">
         <span className="flex min-w-0 items-center gap-2">
           <Camera size={18} aria-hidden="true" className="shrink-0" />
           <span className="truncate text-sm">{filename}</span>
@@ -207,7 +207,7 @@ function EvidenceMain({ mediaId, testIdPrefix }: { mediaId: string; testIdPrefix
             type="button"
             aria-label={zoomed ? t('contributions.zoomOut') : t('contributions.zoomIn')}
             onClick={() => setZoomed((value) => !value)}
-            className="rounded-lg p-1.5 transition-colors hover:bg-inverse-on-surface/20"
+            className="rounded-lg p-1.5 transition-colors hover:bg-on-primary/20"
           >
             {zoomed ? <ZoomOut size={18} aria-hidden="true" /> : <ZoomIn size={18} aria-hidden="true" />}
           </button>
@@ -215,7 +215,7 @@ function EvidenceMain({ mediaId, testIdPrefix }: { mediaId: string; testIdPrefix
             type="button"
             aria-label={t('contributions.fullscreenView')}
             onClick={openFullscreen}
-            className="rounded-lg p-1.5 transition-colors hover:bg-inverse-on-surface/20"
+            className="rounded-lg p-1.5 transition-colors hover:bg-on-primary/20"
           >
             <Maximize size={18} aria-hidden="true" />
           </button>
@@ -249,7 +249,7 @@ function EvidenceThumbButton({
       aria-label={t('contributions.viewerOf', { index: index + 1, total })}
       aria-pressed={active}
       className={`relative h-20 overflow-hidden rounded-lg text-start transition-opacity hover:opacity-90 ${
-        active ? 'ring-2 ring-primary ring-offset-2' : ''
+        active ? 'ring-2 ring-gold-strong ring-offset-2' : ''
       }`}
     >
       {image && url ? (
@@ -350,7 +350,7 @@ function ManifestRow({ mediaId, testIdPrefix }: { mediaId: string; testIdPrefix:
           href={url}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1 text-sm font-medium text-ink hover:text-primary"
+          className="inline-flex items-center gap-1 text-sm font-medium text-ink hover:text-gold-strong"
         >
           <Eye size={16} aria-hidden="true" />
           <span>{t('contributions.openOriginal')}</span>
@@ -358,7 +358,7 @@ function ManifestRow({ mediaId, testIdPrefix }: { mediaId: string; testIdPrefix:
         <a
           href={url}
           download={filename}
-          className="inline-flex items-center gap-1 text-sm font-medium text-ink hover:text-primary"
+          className="inline-flex items-center gap-1 text-sm font-medium text-ink hover:text-gold-strong"
         >
           <Download size={16} aria-hidden="true" />
           <span>{t('contributions.downloadFile')}</span>
@@ -560,7 +560,7 @@ function SubmissionIdentity({
           <Link
             href={`/org/volunteers/${username}`}
             data-testid={`${testIdPrefix}-public-profile`}
-            className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
+            className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-gold-strong hover:underline"
           >
             <span>{t('participants.viewPublicProfile')}</span>
             <ArrowUpRight size={14} aria-hidden="true" className="rtl:rotate-180" />
@@ -581,7 +581,7 @@ function SubmissionIdentity({
         {opportunityId ? (
           <Link
             href={`/org/opportunities/${encodeURIComponent(opportunityId)}`}
-            className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
+            className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-gold-strong hover:underline"
           >
             <span>{t('contributions.viewOpportunity')}</span>
             <ArrowUpRight size={14} aria-hidden="true" className="rtl:rotate-180" />
@@ -615,7 +615,7 @@ function SubmissionIdentity({
           <p data-testid={`${testIdPrefix}-verified`} role="status" className="text-sm text-ink-muted">
             {t('contributions.approvedState')}
             {' · '}
-            <Link href="/org/experiences" className="font-medium text-primary hover:underline">
+            <Link href="/org/experiences" className="font-medium text-gold-strong hover:underline">
               {t('contributions.openArchive')}
             </Link>
           </p>
@@ -809,7 +809,7 @@ function ReviewDecisionSection({
             value={feedback}
             onChange={(event) => onFeedback(event.target.value)}
             placeholder={t('contributions.feedbackPlaceholder')}
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
           />
           {!feedbackValid ? (
             <p data-testid={`${testIdPrefix}-feedback-required`} className="text-sm text-status-error">

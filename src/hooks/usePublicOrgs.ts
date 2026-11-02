@@ -23,7 +23,8 @@ export function publicOrgsKeys() {
   return {
     orgs: (params: OrgSearchParams) =>
       queryKeys.list(`${DOMAIN}-orgs`, params as Record<string, unknown>),
-    orgProfile: (slug: string) => queryKeys.detail(`${DOMAIN}-org`, slug),
+    orgProfile: (slug: string, viewer = 'guest') =>
+      queryKeys.detail(`${DOMAIN}-org`, `${slug}:${viewer}`),
     orgOpps: (slug: string, params: OrgOppsParams) =>
       queryKeys.list(`${DOMAIN}-org-opps-${slug}`, params as Record<string, unknown>),
     orgReliability: (slug: string) => queryKeys.detail(`${DOMAIN}-reliability`, slug),
@@ -50,9 +51,9 @@ export function usePublicOrgsQuery(params: OrgSearchParams) {
   });
 }
 
-export function usePublicOrgProfileQuery(slug: string) {
+export function usePublicOrgProfileQuery(slug: string, viewer = 'guest') {
   return useQuery({
-    queryKey: publicOrgsKeys().orgProfile(slug),
+    queryKey: publicOrgsKeys().orgProfile(slug, viewer),
     queryFn: () => publicOrgsApi.getPublicOrgProfile(api, slug),
     staleTime: 60_000,
     retry: false,

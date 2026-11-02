@@ -12,6 +12,7 @@ import {
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Pagination } from '@/components/ui/Pagination';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import {
   useFeedSkillCategoriesQuery,
   useFeedSkillsQuery,
@@ -207,13 +208,13 @@ function QuickPill({
       onClick={onClick}
       className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-label-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
         active
-          ? 'bg-primary-tint font-semibold text-primary'
+          ? 'bg-gold-soft font-semibold text-gold-strong'
           : 'bg-surface text-ink-muted shadow-sm hover:text-ink'
       }`}
     >
       <span>{label}</span>
       {typeof badge === 'number' && badge > 0 ? (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary-tint text-[10px] font-bold text-primary">
+        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gold-soft text-[10px] font-bold text-gold-strong">
           {badge}
         </span>
       ) : null}
@@ -266,7 +267,7 @@ function AvailButton({
       aria-pressed={active}
       onClick={onClick}
       className={`rounded-md px-2 py-1.5 text-center text-label-xs font-medium transition-colors ${
-        active ? 'bg-primary-tint text-primary' : 'bg-surface-muted text-ink-muted hover:bg-border-muted'
+        active ? 'bg-gold-soft text-gold-strong' : 'bg-surface-muted text-ink-muted hover:bg-border-muted'
       }`}
     >
       {label}
@@ -337,7 +338,7 @@ function RefineFilters({
           <button
             type="button"
             onClick={onToggleWilayas}
-            className="self-start text-label-xs font-medium text-primary hover:underline"
+            className="self-start text-label-xs font-medium text-gold-strong hover:underline"
           >
             {wilayasExpanded
               ? t('talents.showLessLocations')
@@ -463,7 +464,12 @@ function FilterDrawer({
             <X aria-hidden="true" size={20} />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">{children}</div>
+        <ScrollFade
+          className="min-h-0 flex-1"
+          viewportClassName="overflow-y-auto overscroll-contain p-4"
+        >
+          {children}
+        </ScrollFade>
       </div>
     </div>
   );
@@ -536,7 +542,7 @@ function SuggestedList({
         <button
           type="button"
           onClick={onViewAll}
-          className="shrink-0 text-label-xs font-medium text-primary hover:underline"
+          className="shrink-0 text-label-xs font-medium text-gold-strong hover:underline"
         >
           {t('opportunities.suggestedViewAll')}
         </button>
@@ -588,7 +594,7 @@ function SuggestedList({
                   className="group block rounded-lg p-1.5 transition-colors hover:bg-surface-muted/60 -m-1.5"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="truncate text-label-md font-semibold text-ink transition-colors group-hover:text-primary">
+                    <span className="truncate text-label-md font-semibold text-ink transition-colors group-hover:text-gold-strong">
                       {item.title ?? detailId}
                     </span>
                     {meta ? (
@@ -813,11 +819,13 @@ export function VolunteerOpportunitiesPage({
   return (
     <RequireVolunteer locale={locale} next={next}>
       <div data-testid="volunteer-opportunities" className="min-w-0">
-        <div className="grid min-w-0 grid-cols-1 items-start gap-6 lg:h-[calc(100dvh-7rem)] xl:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="grid min-w-0 grid-cols-1 items-start gap-6 lg:h-[calc(100dvh-7rem)] lg:grid-rows-[minmax(0,1fr)] xl:grid-cols-[minmax(0,1fr)_300px]">
           {/* Center column: header, search, feed (own scroll container). */}
-          <div
+          <ScrollFade
             data-testid="opportunities-center"
-            className="flex min-w-0 flex-col gap-4 sm:gap-5 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:pe-1"
+            className="min-w-0 lg:h-full lg:min-h-0"
+            viewportClassName="flex flex-col gap-4 sm:gap-5 lg:overflow-y-auto lg:overscroll-contain lg:pe-1"
+            tone="background"
           >
             <section className="flex min-w-0 flex-col gap-3">
               <div>
@@ -842,7 +850,7 @@ export function VolunteerOpportunitiesPage({
                   placeholder={t('opportunities.searchPlaceholder')}
                   value={queryText}
                   onChange={(e) => setQueryText(e.target.value)}
-                  className="h-11 w-full rounded-xl border border-border bg-surface pe-10 ps-11 text-body-sm text-ink shadow-sm transition-all placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="h-11 w-full rounded-xl border border-border bg-surface pe-10 ps-11 text-body-sm text-ink shadow-sm transition-all placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-gold-strong/20"
                 />
                 {queryText !== '' ? (
                   <button
@@ -1015,18 +1023,21 @@ export function VolunteerOpportunitiesPage({
             <div className="xl:hidden">
               <SuggestedList locale={locale} mySkillIds={mySkillIds} onViewAll={resetAll} />
             </div>
-          </div>
+          </ScrollFade>
 
           {/* Right column: refine panel + suggested (own scroll container). */}
-          <aside
+          <ScrollFade
+            as="aside"
             data-testid="opportunities-filters"
-            className="hidden min-w-0 flex-col gap-5 xl:flex lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:pe-1"
+            className="hidden min-w-0 lg:h-full lg:min-h-0 xl:block"
+            viewportClassName="flex flex-col gap-5 lg:overflow-y-auto lg:overscroll-contain lg:pe-1"
+            tone="background"
           >
             <div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
               {refineBody}
             </div>
             <SuggestedList locale={locale} mySkillIds={mySkillIds} onViewAll={resetAll} />
-          </aside>
+          </ScrollFade>
         </div>
 
         {drawerOpen ? (

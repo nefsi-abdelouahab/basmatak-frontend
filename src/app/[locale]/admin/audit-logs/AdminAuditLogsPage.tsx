@@ -34,6 +34,7 @@ import { Card } from '@/components/ui/Card';
 import { Container } from '@/components/ui/Container';
 import { Empty } from '@/components/ui/Empty';
 import { Loader } from '@/components/ui/Loader';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import { ForbiddenScreen } from '@/components/system';
 import {
   auditRows,
@@ -120,7 +121,7 @@ function FilterSelect({
         title={label}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-10 w-full appearance-none rounded-lg border border-border bg-surface ps-9 pe-8 text-sm text-ink focus:border-primary focus:outline-none"
+        className="h-10 w-full appearance-none rounded-lg border border-border bg-surface ps-9 pe-8 text-sm text-ink focus:border-gold-strong focus:outline-none"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -418,7 +419,7 @@ export function AdminAuditLogsPage({ locale }: { locale: string }) {
                 setQ(event.target.value);
                 resetPage();
               }}
-              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
             />
           </div>
           <Button
@@ -471,7 +472,7 @@ export function AdminAuditLogsPage({ locale }: { locale: string }) {
                 setActor(event.target.value);
                 resetPage();
               }}
-              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
             />
           </div>
           <div className="relative min-w-[10rem] flex-1">
@@ -490,7 +491,7 @@ export function AdminAuditLogsPage({ locale }: { locale: string }) {
                 setEntityType(event.target.value);
                 resetPage();
               }}
-              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
             />
           </div>
           <div className="relative min-w-[10rem] flex-1">
@@ -509,7 +510,7 @@ export function AdminAuditLogsPage({ locale }: { locale: string }) {
                 setEntityId(event.target.value);
                 resetPage();
               }}
-              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
             />
           </div>
           <div className="relative min-w-[10rem] flex-1">
@@ -528,7 +529,7 @@ export function AdminAuditLogsPage({ locale }: { locale: string }) {
                 setDate(event.target.value);
                 resetPage();
               }}
-              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink focus:border-primary focus:outline-none"
+              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-ink focus:border-gold-strong focus:outline-none"
             />
           </div>
           <FilterSelect
@@ -559,7 +560,7 @@ export function AdminAuditLogsPage({ locale }: { locale: string }) {
 
       <div className="grid min-w-0 grid-cols-1 items-start gap-6 xl:grid-cols-3">
         <Card className="min-w-0 p-0 xl:col-span-2">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" tabIndex={0}>
             <table className="w-full text-start">
               <thead>
                 <tr className="border-b border-border text-start text-xs uppercase tracking-wider text-ink-muted">
@@ -592,7 +593,7 @@ export function AdminAuditLogsPage({ locale }: { locale: string }) {
                       onClick={() => setSelectedKey(row.key)}
                       aria-selected={rowSelected}
                       className={`cursor-pointer transition-colors hover:bg-surface-muted ${
-                        rowSelected ? 'bg-primary-tint/40' : ''
+                        rowSelected ? 'bg-gold-soft/40' : ''
                       }`}
                     >
                       <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-ink-muted">
@@ -698,7 +699,7 @@ export function AdminAuditLogsPage({ locale }: { locale: string }) {
                       setLimit(Number(event.target.value) || 20);
                       resetPage();
                     }}
-                    className="rounded-md border border-border bg-surface px-2 py-1 text-sm text-ink focus:border-primary focus:outline-none"
+                    className="rounded-md border border-border bg-surface px-2 py-1 text-sm text-ink focus:border-gold-strong focus:outline-none"
                   >
                     <option value="20">20</option>
                     <option value="25">25</option>
@@ -717,9 +718,12 @@ export function AdminAuditLogsPage({ locale }: { locale: string }) {
               onClick={() => setSelectedKey(undefined)}
               className="fixed inset-0 z-30 bg-ink/40 xl:hidden"
             />
-            <aside
+            <ScrollFade
+              as="aside"
+              role="region"
               aria-label={t('browser.detailTitle')}
-              className="fixed inset-y-0 end-0 z-40 w-[min(94vw,30rem)] overflow-y-auto border-s border-border bg-surface p-4 shadow-modal xl:sticky xl:top-20 xl:z-auto xl:col-span-1 xl:w-auto xl:self-start xl:overflow-visible xl:rounded-xl xl:border xl:p-4 xl:shadow-sm"
+              className="fixed inset-y-0 end-0 z-40 w-[min(94vw,30rem)] border-s border-border bg-surface p-4 shadow-modal xl:sticky xl:top-20 xl:z-auto xl:col-span-1 xl:w-auto xl:self-start xl:rounded-xl xl:border xl:p-4 xl:shadow-sm"
+              viewportClassName="overflow-y-auto xl:overflow-visible"
             >
               <AuditDetail
                 key={selected.key}
@@ -727,7 +731,7 @@ export function AdminAuditLogsPage({ locale }: { locale: string }) {
                 display={selected}
                 onClose={() => setSelectedKey(undefined)}
               />
-            </aside>
+            </ScrollFade>
           </>
         ) : null}
       </div>

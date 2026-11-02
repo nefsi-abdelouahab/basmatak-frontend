@@ -97,6 +97,7 @@ export function CreateAccountForm({ initialType }: { initialType: AccountType })
       backHref="/login"
       backLabel={t('shared.backToLogin')}
       tagline={t(isOrg ? 'createAccount.taglineOrg' : 'createAccount.taglineVolunteer')}
+      pattern
     >
       <div role="group" aria-label={t('createAccount.title')} className="grid grid-cols-2 gap-3">
         <button
@@ -104,13 +105,13 @@ export function CreateAccountForm({ initialType }: { initialType: AccountType })
           data-testid="auth-type-volunteer"
           aria-pressed={!isOrg}
           onClick={() => selectType('volunteer')}
-          className={`flex flex-col items-center gap-1 rounded-lg border p-4 text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+          className={`flex flex-col items-center gap-1 rounded-lg border p-4 text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong ${
             !isOrg
-              ? 'border-primary bg-primary/5 text-ink'
-              : 'border-border bg-surface text-ink-muted hover:border-primary/50 hover:text-ink'
+              ? 'border-gold-strong bg-gold-soft text-ink'
+              : 'border-border bg-surface text-ink-muted hover:border-gold-strong/50 hover:text-ink'
           }`}
         >
-          <User aria-hidden="true" size={22} className={!isOrg ? 'text-primary' : undefined} />
+          <User aria-hidden="true" size={22} className={!isOrg ? 'text-gold-strong' : undefined} />
           <span className="text-sm font-semibold">{t('createAccount.volunteerTitle')}</span>
           <span className="text-xs text-ink-muted">{t('createAccount.volunteerDescription')}</span>
         </button>
@@ -119,13 +120,13 @@ export function CreateAccountForm({ initialType }: { initialType: AccountType })
           data-testid="auth-type-organization"
           aria-pressed={isOrg}
           onClick={() => selectType('organization')}
-          className={`flex flex-col items-center gap-1 rounded-lg border p-4 text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+          className={`flex flex-col items-center gap-1 rounded-lg border p-4 text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-strong ${
             isOrg
-              ? 'border-primary bg-primary/5 text-ink'
-              : 'border-border bg-surface text-ink-muted hover:border-primary/50 hover:text-ink'
+              ? 'border-gold-strong bg-gold-soft text-ink'
+              : 'border-border bg-surface text-ink-muted hover:border-gold-strong/50 hover:text-ink'
           }`}
         >
-          <Building2 aria-hidden="true" size={22} className={isOrg ? 'text-primary' : undefined} />
+          <Building2 aria-hidden="true" size={22} className={isOrg ? 'text-gold-strong' : undefined} />
           <span className="text-sm font-semibold">{t('createAccount.orgTitle')}</span>
           <span className="text-xs text-ink-muted">{t('createAccount.orgDescription')}</span>
         </button>
@@ -141,7 +142,7 @@ export function CreateAccountForm({ initialType }: { initialType: AccountType })
           />
           <Link
             href={isOrg ? '/org/complete-profile' : '/volunteer/profile'}
-            className="text-sm font-medium text-primary"
+            className="text-sm font-medium text-gold-strong"
           >
             {t(isOrg ? 'registerOrganization.continueCta' : 'registerVolunteer.continueCta')}
           </Link>
@@ -193,7 +194,7 @@ export function CreateAccountForm({ initialType }: { initialType: AccountType })
       )}
       <p className="text-sm text-ink-muted">
         {t('createAccount.haveAccount')}{' '}
-        <Link href="/login" className="font-medium text-primary">
+        <Link href="/login" className="font-medium text-gold-strong">
           {t('createAccount.signIn')}
         </Link>
       </p>

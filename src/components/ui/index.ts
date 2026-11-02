@@ -9,6 +9,11 @@ export { Checkbox } from './Checkbox';
 export type { CheckboxProps } from './Checkbox';
 export { Empty } from './Empty';
 export type { EmptyProps } from './Empty';
+export { FingerprintPattern } from './FingerprintPattern';
+export type {
+  FingerprintPatternProps,
+  FingerprintPatternVariant,
+} from './FingerprintPattern';
 export { Input } from './Input';
 export type { InputProps } from './Input';
 export { Loader } from './Loader';
@@ -17,6 +22,11 @@ export { Pagination } from './Pagination';
 export type { PaginationProps } from './Pagination';
 export { Pill } from './Pill';
 export type { PillProps, PillTone } from './Pill';
+export { ScrollFade } from './ScrollFade';
+export type {
+  ScrollFadeProps,
+  ScrollFadeTone,
+} from './ScrollFade';
 export { Select } from './Select';
 export type { SelectOption, SelectProps } from './Select';
 export { Table } from './Table';

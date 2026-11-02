@@ -13,8 +13,8 @@ import * as notificationsApi from '../lib/api/notifications';
 // - PATCH /notifications/:notificationId/read (per-row)
 // - POST /notifications/read-all → `{ updated }`
 // Rows carry `{ type, isRead, readAt?, createdAt }` only — surfaces render
-// the real type + date, never invented titles. All failures surface inline
-// (role=alert) — no toast library.
+// the real type + date, never invented titles. Failures surface inline
+// (role=alert); the global toast confirms each read action.
 
 const DOMAIN = 'notifications';
 
@@ -52,6 +52,7 @@ export function useNotificationsQuery(limit = 10, enabled = true) {
 export function useMarkNotificationReadMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.notificationRead', silent: true },
     mutationFn: (notificationId: string) =>
       notificationsApi.markNotificationRead(api, notificationId),
     onSuccess: () => invalidateNotifications(queryClient),
@@ -61,6 +62,7 @@ export function useMarkNotificationReadMutation() {
 export function useMarkAllNotificationsReadMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.allNotificationsRead', silent: true },
     mutationFn: () => notificationsApi.markAllNotificationsRead(api),
     onSuccess: () => invalidateNotifications(queryClient),
   });

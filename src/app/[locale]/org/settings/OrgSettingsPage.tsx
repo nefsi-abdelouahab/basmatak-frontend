@@ -134,7 +134,7 @@ export function OrgSettingsPage({ locale }: { locale: string }) {
                       selected
                         ? danger
                           ? 'bg-status-error/10 font-medium text-status-error'
-                          : 'bg-primary-tint font-medium text-primary'
+                          : 'bg-gold-soft font-medium text-gold-strong'
                         : danger
                           ? 'text-ink-muted hover:text-status-error'
                           : 'text-ink-muted hover:text-ink'

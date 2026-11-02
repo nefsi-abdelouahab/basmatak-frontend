@@ -66,7 +66,7 @@ export function SourceChips({ sources }: SourceChipsProps) {
               ) : (
                 <Link
                   href={item.href}
-                  className="inline-flex max-w-full items-center gap-1.5 rounded-sm border border-border bg-surface px-2 py-1 text-body-sm text-ink transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                  className="inline-flex max-w-full items-center gap-1.5 rounded-sm border border-border bg-surface px-2 py-1 text-body-sm text-ink transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
                 >
                   {content}
                 </Link>

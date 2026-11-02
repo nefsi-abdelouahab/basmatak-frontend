@@ -25,7 +25,7 @@ export function VolunteerApplicationDetailPage({
       >
         <Link
           href="/volunteer/applications"
-          className="text-sm font-medium text-primary"
+          className="text-sm font-medium text-gold-strong"
         >
           {t('applications.title')}
         </Link>

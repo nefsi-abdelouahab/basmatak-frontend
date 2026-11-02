@@ -21,7 +21,7 @@ export default function PublicLayout({
 }) {
   setRequestLocale(locale);
   return (
-    <div className="flex min-h-screen flex-col bg-surface-muted">
+    <div className="flex min-h-screen flex-col bg-background">
       <RequireGuest>
         <PublicNavbar />
         <main data-testid="shell-main" className="min-w-0 flex-1">

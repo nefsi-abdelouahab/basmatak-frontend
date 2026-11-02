@@ -22,7 +22,7 @@ export function Select({ id, label, options, error, className = '', ...rest }: S
       </label>
       <select
         id={id}
-        className={`w-full rounded-md border bg-surface px-3 py-2 text-ink focus:outline-none ${error ? 'border-status-error' : 'border-border focus:border-primary'} ${className}`}
+        className={`w-full rounded-md border bg-surface px-3 py-2 text-ink focus:outline-none ${error ? 'border-status-error' : 'border-border focus:border-gold-strong'} ${className}`}
         aria-invalid={error ? true : undefined}
         {...rest}
       >

@@ -62,6 +62,7 @@ export function useProfileCompletionQuery() {
 export function useUpdateOrganizationMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.orgProfileUpdated', silent: true },
     mutationFn: (input: UpdateOrganizationInput) => orgApi.updateOwnOrganization(api, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
@@ -71,6 +72,7 @@ export function useUpdateOrganizationMutation() {
 
 export function useDeleteOrganizationMutation() {
   return useMutation({
+    meta: { successKey: 'success.orgDeleted', silent: true },
     mutationFn: () => orgApi.deleteOwnOrganization(api),
   });
 }
@@ -87,6 +89,7 @@ export function useVerificationStatusQuery() {
 export function useSubmitVerificationMutation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { successKey: 'success.verificationSubmitted', silent: true },
     mutationFn: (input: SubmitVerificationInput) =>
       orgApi.submitOrganizationVerification(api, input),
     onSuccess: () => {

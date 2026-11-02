@@ -1,19 +1,20 @@
 {
   "branding": {
-    "name": "Basmatak Assistant",
-    "logoAlt": "Basmatak logo"
+    "name": "Basma",
+    "logoAlt": "Basma avatar"
   },
   "launcher": {
-    "open": "Open Basmatak assistant",
-    "close": "Close Basmatak assistant"
+    "open": "Open Basma",
+    "close": "Close Basma"
   },
   "panel": {
-    "title": "Basmatak Assistant",
-    "subtitle": "Answers about opportunities, organizations, and volunteering on Basmatak.",
-    "close": "Close assistant",
+    "title": "Basma",
+    "subtitle": "Basmatak Assistant",
+    "label": "Basma assistant",
+    "close": "Close Basma",
     "newChat": "New chat",
-    "messagesLabel": "Assistant conversation",
-    "statusLabel": "Assistant availability"
+    "messagesLabel": "Basma conversation",
+    "statusLabel": "Basma availability"
   },
   "status": {
     "online": "Online",
@@ -22,16 +23,15 @@
     "offline": "Offline"
   },
   "empty": {
-    "title": "How can I help?",
-    "body": "Ask about volunteering, opportunities, or organizations on Basmatak.",
+    "title": "Hi, I'm Basma. How can I help?",
+    "body": "Ask about opportunities, organizations, or volunteering on Basmatak.",
     "suggestionsLabel": "Suggested questions",
-    "suggestion1": "What is Basmatak?",
-    "suggestion2": "Show me volunteer opportunities",
-    "suggestion3": "How do I find verified organizations?",
-    "suggestion4": "How does volunteering work?"
+    "suggestion1": "Find a volunteering opportunity",
+    "suggestion2": "How do I submit a contribution?",
+    "suggestion3": "How does verification work?"
   },
   "composer": {
-    "label": "Message the assistant",
+    "label": "Message Basma",
     "placeholder": "Ask a question…",
     "send": "Send message",
     "stop": "Stop answer",
@@ -42,16 +42,16 @@
   },
   "message": {
     "you": "You",
-    "assistant": "Assistant",
+    "assistant": "Basma",
     "stopped": "Stopped",
     "shortened": "Shortened",
     "retry": "Retry",
     "continue": "Continue",
-    "liveReady": "The assistant has finished answering.",
-    "liveError": "The assistant could not finish the answer.",
+    "liveReady": "Basma has finished answering.",
+    "liveError": "Basma could not finish the answer.",
     "liveStopped": "The answer was stopped.",
-    "liveLabel": "Assistant announcements",
-    "errorTitle": "The assistant could not answer.",
+    "liveLabel": "Basma announcements",
+    "errorTitle": "Basma could not answer.",
     "failed": "This answer did not complete.",
     "typing": {
       "connecting": "Connecting…",
@@ -73,12 +73,12 @@
   },
   "banners": {
     "waking": {
-      "title": "Waking up the assistant",
-      "body": "The assistant is starting. This can take a moment."
+      "title": "Waking up Basma",
+      "body": "Basma is starting. This can take a moment."
     },
     "offline": {
-      "title": "Assistant unavailable",
-      "body": "The assistant is offline right now. Please try again later."
+      "title": "Basma unavailable",
+      "body": "Basma is offline right now. Please try again later."
     },
     "limited": {
       "title": "Limited mode",
@@ -86,7 +86,7 @@
     },
     "quota": {
       "title": "Usage limit reached",
-      "body": "The assistant has reached its usage limit for now.",
+      "body": "Basma has reached its usage limit for now.",
       "resetSeconds": "The limit resets in {count, plural, one {# second} other {# seconds}}.",
       "resetMinutes": "The limit resets in {count, plural, one {# minute} other {# minutes}}.",
       "resetHours": "The limit resets in {count, plural, one {# hour} other {# hours}}."
@@ -94,21 +94,20 @@
     "retry": "Check again"
   },
   "errors": {
-    "disabled": "The assistant is temporarily unavailable. Please try again shortly.",
+    "disabled": "Basma is temporarily unavailable. Please try again shortly.",
     "invalidInput": "Please check the message length and try again.",
     "rateLimited": "Too many messages. Please wait a moment and try again.",
-    "busy": "The assistant is busy right now. Please retry shortly.",
-    "quota": "The assistant has reached its usage limit. Please try again later.",
-    "providerUnavailable": "The assistant is temporarily unavailable. Please retry.",
-    "timeout": "The assistant took too long to answer. Please retry.",
+    "busy": "Basma is busy right now. Please retry shortly.",
+    "quota": "Basma has reached its usage limit. Please try again later.",
+    "providerUnavailable": "Basma is temporarily unavailable. Please retry.",
+    "timeout": "Basma took too long to answer. Please retry.",
     "network": "Could not reach the server. Please check your connection and try again.",
     "interrupted": "The answer stopped unexpectedly. Please retry.",
-    "invalidResponse": "The assistant returned an unexpected response. Please retry.",
-    "internal": "The assistant could not complete the response. Please try again.",
-    "generic": "The assistant could not complete the response. Please try again.",
+    "invalidResponse": "Basma returned an unexpected response. Please retry.",
+    "internal": "Basma could not complete the response. Please try again.",
+    "generic": "Basma could not complete the response. Please try again.",
     "retryInSeconds": "Try again in {count, plural, one {# second} other {# seconds}}.",
     "retryInMinutes": "Try again in {count, plural, one {# minute} other {# minutes}}.",
     "retryInHours": "Try again in {count, plural, one {# hour} other {# hours}}."
-  },
-  "disclaimer": "Answers are generated from public Basmatak data and may be incomplete."
+  }
 }

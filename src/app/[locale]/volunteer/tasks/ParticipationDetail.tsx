@@ -214,7 +214,7 @@ export function ParticipationDetail({
           <Link
             data-testid="submit-link"
             href={`/volunteer/tasks/${rowId(row)}/submit`}
-            className="text-sm font-medium text-primary"
+            className="text-sm font-medium text-gold-strong"
           >
             {t('participations.submitCta')}
           </Link>

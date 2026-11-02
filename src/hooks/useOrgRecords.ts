@@ -28,6 +28,7 @@ export function useOrgExperiencesQuery(filters: OrgRecordsFilters = {}) {
 
 export function useOrgCsvExportMutation() {
   return useMutation({
+    meta: { successKey: 'success.experiencesExported', silent: true },
     mutationFn: (filters: OrgRecordsFilters = {}) =>
       orgRecordsApi.exportOrgExperiencesCsv(api, filters),
   });
@@ -35,6 +36,7 @@ export function useOrgCsvExportMutation() {
 
 export function useOrgAttestationDownloadMutation() {
   return useMutation({
+    meta: { successKey: 'success.attestationDownloaded', silent: true },
     mutationFn: (experienceId: string) => downloadAttestation(api, experienceId),
   });
 }

@@ -382,7 +382,7 @@ function VerifiedExperiences({ opportunityId }: { opportunityId: string }) {
 }
 
 const ACTION_PRIMARY =
-  'inline-flex h-9 items-center justify-center rounded-lg bg-primary px-3.5 text-title-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50';
+  'inline-flex h-9 items-center justify-center rounded-lg bg-primary px-3.5 text-title-sm font-medium text-on-primary transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50';
 const ACTION_BORDERED =
   'inline-flex h-9 items-center justify-center rounded-lg border border-border bg-surface px-3.5 text-title-sm font-medium text-ink transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50';
 const ACTION_GHOST =
@@ -558,7 +558,7 @@ function OppCard({
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-label-sm">
             <span
               aria-hidden="true"
-              className={`h-2 w-2 shrink-0 rounded-full ${isPublished ? 'bg-[#16A34A]' : 'bg-ink-muted'}`}
+              className={`h-2 w-2 shrink-0 rounded-full ${isPublished ? 'bg-status-success' : 'bg-ink-muted'}`}
             />
             <span className={`text-title-sm font-medium ${isDraft ? 'text-ink-muted' : 'text-ink'}`}>
               {t(`list.${STATUS_LABEL_KEY[status] ?? 'statusDraft'}`)}
@@ -643,7 +643,7 @@ function OppCard({
                 className="group inline-flex items-center gap-1.5"
               >
                 <span className="font-medium text-ink">{applications}</span>
-                <span className="text-ink-muted group-hover:text-primary">{applicationsLabel}</span>
+                <span className="text-ink-muted group-hover:text-gold-strong">{applicationsLabel}</span>
                 <ArrowRight
                   size={14}
                   aria-hidden="true"
@@ -659,7 +659,7 @@ function OppCard({
                 className="group inline-flex items-center gap-1.5"
               >
                 <span className="font-medium text-ink">{participants}</span>
-                <span className="text-ink-muted group-hover:text-primary">{participantsLabel}</span>
+                <span className="text-ink-muted group-hover:text-gold-strong">{participantsLabel}</span>
                 <ArrowRight
                   size={14}
                   aria-hidden="true"
@@ -1012,7 +1012,7 @@ export function OrgOpportunitiesPage({
             <Link
               data-testid="create-opportunity-link"
               href="/org/opportunities/new"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-title-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-title-sm font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover"
             >
               <Plus size={18} aria-hidden="true" className="shrink-0" />
               <span>{t('list.createCta')}</span>
@@ -1037,7 +1037,7 @@ export function OrgOpportunitiesPage({
                   onClick={() => selectTab(key)}
                   className={`flex shrink-0 items-center gap-1.5 border-b-2 pb-3 text-title-sm transition-colors ${
                     active
-                      ? 'border-primary font-medium text-ink'
+                      ? 'border-gold-strong font-medium text-ink'
                       : 'border-transparent text-ink-muted hover:text-ink'
                   }`}
                 >
@@ -1066,7 +1066,7 @@ export function OrgOpportunitiesPage({
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') applySearch();
                 }}
-                className="h-10 w-full rounded-lg border border-border bg-surface py-2 pe-3 ps-9 text-body-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                className="h-10 w-full rounded-lg border border-border bg-surface py-2 pe-3 ps-9 text-body-sm text-ink placeholder:text-ink-muted focus:border-gold-strong focus:outline-none"
               />
             </div>
             <div className="w-full sm:w-44">
@@ -1077,7 +1077,7 @@ export function OrgOpportunitiesPage({
                 id="opp-sort"
                 value={sort}
                 onChange={(event) => applySort(event.target.value)}
-                className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-body-sm text-ink focus:border-primary focus:outline-none"
+                className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-body-sm text-ink focus:border-gold-strong focus:outline-none"
               >
                 <option value="">{t('list.sortNewest')}</option>
                 <option value="newest">{t('list.sortNewest')}</option>
@@ -1137,7 +1137,7 @@ export function OrgOpportunitiesPage({
               action={
                 <Link
                   href="/org/opportunities/new"
-                  className="text-sm font-medium text-primary hover:underline"
+                  className="text-sm font-medium text-gold-strong hover:underline"
                 >
                   {t('list.createCta')}
                 </Link>
@@ -1190,7 +1190,7 @@ export function OrgOpportunitiesPage({
                     onClick={() => onPage(entry)}
                     className={`h-9 w-9 rounded-lg text-title-sm font-medium transition-colors ${
                       entry === page
-                        ? 'bg-primary text-white'
+                        ? 'bg-primary text-on-primary'
                         : 'text-ink hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50'
                     }`}
                   >

@@ -202,7 +202,7 @@ export function ApplicationDetailCard({
               <Link
                 href={`/org/volunteers/${encodeURIComponent(usernameKey)}`}
                 data-testid={`${testIdPrefix}-public-profile`}
-                className="mt-1.5 inline-flex min-w-0 items-center gap-0.5 text-sm font-medium text-primary hover:underline"
+                className="mt-1.5 inline-flex min-w-0 items-center gap-0.5 text-sm font-medium text-gold-strong hover:underline"
               >
                 <span className="break-words">{t('applications.viewPublicProfile')}</span>
                 <ArrowUpRight size={14} aria-hidden="true" className="shrink-0" />
@@ -231,7 +231,7 @@ export function ApplicationDetailCard({
               data-testid={`${testIdPrefix}-accept`}
               disabled={accept.isPending}
               onClick={() => accept.mutate({ applicationId })}
-              className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
+              className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover disabled:opacity-50"
             >
               <Check size={18} aria-hidden="true" className="shrink-0" />
               <span>{t('applications.acceptCta')}</span>
@@ -260,7 +260,7 @@ export function ApplicationDetailCard({
                 <Link
                   href={`/org/opportunities/${encodeURIComponent(opportunityId)}`}
                   data-testid={`${testIdPrefix}-opportunity`}
-                  className="min-w-0 truncate text-sm text-primary hover:underline"
+                  className="min-w-0 truncate text-sm text-gold-strong hover:underline"
                 >
                   {opportunityName}
                 </Link>
@@ -419,7 +419,7 @@ export function ApplicationDetailCard({
         {/* Accept notice — matches the accept transaction exactly */}
         {canAccept && positionName ? (
           <div className="flex items-start gap-3 rounded-lg border border-border-muted bg-surface-muted p-3.5">
-            <Info size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
+            <Info size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-gold-strong" />
             <p className="text-sm leading-normal text-ink">
               {t('applications.acceptNotice', {
                 name: applicantLabel,
@@ -454,7 +454,7 @@ export function ApplicationDetailCard({
             <span aria-hidden="true" className="text-ink-muted">
               ·
             </span>
-            <Link href="/org/participants" className="font-medium text-primary hover:underline">
+            <Link href="/org/participants" className="font-medium text-gold-strong hover:underline">
               {t('applications.viewParticipants')} →
             </Link>
           </p>
@@ -524,7 +524,7 @@ export function ApplicationDetailCard({
               data-testid={`${testIdPrefix}-accept-footer`}
               disabled={accept.isPending}
               onClick={() => accept.mutate({ applicationId })}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover disabled:opacity-50"
             >
               <Check size={16} aria-hidden="true" className="shrink-0" />
               <span>{t('applications.acceptCta')}</span>

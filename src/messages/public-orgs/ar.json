@@ -446,6 +446,8 @@
     "founded": "سنة التأسيس",
     "activeSince": "نشطة منذ {year}",
     "contact": "الاتصال",
+    "contactSignIn": "سجّل الدخول لعرض بيانات الاتصال",
+    "contactSignInHint": "تظهر أرقام الهاتف للأعضاء المسجلين فقط.",
     "focus": "مجالات الاهتمام",
     "statsActive": "فرص نشطة",
     "statsCompleted": "فرص مكتملة",

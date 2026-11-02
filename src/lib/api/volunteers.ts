@@ -52,6 +52,22 @@ export const PUBLIC_TOGGLE_KEYS = [
 
 export type PublicToggleKey = (typeof PUBLIC_TOGGLE_KEYS)[number];
 
+/**
+ * Privacy-safe backend defaults. `GET /volunteers/me` always returns the
+ * concrete flags; these values are only a defensive fallback for legacy
+ * payloads that omit a key.
+ */
+export const PUBLIC_TOGGLE_DEFAULTS: Record<PublicToggleKey, boolean> = {
+  showAvatar: false,
+  showBiography: true,
+  showLocation: false,
+  showSkills: true,
+  showExperiences: true,
+  showAvailability: false,
+  showPortfolio: true,
+  showStats: true,
+};
+
 export const VolunteerMeSchema = z
   .object({
     username: z.string(),
@@ -63,6 +79,7 @@ export const VolunteerMeSchema = z
     birthDate: z.string().nullable().optional(),
     location: VolunteerLocationSchema.nullable().optional(),
     avatar: z.string().nullable().optional(),
+    banner: z.string().nullable().optional(),
     availabilityNote: z.string().nullable().optional(),
     preferredDomains: z.array(z.string()).nullable().optional(),
     geographicBase: z.string().nullable().optional(),
@@ -82,6 +99,7 @@ export const UpdateVolunteerProfileSchema = z.object({
   birthDate: z.string().optional(),
   location: VolunteerLocationSchema.optional(),
   avatar: z.string().optional(),
+  banner: z.string().optional(),
   availabilityNote: z.string().max(500).optional(),
   preferredDomains: z.array(z.string().min(1).max(60)).max(10).optional(),
   geographicBase: z.string().max(120).optional(),
@@ -95,9 +113,18 @@ export const UpdatePublicSettingsSchema = z.object({
 
 export type UpdatePublicSettings = z.infer<typeof UpdatePublicSettingsSchema>;
 
+export const ProfileCompletionSchema = z.object({
+  percent: z.number(),
+  missingFields: z.array(z.string()),
+  complete: z.boolean(),
+});
+
+export type ProfileCompletion = z.infer<typeof ProfileCompletionSchema>;
+
 export const VolunteerDashboardSchema = z
   .object({
     completionPercent: z.number(),
+    completion: ProfileCompletionSchema.optional(),
     stats: z.unknown().nullable().optional(),
     latestVerifiedExperience: z.unknown().nullable().optional(),
   })
@@ -107,8 +134,14 @@ export type VolunteerDashboard = z.infer<typeof VolunteerDashboardSchema>;
 
 export const VolunteerSkillSchema = z
   .object({
+    _id: z.string().optional(),
     id: z.string().optional(),
     skillId: z.string().optional(),
+    nameAr: z.string().optional(),
+    nameFr: z.string().optional(),
+    categoryId: z.string().nullable().optional(),
+    categoryNameAr: z.string().nullable().optional(),
+    categoryNameFr: z.string().nullable().optional(),
     level: z.number().int().min(1).max(5).optional(),
     yearsOfExperience: z.number().int().min(0).max(100).nullable().optional(),
     isPrimary: z.boolean().nullable().optional(),
@@ -205,6 +238,26 @@ export const SkillCategorySchema = z
 
 export type SkillCategory = z.infer<typeof SkillCategorySchema>;
 
+export const WilayaSchema = z
+  .object({
+    code: z.string(),
+    nameFr: z.string(),
+    nameAr: z.string(),
+  })
+  .passthrough();
+
+export type Wilaya = z.infer<typeof WilayaSchema>;
+
+export const MunicipalitySchema = z
+  .object({
+    code: z.string(),
+    nameFr: z.string(),
+    nameAr: z.string(),
+  })
+  .passthrough();
+
+export type Municipality = z.infer<typeof MunicipalitySchema>;
+
 export const VolunteerMediaReadSchema = z
   .object({
     url: z.string().nullable().optional(),
@@ -265,6 +318,13 @@ export async function getVolunteerDashboard(
   return VolunteerDashboardSchema.parse(data);
 }
 
+export async function getVolunteerProfileCompletion(
+  client: HttpClient,
+): Promise<ProfileCompletion> {
+  const { data } = await client.get('/volunteers/me/profile-completion');
+  return ProfileCompletionSchema.parse(data);
+}
+
 export async function listMySkills(client: HttpClient): Promise<VolunteerSkill[]> {
   const { data } = await client.get('/volunteers/me/skills');
   return z.array(VolunteerSkillSchema).parse(data);
@@ -315,4 +375,19 @@ export async function listSkills(
 export async function listSkillCategories(client: HttpClient): Promise<SkillCategory[]> {
   const { data } = await client.get('/skill-categories');
   return z.array(SkillCategorySchema).parse(data);
+}
+
+export async function listWilayas(client: HttpClient): Promise<Wilaya[]> {
+  const { data } = await client.get('/locations/wilayas');
+  return z.array(WilayaSchema).parse(data);
+}
+
+export async function listMunicipalities(
+  client: HttpClient,
+  wilayaId: string,
+): Promise<Municipality[]> {
+  const { data } = await client.get(
+    `/locations/wilayas/${encodeURIComponent(wilayaId)}/municipalities`,
+  );
+  return z.array(MunicipalitySchema).parse(data);
 }
