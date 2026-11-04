@@ -20,6 +20,8 @@ const ROUTES = [
   '/opportunities/test-opportunity',
   '/orgs/test-org',
   '/talents',
+  '/verify',
+  '/verify/ABCDEFGH',
   '/volunteers/testuser',
   '/admin/dashboard',
   '/admin/audit-logs',
