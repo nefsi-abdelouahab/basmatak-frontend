@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   AiAgentError,
   streamChat,
+  type AiAgentCardsEvent,
   type AiAgentChatRequest,
   type AiAgentDoneEvent,
   type AiAgentMetaEvent,
@@ -69,6 +70,19 @@ const usageFixture: AiAgentUsage = {
   outputTokens: 50,
   totalTokens: 150,
   estimated: false,
+};
+
+const cardsFixture: AiAgentCardsEvent = {
+  cards: [
+    {
+      kind: 'opportunity',
+      slug: 'beach-cleanup',
+      title: 'Beach cleanup',
+      organizationName: { ar: 'الأرض الخضراء', fr: 'Green Earth' },
+      openPositions: 2,
+      href: '/en/opportunities/beach-cleanup',
+    },
+  ],
 };
 
 function successImplementation(options: {
@@ -154,6 +168,7 @@ function persistedPayload(messages: AiChatMessage[]): string {
       content: message.content,
       createdAt: message.createdAt,
       ...(message.sources !== undefined ? { sources: message.sources } : {}),
+      ...(message.cards !== undefined ? { cards: message.cards } : {}),
       ...(message.mode !== undefined ? { mode: message.mode } : {}),
       ...(message.truncated !== undefined
         ? { truncated: message.truncated }
@@ -248,6 +263,47 @@ describe('useAiChat successful turns', () => {
       mode: 'normal',
       truncated: false,
     });
+  });
+
+  it('attaches a cards event to the assistant and persists it', async () => {
+    streamChatMock.mockImplementation(async (_input, streamOptions) => {
+      const done: AiAgentDoneEvent = {
+        finishReason: 'stop',
+        usage: usageFixture,
+      };
+      streamOptions?.onEvent?.({ event: 'meta', data: metaFixture });
+      streamOptions?.onEvent?.({ event: 'token', data: { delta: 'Hello' } });
+      streamOptions?.onEvent?.({ event: 'cards', data: cardsFixture });
+      return {
+        text: 'Hello',
+        meta: metaFixture,
+        cards: cardsFixture,
+        done,
+        aborted: false,
+      };
+    });
+    const storage = new MemoryStorage();
+    const { result } = renderHook(() => useAiChat({ storage, locale: 'en' }));
+
+    await act(async () => {
+      await result.current.send('Find something');
+    });
+
+    expect(result.current.messages[1]).toMatchObject({
+      role: 'assistant',
+      content: 'Hello',
+      status: 'complete',
+      cards: cardsFixture,
+    });
+
+    await waitFor(() => {
+      expect(storedPayloadMessages(storage)).toHaveLength(2);
+    });
+    const persisted = storedPayloadMessages(storage) as Array<{
+      role: string;
+      cards?: AiAgentCardsEvent;
+    }>;
+    expect(persisted[1]?.cards).toEqual(cardsFixture);
   });
 
   it('exposes retrieval_only and truncated answers for continuation', async () => {
@@ -755,6 +811,7 @@ describe('useAiChat persistence', () => {
         content: 'Stored answer',
         status: 'streaming',
         sources: sourcesFixture,
+        cards: cardsFixture,
         mode: 'normal',
         truncated: true,
       }),
@@ -775,6 +832,7 @@ describe('useAiChat persistence', () => {
     expect(result.current.messages[1]).toMatchObject({
       content: 'Stored answer',
       sources: sourcesFixture,
+      cards: cardsFixture,
       mode: 'normal',
       truncated: true,
     });
@@ -928,6 +986,35 @@ describe('aiChatReducer', () => {
 
     expect(next.sources).toEqual(sourcesFixture);
     expect(next.messages[1]?.sources).toEqual(sourcesFixture);
+  });
+
+  it('CARDS attaches generated cards to the active assistant only', () => {
+    const user = makeMessage({ role: 'user', content: 'Hi' });
+    const assistant = makeMessage({
+      role: 'assistant',
+      content: '',
+      status: 'streaming',
+    });
+    const before = stateWith({
+      messages: [user, assistant],
+      activeAssistantId: assistant.id,
+    });
+
+    const next = aiChatReducer(before, {
+      type: 'CARDS',
+      data: cardsFixture,
+    });
+
+    expect(next.messages[1]?.cards).toEqual(cardsFixture);
+    expect(next.messages[0]?.cards).toBeUndefined();
+    expect(next.sources).toBeNull();
+
+    expect(
+      aiChatReducer(stateWith({ activeAssistantId: null }), {
+        type: 'CARDS',
+        data: cardsFixture,
+      }).messages,
+    ).toEqual([]);
   });
 
   it('TOKEN appends only to the active streaming assistant', () => {

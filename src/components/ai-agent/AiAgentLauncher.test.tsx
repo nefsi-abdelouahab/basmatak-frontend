@@ -211,22 +211,33 @@ describe('AiAgentLauncher', () => {
     });
   });
 
-  it('clamps the persisted position after a viewport resize', async () => {
+  it('clamps the persisted position above the bottom navigation after a resize', async () => {
     window.localStorage.setItem(
       AI_AGENT_LAUNCHER_STORAGE_KEY,
       JSON.stringify({ version: 1, edge: 'start', y: 700 }),
     );
     const { button } = renderLauncher();
 
+    // Below `lg` the 72px bottom navigation plus a 24px gap reserves space, so
+    // 700px is clamped to 800 - 52 - 96 = 652px.
     await waitFor(() => {
-      expect((button as HTMLElement).style.top).toBe('700px');
+      expect((button as HTMLElement).style.top).toBe('652px');
     });
 
     setViewport(390, 400);
     window.dispatchEvent(new Event('resize'));
 
     await waitFor(() => {
-      expect(button.style.top).toBe('332px');
+      expect(button.style.top).toBe('252px');
+    });
+  });
+
+  it('keeps the full-height position on large screens', async () => {
+    setViewport(1280, 800);
+    const { button } = renderLauncher();
+
+    await waitFor(() => {
+      expect((button as HTMLElement).style.top).toBe('720px');
     });
   });
 });

@@ -71,6 +71,27 @@
     "reference": "Reference",
     "stats": "Platform statistics"
   },
+  "cards": {
+    "opportunity": "Opportunity",
+    "organization": "Organization",
+    "stats": "Platform at a glance",
+    "viewOpportunity": "View opportunity",
+    "viewOrganization": "View organization",
+    "startsOn": "Starts {date}",
+    "applyBy": "Apply by {date}",
+    "foundedYear": "Founded {year}",
+    "openPositions": "{count, plural, one {# open position} other {# open positions}}",
+    "publishedOpportunities": "Published opportunities",
+    "verifiedOrganizations": "Verified organizations",
+    "activeSkills": "Active skills",
+    "wilayas": "Wilayas",
+    "municipalities": "Municipalities",
+    "modes": {
+      "onsite": "On-site",
+      "hybrid": "Hybrid",
+      "remote": "Remote"
+    }
+  },
   "banners": {
     "waking": {
       "title": "Waking up Basma",

@@ -371,6 +371,52 @@ describe('AiAgentWidget', () => {
     expect(getInput().value).toBe('');
   });
 
+  it('renders generated cards below the answer and keeps the inline link', async () => {
+    mockedStream.mockImplementation(async (_input, options) => {
+      options?.onEvent?.({
+        event: 'meta',
+        data: { conversationId: 'c2', locale: 'en', mode: 'normal' },
+      });
+      options?.onEvent?.({
+        event: 'token',
+        data: { delta: 'You can help at the [food drive](/en/opportunities/food-drive).' },
+      });
+      options?.onEvent?.({
+        event: 'cards',
+        data: {
+          cards: [
+            {
+              kind: 'opportunity',
+              slug: 'food-drive',
+              title: 'Food drive',
+              organizationName: { ar: 'مؤسسة العطاء', fr: 'Helping Hands' },
+              wilayaName: { ar: 'الجزائر', fr: 'Algiers' },
+              href: '/en/opportunities/food-drive',
+            },
+          ],
+        },
+      });
+      return {
+        text: 'You can help at the [food drive](/en/opportunities/food-drive).',
+        done: { finishReason: 'stop' },
+        aborted: false,
+      };
+    });
+
+    renderWidget();
+    await openPanel();
+    await sendMessage('Where can I help?');
+
+    const cards = await screen.findByTestId('ai-agent-cards');
+    expect(cards.textContent).toContain('Food drive');
+    expect(cards.textContent).toContain('Helping Hands');
+    expect(cards.textContent).toContain('Algiers');
+    expect(screen.getByRole('link', { name: 'food drive' })).toBeDefined();
+    expect(
+      screen.getByRole('link', { name: /View opportunity/ }),
+    ).toBeDefined();
+  });
+
   it('sends the Arabic locale when the page is Arabic', async () => {
     mockedStream.mockImplementation(async (_input, options) => {
       options?.onEvent?.({

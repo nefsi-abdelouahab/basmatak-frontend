@@ -21,6 +21,13 @@ export const AI_AGENT_LAUNCHER_SIZE = 56;
 export const AI_AGENT_LAUNCHER_SIZE_SMALL = 52;
 export const AI_AGENT_LAUNCHER_MARGIN = 16;
 export const AI_AGENT_LAUNCHER_BOTTOM_MARGIN = 24;
+/**
+ * Height reserved for the fixed mobile bottom navigation plus the device safe
+ * area. The shell's `BottomNav` is fixed below `lg` (around 54-60px tall); the
+ * extra pixels keep the launcher clear of it on devices with an inset.
+ */
+export const AI_AGENT_LAUNCHER_BOTTOM_NAV_HEIGHT = 72;
+export const AI_AGENT_LAUNCHER_BOTTOM_NAV_BREAKPOINT = 1024;
 export const AI_AGENT_LAUNCHER_STORAGE_KEY =
   'basmatak.aiAgent.launcherPosition';
 export const AI_AGENT_LAUNCHER_DRAG_THRESHOLD = 6;
@@ -220,6 +227,51 @@ export function stripChatLocalePrefix(href: string): string {
 }
 
 /**
+ * Pick the localized label of a card entity. Arabic falls back to the French
+ * (Latin) name and English/French fall back to Arabic, so a card never renders
+ * an empty heading when only one name exists.
+ */
+export function cardNameFor(
+  name: { ar?: string; fr?: string } | undefined,
+  locale: 'en' | 'ar',
+): string | undefined {
+  if (name === undefined) return undefined;
+  const preferred = locale === 'ar' ? name.ar : name.fr;
+  const fallback = locale === 'ar' ? name.fr : name.ar;
+  const value = (preferred ?? fallback ?? '').trim();
+  return value === '' ? undefined : value;
+}
+
+/**
+ * Format a card timestamp for display. Dates arrive as ISO strings and are
+ * rendered in UTC so a midnight timestamp never shifts to the previous day.
+ */
+export function formatCardDate(
+  value: string | undefined,
+  locale: 'en' | 'ar',
+): string | null {
+  if (typeof value !== 'string' || value.trim() === '') return null;
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return value.trim();
+  try {
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: 'medium',
+      timeZone: 'UTC',
+    }).format(date);
+  } catch {
+    return value.trim();
+  }
+}
+
+/** Known opportunity modes that have a translation in the chat namespace. */
+export function cardModeKey(mode: string | undefined): string | null {
+  if (mode === 'onsite' || mode === 'remote' || mode === 'hybrid') {
+    return mode;
+  }
+  return null;
+}
+
+/**
  * Validate an assistant Markdown link and return a locale-prefixed internal
  * path. Absolute same-site URLs lose their origin, and repeated locale
  * segments collapse to exactly one. Anything protocol-relative, non-HTTP, or
@@ -380,14 +432,59 @@ export function clampLauncherY(
   return Math.min(Math.max(top, minTop), maxTop);
 }
 
+/**
+ * The default gap between the launcher and the viewport bottom. Below `lg` the
+ * shell's fixed bottom navigation occupies that space, so the launcher must sit
+ * above it; on large screens the original 24px margin still applies.
+ */
+export function launcherBottomMargin(viewportWidth: number): number {
+  return viewportWidth < AI_AGENT_LAUNCHER_BOTTOM_NAV_BREAKPOINT
+    ? AI_AGENT_LAUNCHER_BOTTOM_MARGIN + AI_AGENT_LAUNCHER_BOTTOM_NAV_HEIGHT
+    : AI_AGENT_LAUNCHER_BOTTOM_MARGIN;
+}
+
+/**
+ * Clamp a dragged or stored launcher position so it never overlaps the bottom
+ * navigation below `lg`. The top inset stays at the normal 16px margin; only the
+ * bottom of the safe area moves up. On large screens this matches
+ * `clampLauncherY`.
+ */
+export function clampLauncherYAboveNav(
+  top: number,
+  viewportHeight: number,
+  size: number,
+  viewportWidth: number,
+): number {
+  if (viewportWidth >= AI_AGENT_LAUNCHER_BOTTOM_NAV_BREAKPOINT) {
+    return clampLauncherY(top, viewportHeight, size);
+  }
+
+  const bottomGap =
+    AI_AGENT_LAUNCHER_BOTTOM_MARGIN + AI_AGENT_LAUNCHER_BOTTOM_NAV_HEIGHT;
+  const maxTop = Math.max(0, viewportHeight - size - bottomGap);
+  const minTop = Math.min(AI_AGENT_LAUNCHER_MARGIN, maxTop);
+  if (!Number.isFinite(top)) return maxTop;
+  return Math.min(Math.max(top, minTop), maxTop);
+}
+
 export function defaultLauncherY(
   viewportHeight: number,
   size: number,
+  viewportWidth?: number,
 ): number {
-  return clampLauncherY(
-    viewportHeight - size - AI_AGENT_LAUNCHER_BOTTOM_MARGIN,
+  const bottom =
+    viewportWidth === undefined
+      ? AI_AGENT_LAUNCHER_BOTTOM_MARGIN
+      : launcherBottomMargin(viewportWidth);
+  const desired = viewportHeight - size - bottom;
+  if (viewportWidth === undefined) {
+    return clampLauncherY(desired, viewportHeight, size);
+  }
+  return clampLauncherYAboveNav(
+    desired,
     viewportHeight,
     size,
+    viewportWidth,
   );
 }
 
@@ -463,6 +560,11 @@ export function parseLauncherPosition(
 
   return {
     edge: record.edge,
-    y: clampLauncherY(record.y, viewport.height, size),
+    y: clampLauncherYAboveNav(
+      record.y,
+      viewport.height,
+      size,
+      viewport.width,
+    ),
   };
 }

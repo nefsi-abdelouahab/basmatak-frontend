@@ -17,8 +17,9 @@ import {
   AI_AGENT_LAUNCHER_STORAGE_KEY,
   AI_AGENT_PANEL_ID,
   clampLauncherInset,
-  clampLauncherY,
+  clampLauncherYAboveNav,
   defaultLauncherY,
+  launcherBottomMargin,
   launcherInsetFromRect,
   launcherSizeFor,
   nearestLauncherEdge,
@@ -116,6 +117,7 @@ export const AiAgentLauncher = forwardRef<
         y: defaultLauncherY(
           viewport.height,
           launcherSizeFor(viewport.width),
+          viewport.width,
         ),
       },
     );
@@ -125,10 +127,11 @@ export const AiAgentLauncher = forwardRef<
     const handleResize = (): void => {
       setPosition((current) => {
         if (current === null) return current;
-        const y = clampLauncherY(
+        const y = clampLauncherYAboveNav(
           current.y,
           window.innerHeight,
           launcherSizeFor(window.innerWidth),
+          window.innerWidth,
         );
         return y === current.y ? current : { ...current, y };
       });
@@ -163,7 +166,7 @@ export const AiAgentLauncher = forwardRef<
       startTop:
         rect.height > 0
           ? rect.top
-          : (position?.y ?? defaultLauncherY(height, size)),
+          : (position?.y ?? defaultLauncherY(height, size, width)),
       isRtl,
       size,
       width,
@@ -203,7 +206,12 @@ export const AiAgentLauncher = forwardRef<
         start.width,
         start.size,
       ),
-      top: clampLauncherY(start.startTop + dy, start.height, start.size),
+      top: clampLauncherYAboveNav(
+        start.startTop + dy,
+        start.height,
+        start.size,
+        start.width,
+      ),
     };
     dragVisualRef.current = next;
     setDrag(next);
@@ -288,7 +296,10 @@ export const AiAgentLauncher = forwardRef<
         : { top: position.y, insetInlineEnd: AI_AGENT_LAUNCHER_MARGIN };
   } else {
     style = {
-      bottom: AI_AGENT_LAUNCHER_BOTTOM_MARGIN,
+      bottom:
+        typeof window === 'undefined'
+          ? AI_AGENT_LAUNCHER_BOTTOM_MARGIN
+          : launcherBottomMargin(window.innerWidth),
       insetInlineEnd: AI_AGENT_LAUNCHER_MARGIN,
     };
   }
