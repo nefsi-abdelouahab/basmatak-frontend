@@ -23,6 +23,7 @@ const ROUTES = [
   '/verify',
   '/verify/ABCDEFGH',
   '/volunteers/testuser',
+  '/volunteers/testuser/cv',
   '/admin/dashboard',
   '/admin/audit-logs',
   '/admin/opportunities',
