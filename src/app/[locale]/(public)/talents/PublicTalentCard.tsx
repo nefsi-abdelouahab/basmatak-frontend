@@ -101,7 +101,8 @@ export function PublicTalentCard({
   const t = useTranslations('publicTalent');
   const name = publicDisplayName(item.firstName, item.username);
   const verifiedCount = item.stats?.verifiedExperiences ?? 0;
-  const hours = item.stats?.volunteerHours ?? 0;
+  // Stored in minutes; convert at display only.
+  const hours = hoursFromMinutes(item.stats?.volunteerHours) ?? '0';
   const profileQuery = usePublicTalentProfileQuery(item.username);
   const latest = profileQuery.data?.experiences?.[0] ?? null;
 

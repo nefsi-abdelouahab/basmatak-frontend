@@ -169,7 +169,8 @@ function StatsStrip({
 }: {
   completedTasks: number;
   verifiedExperiences: number;
-  volunteerHours: number;
+  /** Already converted from stored minutes by the caller. */
+  volunteerHours: string;
   skillsCount: number | null;
 }) {
   const t = useTranslations('publicTalent');
@@ -622,7 +623,7 @@ export function PublicTalentProfilePage({
           <StatsStrip
             completedTasks={sections.stats.data.completedTasks}
             verifiedExperiences={sections.stats.data.verifiedExperiences}
-            volunteerHours={sections.stats.data.volunteerHours}
+            volunteerHours={hoursFromMinutes(sections.stats.data.volunteerHours) ?? '0'}
             skillsCount={skillsCount}
           />
         </Card>
@@ -813,7 +814,9 @@ export function PublicTalentProfilePage({
               {sections.stats.open && sections.stats.data ? (
                 <div className="flex items-baseline justify-between gap-3">
                   <dt className="text-ink-muted">{t('stats.volunteerHours')}</dt>
-                  <dd className="font-medium text-ink">{sections.stats.data.volunteerHours}</dd>
+                  <dd className="font-medium text-ink">
+                    {hoursFromMinutes(sections.stats.data.volunteerHours) ?? '0'}
+                  </dd>
                 </div>
               ) : null}
             </dl>

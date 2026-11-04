@@ -36,6 +36,7 @@ import {
   isAdminUserStatus,
   type AdminVolunteerRow,
 } from '@/lib/api/adminLists';
+import { hoursFromMinutes } from '@/lib/api/publicTalent';
 import {
   useAdminDossierMediaQuery,
   useAdminNoticeMutation,
@@ -285,8 +286,11 @@ function VolunteerDetail({
     typeof stats.completedTasks === 'number' ? stats.completedTasks : 0;
   const verifiedExperiences =
     typeof stats.verifiedExperiences === 'number' ? stats.verifiedExperiences : 0;
+  // Stored in minutes; convert at display only.
   const volunteerHours =
-    typeof stats.volunteerHours === 'number' ? stats.volunteerHours : 0;
+    hoursFromMinutes(
+      typeof stats.volunteerHours === 'number' ? stats.volunteerHours : 0,
+    ) ?? '0';
   const latestOrg =
     latest && typeof latest === 'object' && 'organization' in latest
       ? (latest.organization as {
@@ -505,9 +509,7 @@ function VolunteerDetail({
               {t('volunteers.volunteerHours')}
             </p>
             <p className="mt-0.5 text-base font-semibold text-ink">
-              {formatMinutes(volunteerHours, (key, values) =>
-                t(key, values as Record<string, string | number>),
-              )}
+              {t('volunteers.durationHours', { count: volunteerHours })}
             </p>
           </div>
         </div>
