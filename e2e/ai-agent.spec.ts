@@ -50,6 +50,11 @@ const ANSWER = {
   ar: 'يمكنك المساعدة في حملة الطعام المجتمعية.',
 } as const;
 
+const ANSWER_MARKUP = {
+  en: 'You can help at the [community food drive](/en/opportunities/food-drive).',
+  ar: 'يمكنك المساعدة في [حملة الطعام المجتمعية](/ar/opportunities/food-drive).',
+} as const;
+
 const ARABIC_PROMPT = 'كيف يمكنني التطوع؟';
 
 function sseBody(
@@ -63,65 +68,6 @@ function sseBody(
     .join('');
 }
 
-function sourcesFor(locale: Locale) {
-  if (locale === 'ar') {
-    return {
-      knowledge: [
-        { id: 'k1', title: 'دليل التطوع', source: 'guide.md' },
-      ],
-      data: [
-        {
-          id: 'd1',
-          citationId: 'T1',
-          type: 'opportunity',
-          title: 'حملة الطعام المجتمعية',
-          path: '/opportunities/food-drive',
-        },
-        {
-          id: 'd2',
-          citationId: 'T2',
-          type: 'organization',
-          title: 'كل المنظمات',
-          path: '/orgs',
-        },
-        {
-          id: 'd3',
-          citationId: 'T3',
-          type: 'stats',
-          title: 'إحصاءات المنصة',
-        },
-      ],
-    };
-  }
-  return {
-    knowledge: [
-      { id: 'k1', title: 'Volunteering guide', source: 'guide.md' },
-    ],
-    data: [
-      {
-        id: 'd1',
-        citationId: 'T1',
-        type: 'opportunity',
-        title: 'Community food drive',
-        path: '/opportunities/food-drive',
-      },
-      {
-        id: 'd2',
-        citationId: 'T2',
-        type: 'organization',
-        title: 'All organizations',
-        path: '/orgs',
-      },
-      {
-        id: 'd3',
-        citationId: 'T3',
-        type: 'stats',
-        title: 'Platform totals',
-      },
-    ],
-  };
-}
-
 function successStream(locale: Locale): string {
   return sseBody([
     {
@@ -129,8 +75,7 @@ function successStream(locale: Locale): string {
       data: { conversationId: 'conv-1', locale, mode: 'normal' },
     },
     { event: 'status', data: { state: 'searching' } },
-    { event: 'sources', data: sourcesFor(locale) },
-    { event: 'token', data: { delta: ANSWER[locale] } },
+    { event: 'token', data: { delta: ANSWER_MARKUP[locale] } },
     { event: 'done', data: { finishReason: 'stop' } },
   ]);
 }
@@ -327,7 +272,7 @@ test.describe('launcher availability', () => {
 });
 
 test.describe('assistant panel', () => {
-  test('checks status on mount/open, chats, links safe sources, and closes', async ({
+  test('checks status on mount/open, chats, renders safe entity links, and closes', async ({
     page,
   }) => {
     const mock = await mockApi(page);
@@ -357,12 +302,6 @@ test.describe('assistant panel', () => {
       'href',
       '/en/opportunities/food-drive',
     );
-    // The backend can still emit the slug-less /orgs listing, which has no
-    // frontend route; it must stay plain text rather than a dead link.
-    await expect(
-      panel.getByRole('link', { name: /All organizations/ }),
-    ).toHaveCount(0);
-    await expect(panel.getByText('All organizations')).toBeVisible();
 
     expect(mock.chatBodies[0]).toMatchObject({
       message: 'Where can I volunteer?',
