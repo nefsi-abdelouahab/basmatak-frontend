@@ -1,0 +1,34 @@
+{
+  "entry": {
+    "title": "التحقق من شهادة",
+    "subtitle": "أدخل رمز التحقق المطبوع على الشهادة، أو الصق رابط التحقق.",
+    "label": "رمز التحقق",
+    "placeholder": "ABCDEFGH",
+    "submit": "تحقّق",
+    "hint": "يظهر الرمز على كل شهادة خبرة موثّقة."
+  },
+  "result": {
+    "badge": "خبرة موثّقة",
+    "title": "التحقق من الشهادة",
+    "notFoundTitle": "الرمز غير موجود",
+    "notFoundBody": "رمز التحقق غير صالح أو لم يعد ساريًا. عند إعادة توثيق الخبرة يُستبدل الرمز السابق.",
+    "loadError": "تعذّر تحميل سجل التحقق.",
+    "retry": "إعادة المحاولة",
+    "backToForm": "التحقق من رمز آخر",
+    "experience": "الخبرة",
+    "organization": "المنظمة",
+    "volunteer": "المتطوع",
+    "verifiedOn": "تاريخ التوثيق",
+    "duration": "المدة",
+    "hours": "{hours} ساعة",
+    "registryCode": "مرجع السجل",
+    "description": "الوصف",
+    "skills": "المهارات",
+    "review": "التقييم",
+    "rating": "{rating} / 5",
+    "evidence": "الأدلة العامة",
+    "evidenceLink": "فتح الدليل",
+    "evidenceFile": "ملف مرفق",
+    "notPublished": "غير منشور"
+  }
+}

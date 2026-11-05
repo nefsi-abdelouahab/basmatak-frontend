@@ -49,6 +49,27 @@
     "volunteerHours": "Volunteer hours",
     "skills": "Skills"
   },
+  "cv": {
+    "download": "Download CV",
+    "title": "Volunteer CV",
+    "print": "Print / Save as PDF",
+    "backToProfile": "Back to profile",
+    "about": "About",
+    "skills": "Skills",
+    "skillLevel": "Level {level} of 5",
+    "skillPrimary": "Primary",
+    "experiences": "Verified experiences",
+    "verifiedOn": "Verified on {date}",
+    "experienceHours": "{hours} h",
+    "experienceCode": "Code {code}",
+    "totalHours": "Total verified hours",
+    "organizations": "Organizations",
+    "completedTasks": "Completed tasks",
+    "profileUrl": "Profile",
+    "verifyNote": "Verify each experience with its code at",
+    "verifyLink": "the verification page",
+    "footerNote": "Generated from the public profile."
+  },
   "areas": {
     "title": "Areas of contribution",
     "percent": "{percent}%"

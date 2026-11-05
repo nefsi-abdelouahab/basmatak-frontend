@@ -103,7 +103,8 @@ const PROFILE = {
   preferredDomains: ['Environment'],
   geographicBase: 'Algiers',
   createdAt: '2019-04-02T00:00:00.000Z',
-  stats: { completedTasks: 12, verifiedExperiences: 4, volunteerHours: 30 },
+  // `volunteerHours` is stored in MINUTES: 1800 -> 30 h.
+  stats: { completedTasks: 12, verifiedExperiences: 4, volunteerHours: 1800 },
   areasOfContribution: [
     { categoryId: 'c1', nameFr: 'Environment', nameAr: 'البيئة', percent: 40, count: 4 },
     { categoryId: 'c2', nameFr: 'Health', nameAr: 'الصحة', percent: 60, count: 6 },
@@ -151,7 +152,8 @@ const TALENTS_PAGE = {
       location: { wilayaId: '16' },
       skills: [SKILLS[0]],
       avatar: 'm-avatar',
-      stats: { completedTasks: 12, verifiedExperiences: 5, volunteerHours: 112 },
+      // MINUTES: 6720 -> 112 h.
+      stats: { completedTasks: 12, verifiedExperiences: 5, volunteerHours: 6720 },
       isFavorited: false,
       favoriteCount: 3,
     },

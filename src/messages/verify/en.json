@@ -1,0 +1,34 @@
+{
+  "entry": {
+    "title": "Verify a certificate",
+    "subtitle": "Enter the verification code printed on a certificate, or paste the verification link.",
+    "label": "Verification code",
+    "placeholder": "ABCDEFGH",
+    "submit": "Verify",
+    "hint": "The code appears on every verified experience certificate."
+  },
+  "result": {
+    "badge": "Verified experience",
+    "title": "Certificate verification",
+    "notFoundTitle": "Code not found",
+    "notFoundBody": "This verification code is invalid or no longer valid. Re-verifying an experience replaces the previous code.",
+    "loadError": "The verification record could not be loaded.",
+    "retry": "Retry",
+    "backToForm": "Verify another code",
+    "experience": "Experience",
+    "organization": "Organization",
+    "volunteer": "Volunteer",
+    "verifiedOn": "Verified on",
+    "duration": "Duration",
+    "hours": "{hours} h",
+    "registryCode": "Record reference",
+    "description": "Description",
+    "skills": "Skills",
+    "review": "Review",
+    "rating": "{rating} / 5",
+    "evidence": "Public evidence",
+    "evidenceLink": "Open evidence",
+    "evidenceFile": "Attached file",
+    "notPublished": "Not published"
+  }
+}

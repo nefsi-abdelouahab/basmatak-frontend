@@ -49,6 +49,27 @@
     "volunteerHours": "ساعات تطوعية",
     "skills": "المهارات"
   },
+  "cv": {
+    "download": "تحميل السيرة الذاتية",
+    "title": "السيرة الذاتية التطوعية",
+    "print": "طباعة / حفظ بصيغة PDF",
+    "backToProfile": "العودة إلى الملف",
+    "about": "نبذة",
+    "skills": "المهارات",
+    "skillLevel": "المستوى {level} من 5",
+    "skillPrimary": "أساسية",
+    "experiences": "الخبرات الموثّقة",
+    "verifiedOn": "تاريخ التوثيق {date}",
+    "experienceHours": "{hours} س",
+    "experienceCode": "الرمز {code}",
+    "totalHours": "إجمالي الساعات الموثّقة",
+    "organizations": "المنظمات",
+    "completedTasks": "مهام منجزة",
+    "profileUrl": "الملف",
+    "verifyNote": "يمكن التحقق من كل خبرة برمزها عبر",
+    "verifyLink": "صفحة التحقق",
+    "footerNote": "أُنشئت من الملف العام."
+  },
   "areas": {
     "title": "مجالات المساهمة",
     "percent": "{percent}٪"

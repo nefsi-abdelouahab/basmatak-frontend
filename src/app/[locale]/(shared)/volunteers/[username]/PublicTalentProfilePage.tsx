@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, BadgeCheck, Check, Copy, MapPin, Pencil, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, Check, Copy, Download, MapPin, Pencil, ShieldCheck } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -169,7 +169,8 @@ function StatsStrip({
 }: {
   completedTasks: number;
   verifiedExperiences: number;
-  volunteerHours: number;
+  /** Already converted from stored minutes by the caller. */
+  volunteerHours: string;
   skillsCount: number | null;
 }) {
   const t = useTranslations('publicTalent');
@@ -587,6 +588,17 @@ export function PublicTalentProfilePage({
                 {t('profile.editLabel')}
               </Link>
             ) : null}
+            {(sections.experiences.open && sections.experiences.data.length > 0) ||
+            (sections.skills.open && sections.skills.data.length > 0) ? (
+              <Link
+                href={`/volunteers/${profile.username}/cv?print=1`}
+                data-testid="profile-download-cv"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-surface-muted"
+              >
+                <Download size={16} aria-hidden="true" />
+                {t('cv.download')}
+              </Link>
+            ) : null}
             <CopyProfileLink />
           </div>
         </div>
@@ -622,7 +634,7 @@ export function PublicTalentProfilePage({
           <StatsStrip
             completedTasks={sections.stats.data.completedTasks}
             verifiedExperiences={sections.stats.data.verifiedExperiences}
-            volunteerHours={sections.stats.data.volunteerHours}
+            volunteerHours={hoursFromMinutes(sections.stats.data.volunteerHours) ?? '0'}
             skillsCount={skillsCount}
           />
         </Card>
@@ -813,7 +825,9 @@ export function PublicTalentProfilePage({
               {sections.stats.open && sections.stats.data ? (
                 <div className="flex items-baseline justify-between gap-3">
                   <dt className="text-ink-muted">{t('stats.volunteerHours')}</dt>
-                  <dd className="font-medium text-ink">{sections.stats.data.volunteerHours}</dd>
+                  <dd className="font-medium text-ink">
+                    {hoursFromMinutes(sections.stats.data.volunteerHours) ?? '0'}
+                  </dd>
                 </div>
               ) : null}
             </dl>
