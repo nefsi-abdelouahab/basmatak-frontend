@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import {
   Award,
   BadgeCheck,
+  Bookmark,
   Building2,
   ClipboardList,
   Compass,
@@ -49,6 +50,7 @@ const MORE_TABS: Tab[] = [
   { key: 'experiences', href: '/volunteer/experiences', Icon: Award },
   { key: 'portfolio', href: '/volunteer/portfolio', Icon: Images },
   { key: 'talents', href: '/volunteer/talents', Icon: Users },
+  { key: 'favorites', href: '/volunteer/favorites', Icon: Bookmark },
   { key: 'settings', href: '/volunteer/settings', Icon: Settings },
 ];
 

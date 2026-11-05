@@ -9,6 +9,15 @@ describe('favoritesKeys', () => {
     expect(keys.counts[0]).toBe('volunteer-home-favorites');
     expect(keys.lookup('opportunity', ['1'])).not.toEqual(keys.lookup('opportunity', ['2']));
     expect(keys.lookup('opportunity', ['1'])).not.toEqual(keys.lookup('talent', ['1']));
+    expect(keys.lookup('organization', ['org'])).not.toEqual(
+      keys.lookup('talent', ['org']),
+    );
+    expect(keys.list({ targetType: 'opportunity' })).not.toEqual(
+      keys.list({ targetType: 'organization' }),
+    );
+    expect(keys.list({ targetType: 'opportunity', cursor: 'a' })).not.toEqual(
+      keys.list({ targetType: 'opportunity', cursor: 'b' }),
+    );
   });
 });
 

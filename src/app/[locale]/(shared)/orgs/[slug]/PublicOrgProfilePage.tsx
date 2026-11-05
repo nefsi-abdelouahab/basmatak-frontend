@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import {
   ArrowRight,
   BadgeCheck,
+  Bookmark,
   Building2,
   CalendarDays,
   ChevronRight,
@@ -19,7 +20,7 @@ import {
   Tag,
   Users,
 } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Container } from '@/components/ui/Container';
@@ -28,7 +29,12 @@ import { Loader } from '@/components/ui/Loader';
 import { Pill } from '@/components/ui/Pill';
 import { mapToApiError } from '@/lib/api/errors';
 import { notify } from '@/lib/notify';
-import { useSessionQuery } from '@/hooks/useSession';
+import { useSessionQuery, getLoginHref } from '@/hooks/useSession';
+import {
+  isAuthError,
+  useFavoritesLookupQuery,
+  useToggleOrganizationFavoriteMutation,
+} from '@/hooks/useFavorites';
 import { useOrgAccountQuery } from '@/hooks/useOrgAccount';
 import {
   archiveCountFor,
@@ -64,10 +70,9 @@ import {
 // - Manage organization: visible only when the viewer owns this org (own slug
 //   via GET /organizations/me matches the route slug). Hidden for guests,
 //   volunteers, admins, and non-member organizations.
-// - Save/Follow is OMITTED on org profiles: the favorites backend only backs
-//   talents (/favorites/talents/:username) and opportunities
-//   (/favorites/opportunities/:id) — there is no org-follow endpoint, so
-//   rendering one would be fabricated. Reported as a gap in the diff table.
+// - Save: volunteer-only. Guests see it and are redirected to Login; org/admin
+//   sessions omit it because the favorites toggle routes are @Roles('volunteer').
+//   The saved state hydrates from GET /favorites/lookup keyed on this slug.
 // Aggregates ride the profile payload (real OrgPublicStatsProvider keys:
 // volunteers / initiativesActive / initiativesCompleted / verifiedHours /
 // activeSince, with legacy fallbacks); per-status archives page through
@@ -151,6 +156,45 @@ function ShareButton() {
     >
       <Share2 size={16} aria-hidden="true" />
       {copied ? t('orgProfile.copied') : t('orgProfile.share')}
+    </Button>
+  );
+}
+
+// Volunteer-only Save. The favorites backend backs the volunteer role (the
+// organization toggle routes are @Roles('volunteer')), so organization and
+// admin sessions omit the button instead of calling a forbidden endpoint.
+// Guests see it and are sent to Login on click (decision 10).
+function OrgSaveButton({ slug }: { slug: string }) {
+  const t = useTranslations('publicOrgs');
+  const router = useRouter();
+  const session = useSessionQuery();
+  const lookup = useFavoritesLookupQuery('organization', [slug]);
+  const toggle = useToggleOrganizationFavoriteMutation();
+  const canSave = !session.data || session.data.role === 'volunteer';
+  if (!canSave) return null;
+  const favorited = lookup.data?.[slug]?.favorited === true;
+  const goLogin = () => router.replace(getLoginHref(`/orgs/${slug}`));
+  return (
+    <Button
+      type="button"
+      variant="secondary"
+      size="sm"
+      data-testid="org-save"
+      aria-pressed={favorited}
+      disabled={toggle.isPending}
+      onClick={() => {
+        if (!session.data) {
+          goLogin();
+          return;
+        }
+        toggle.mutate(
+          { slug, favorited },
+          { onError: (err) => { if (isAuthError(err)) goLogin(); } },
+        );
+      }}
+    >
+      <Bookmark size={16} aria-hidden="true" className={favorited ? 'fill-current' : ''} />
+      {favorited ? t('shared.saved') : t('shared.save')}
     </Button>
   );
 }
@@ -410,6 +454,7 @@ export function PublicOrgProfilePage({ locale, slug }: { locale: string; slug: s
               ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-2 self-start">
+              <OrgSaveButton slug={slug} />
               <ShareButton />
               {profile.website ? (
                 <a

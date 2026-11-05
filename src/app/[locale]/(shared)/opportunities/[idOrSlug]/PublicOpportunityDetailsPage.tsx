@@ -332,6 +332,10 @@ export function PublicOpportunityDetailsPage({
   const verified = detail.organization?.verificationStatus === 'verified';
   const favorited = detail.isFavorited === true;
   const opportunityId = oppIdOf(detail);
+  // The favorites backend backs the volunteer role only (the toggle routes are
+  // @Roles('volunteer')), so org/admin sessions must not see a Save action that
+  // would 403. Guests still see it and are redirected to Login on click.
+  const canSave = !session.data || session.data.role === 'volunteer';
   const locationLine = [
     labelFor(detail.locationLabels?.wilaya, locale),
     labelFor(detail.locationLabels?.municipality, locale),
@@ -397,9 +401,11 @@ export function PublicOpportunityDetailsPage({
         </div>
         {detail.description ? <p className="text-sm text-ink">{detail.description}</p> : null}
         <div className="flex flex-wrap gap-2">
-          <Button data-testid="save-cta" variant="secondary" onClick={onSave}>
-            {favorited ? t('shared.saved') : t('shared.save')}
-          </Button>
+          {canSave ? (
+            <Button data-testid="save-cta" variant="secondary" onClick={onSave}>
+              {favorited ? t('shared.saved') : t('shared.save')}
+            </Button>
+          ) : null}
           <ShareButton />
         </div>
       </div>
