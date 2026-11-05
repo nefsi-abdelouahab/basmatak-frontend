@@ -52,6 +52,7 @@ const ROUTES = [
   `/volunteer/applications/${ID}`,
   '/volunteer/dashboard',
   '/volunteer/experiences',
+  '/volunteer/favorites',
   '/volunteer/opportunities',
   '/volunteer/opportunities/test-opportunity',
   '/volunteer/portfolio',

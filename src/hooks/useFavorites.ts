@@ -19,6 +19,8 @@ const DOMAIN = 'volunteer-home-favorites';
 export function favoritesKeys() {
   return {
     counts: queryKeys.detail(DOMAIN, 'counts'),
+    list: (params: { targetType?: FavoriteTargetType; cursor?: string }) =>
+      queryKeys.list(DOMAIN, { scope: 'mine', ...params }),
     lookup: (targetType: FavoriteTargetType, targetIds: string[]) =>
       queryKeys.list(DOMAIN, { scope: 'lookup', targetType, targetIds }),
   };
@@ -61,10 +63,31 @@ export function useFavoritesLookupQuery(
   });
 }
 
+export function useMyFavoritesQuery(
+  params: { targetType?: FavoriteTargetType; cursor?: string } = {},
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: favoritesKeys().list(params),
+    queryFn: () =>
+      favoritesApi.listOwnFavorites(api, {
+        targetType: params.targetType,
+        cursor: params.cursor,
+      }),
+    staleTime: 30_000,
+    retry: false,
+    enabled,
+  });
+}
+
 function invalidateFeedLists(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: queryKeys.domain('volunteer-home') });
   queryClient.invalidateQueries({ queryKey: queryKeys.domain('volunteer-home-opportunities') });
   queryClient.invalidateQueries({ queryKey: queryKeys.domain('volunteer-home-talents') });
+  queryClient.invalidateQueries({ queryKey: queryKeys.domain('volunteer-home-recommended') });
+  queryClient.invalidateQueries({ queryKey: queryKeys.domain('public-orgs-opp') });
+  queryClient.invalidateQueries({ queryKey: queryKeys.domain('opportunity') });
+  queryClient.invalidateQueries({ queryKey: queryKeys.domain('public-opportunities-feed') });
   queryClient.invalidateQueries({ queryKey: queryKeys.domain(DOMAIN) });
 }
 
@@ -105,6 +128,27 @@ export function useToggleTalentFavoriteMutation() {
         return { favorited: false };
       }
       return favoritesApi.saveTalent(api, username);
+    },
+    onSuccess: () => invalidateFeedLists(queryClient),
+  });
+}
+
+export function useToggleOrganizationFavoriteMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    meta: { successKey: (variables: { favorited: boolean }) => variables.favorited ? 'success.favoriteRemoved' : 'success.favoriteAdded' },
+    mutationFn: async ({
+      slug,
+      favorited,
+    }: {
+      slug: string;
+      favorited: boolean;
+    }): Promise<{ favorited: boolean }> => {
+      if (favorited) {
+        await favoritesApi.removeOrganization(api, slug);
+        return { favorited: false };
+      }
+      return favoritesApi.saveOrganization(api, slug);
     },
     onSuccess: () => invalidateFeedLists(queryClient),
   });

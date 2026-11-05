@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import {
   Award,
   BadgeCheck,
+  Bookmark,
   Building2,
   ClipboardList,
   Compass,
@@ -51,6 +52,7 @@ const MY_SPACE: SpaceLink[] = [
   { key: 'tasks', href: '/volunteer/tasks', Icon: ListChecks, count: 'participations' },
   { key: 'experiences', href: '/volunteer/experiences', Icon: Award },
   { key: 'portfolio', href: '/volunteer/portfolio', Icon: Images },
+  { key: 'favorites', href: '/volunteer/favorites', Icon: Bookmark },
 ];
 
 const DISCOVER: SpaceLink[] = [

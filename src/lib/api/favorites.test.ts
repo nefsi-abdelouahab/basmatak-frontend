@@ -8,8 +8,10 @@ import {
   listOwnFavorites,
   lookupFavorites,
   removeOpportunity,
+  removeOrganization,
   removeTalent,
   saveOpportunity,
+  saveOrganization,
   saveTalent,
 } from './favorites';
 
@@ -58,17 +60,59 @@ describe('favorites api functions', () => {
     expect(del).toHaveBeenCalledWith('/favorites/talents/amineb');
   });
 
+  it('saves and unsaves organizations by raw slug', async () => {
+    const { client, post, del } = stubClient({
+      post: () => ({ favorited: true, favoriteCount: 1 }),
+      delete: () => undefined,
+    });
+    await expect(saveOrganization(client, 'green-algeria')).resolves.toEqual({
+      favorited: true,
+      favoriteCount: 1,
+    });
+    expect(post).toHaveBeenCalledWith('/favorites/organizations/green-algeria');
+    await expect(removeOrganization(client, 'green-algeria')).resolves.toBeUndefined();
+    expect(del).toHaveBeenCalledWith('/favorites/organizations/green-algeria');
+  });
+
   it('reads counts and hydrates card state via lookup', async () => {
     const { client, get } = stubClient({
       get: (url) => {
-        if (url === '/favorites/counts') return { opportunities: 3, talents: 1 };
+        if (url === '/favorites/counts')
+          return { opportunity: 3, talent: 1, organization: 2 };
         if (url === '/favorites/lookup')
           return { 'opp:1': { favorited: true, favoriteCount: 4 } };
-        if (url === '/favorites') return { items: [] };
+        if (url === '/favorites')
+          return {
+            items: [
+              {
+                targetType: 'opportunity',
+                targetId: '64f000000000000000000001',
+                createdAt: '2026-01-01T00:00:00.000Z',
+                summary: {
+                  title: 'Beach cleanup',
+                  slug: 'beach-cleanup',
+                  status: 'published',
+                  applicationDeadline: '2026-12-31T00:00:00.000Z',
+                  organization: {
+                    slug: 'green-algeria',
+                    nameAr: 'الجزائر الخضراء',
+                    nameFr: 'Green Algeria',
+                  },
+                },
+              },
+            ],
+            total: 1,
+            page: 1,
+            pages: 1,
+          };
         throw new Error(`unexpected ${url}`);
       },
     });
-    await expect(countsOwn(client)).resolves.toEqual({ opportunities: 3, talents: 1 });
+    await expect(countsOwn(client)).resolves.toEqual({
+      opportunity: 3,
+      talent: 1,
+      organization: 2,
+    });
     const lookup = await lookupFavorites(client, {
       targetType: 'opportunity',
       targetIds: ['1'],
@@ -77,16 +121,25 @@ describe('favorites api functions', () => {
     expect(get).toHaveBeenCalledWith('/favorites/lookup', {
       params: expect.objectContaining({ targetType: 'opportunity', targetIds: '1' }),
     });
-    await expect(listOwnFavorites(client)).resolves.toEqual({ items: [] });
+    const page = await listOwnFavorites(client, {
+      targetType: 'opportunity',
+      cursor: 'next',
+      limit: 20,
+    });
+    expect(page.items[0].summary?.title).toBe('Beach cleanup');
+    expect(page.items[0].summary?.organization?.slug).toBe('green-algeria');
+    expect(get).toHaveBeenCalledWith('/favorites', {
+      params: { targetType: 'opportunity', cursor: 'next', limit: 20 },
+    });
   });
 
   it('accepts toggle/count/lookup shapes', () => {
     expect(
       FavoriteToggleResultSchema.safeParse({ favorited: true, favoriteCount: 1 }).success,
     ).toBe(true);
-    expect(FavoritesCountsSchema.safeParse({ opportunities: 0, talents: 0 }).success).toBe(
-      true,
-    );
+    expect(
+      FavoritesCountsSchema.safeParse({ opportunity: 0, talent: 0, organization: 0 }).success,
+    ).toBe(true);
     expect(LookupStateSchema.safeParse({ favorited: false }).success).toBe(true);
   });
 });

@@ -9,7 +9,9 @@ import type { AxiosInstance } from 'axios';
 // - DELETE /favorites/opportunities/:id (204, idempotent unsave)
 // - POST /favorites/talents/:username (same contract, raw username, no `@`)
 // - DELETE /favorites/talents/:username (204)
-// - GET /favorites (own saves, both target types)
+// - POST /favorites/organizations/:slug (same contract, raw slug)
+// - DELETE /favorites/organizations/:slug (204)
+// - GET /favorites (own saves, all target types; `targetType` filter)
 // - GET /favorites/counts (per-type totals)
 // - GET /favorites/lookup (guest-tolerant batch card state
 //   {favorited, favoriteCount} per key; counts-only for anonymous callers).
@@ -36,16 +38,76 @@ export type LookupState = z.infer<typeof LookupStateSchema>;
 
 export const FavoritesCountsSchema = z
   .object({
-    opportunities: z.number().optional(),
-    talents: z.number().optional(),
+    opportunity: z.number().optional(),
+    talent: z.number().optional(),
+    organization: z.number().optional(),
   })
   .passthrough();
 
 export type FavoritesCounts = z.infer<typeof FavoritesCountsSchema>;
 
-export type FavoriteTargetType = 'opportunity' | 'talent';
+export type FavoriteTargetType = 'opportunity' | 'talent' | 'organization';
+
+export const FAVORITE_TARGET_TYPES = [
+  'opportunity',
+  'talent',
+  'organization',
+] as const;
 
 export const MAX_LOOKUP_KEYS = 50;
+
+// Summary shape is additive across target types (backend
+// `favorites.service.ts`): opportunity rows carry title/slug/status plus the
+// optional deadline and organization embed; talent rows carry username
+// (fullName is accepted but never rendered); organization rows carry the
+// localized names and status.
+export const FavoriteSummarySchema = z
+  .object({
+    title: z.string().optional(),
+    slug: z.string().optional(),
+    status: z.string().nullable().optional(),
+    applicationDeadline: z.string().nullable().optional(),
+    organization: z
+      .object({
+        slug: z.string().optional(),
+        nameAr: z.string().nullable().optional(),
+        nameFr: z.string().nullable().optional(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+    username: z.string().optional(),
+    fullName: z.string().nullable().optional(),
+    nameAr: z.string().nullable().optional(),
+    nameFr: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+export type FavoriteSummary = z.infer<typeof FavoriteSummarySchema>;
+
+export const FavoriteItemSchema = z
+  .object({
+    targetType: z.enum(FAVORITE_TARGET_TYPES),
+    targetId: z.string(),
+    createdAt: z.string(),
+    summary: FavoriteSummarySchema.nullable(),
+  })
+  .passthrough();
+
+export type FavoriteItem = z.infer<typeof FavoriteItemSchema>;
+
+export const FavoritePageSchema = z
+  .object({
+    items: z.array(FavoriteItemSchema),
+    nextCursor: z.string().nullable().optional(),
+    limit: z.number().optional(),
+    total: z.number(),
+    page: z.number().optional(),
+    pages: z.number().optional(),
+  })
+  .passthrough();
+
+export type FavoritePage = z.infer<typeof FavoritePageSchema>;
 
 type HttpClient = Pick<AxiosInstance, 'get' | 'post' | 'delete'>;
 
@@ -73,12 +135,33 @@ export async function removeTalent(client: HttpClient, username: string): Promis
   await client.delete(`/favorites/talents/${username}`);
 }
 
+export async function saveOrganization(
+  client: HttpClient,
+  slug: string,
+): Promise<FavoriteToggleResult> {
+  const { data } = await client.post(`/favorites/organizations/${slug}`);
+  return FavoriteToggleResultSchema.parse(data);
+}
+
+export async function removeOrganization(
+  client: HttpClient,
+  slug: string,
+): Promise<void> {
+  await client.delete(`/favorites/organizations/${slug}`);
+}
+
+export interface ListOwnFavoritesParams {
+  targetType?: FavoriteTargetType;
+  cursor?: string;
+  limit?: number;
+}
+
 export async function listOwnFavorites(
   client: HttpClient,
-  params?: { cursor?: string; limit?: number },
-): Promise<unknown> {
+  params?: ListOwnFavoritesParams,
+): Promise<FavoritePage> {
   const { data } = await client.get('/favorites', { params });
-  return data;
+  return FavoritePageSchema.parse(data);
 }
 
 export async function countsOwn(client: HttpClient): Promise<FavoritesCounts> {
