@@ -36,7 +36,7 @@ const PRINT_CSS = `
     display: none !important;
   }
   body {
-    background: #ffffff !important;
+    background: var(--color-surface) !important;
   }
   [data-testid="cv-page"] {
     max-width: none !important;

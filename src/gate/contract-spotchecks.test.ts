@@ -85,22 +85,18 @@ describe('F19 gate (6): contract spot-checks (static)', () => {
     expect(violations).toEqual([]);
   });
 
-  it('no /verify proof page route (verification links stay inline deep-links)', () => {
-    const offenders: string[] = [];
-    const walk = (dir: string): void => {
-      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        const full = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          walk(full);
-          continue;
-        }
-        if (entry.name === 'page.tsx' && path.basename(path.dirname(full)) === 'verify') {
-          offenders.push(path.relative(SRC, full));
-        }
-      }
-    };
-    walk(path.join(SRC, 'app'));
-    expect(offenders).toEqual([]);
+  it('verify proof pages are the sanctioned S2 deep-link surface', () => {
+    // S2 (pre-presentation) replaced inline-only verification links with public
+    // proof pages. The routes must live under the shared shell so guards and
+    // layout stay consistent with the rest of the public surface.
+    expect(
+      fs.existsSync(path.join(SRC, 'app', '[locale]', '(shared)', 'verify', 'page.tsx')),
+      'the /verify entry page must exist',
+    ).toBe(true);
+    expect(
+      fs.existsSync(path.join(SRC, 'app', '[locale]', '(shared)', 'verify', '[code]', 'page.tsx')),
+      'the /verify/[code] proof page must exist',
+    ).toBe(true);
   });
 
   it('no standalone public portfolio page (self-management route is the only one)', () => {
@@ -116,12 +112,14 @@ describe('F19 gate (6): contract spot-checks (static)', () => {
 
   it('no chat/messaging component files', () => {
     // The AI agent is a sanctioned feature (AI_AGENT_ROADMAP.md); its state
-    // hook is the one approved exception to this F19 messaging guard.
+    // hook and card components are the approved exceptions to this F19
+    // messaging guard. New AI-agent UI lives under components/ai-agent/.
     const allowedAiAgentFiles = new Set(['hooks/useAiChat.ts']);
+    const allowedAiAgentPrefix = 'components/ai-agent/';
     const offenders = allCodeFiles()
       .filter((file) => /chat/i.test(path.basename(file)))
       .map((file) => path.relative(SRC, file).split(path.sep).join('/'))
-      .filter((file) => !allowedAiAgentFiles.has(file));
+      .filter((file) => !allowedAiAgentFiles.has(file) && !file.startsWith(allowedAiAgentPrefix));
     expect(offenders).toEqual([]);
   });
 
