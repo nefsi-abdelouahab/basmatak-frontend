@@ -55,6 +55,11 @@ const ANSWER_MARKUP = {
   ar: 'يمكنك المساعدة في [حملة الطعام المجتمعية](/ar/opportunities/food-drive).',
 } as const;
 
+const CARD_TITLE = {
+  en: 'Community food drive',
+  ar: 'حملة الطعام المجتمعية',
+} as const;
+
 const ARABIC_PROMPT = 'كيف يمكنني التطوع؟';
 
 function sseBody(
@@ -76,6 +81,19 @@ function successStream(locale: Locale): string {
     },
     { event: 'status', data: { state: 'searching' } },
     { event: 'token', data: { delta: ANSWER_MARKUP[locale] } },
+    {
+      event: 'cards',
+      data: {
+        cards: [
+          {
+            kind: 'opportunity',
+            slug: 'food-drive',
+            title: CARD_TITLE[locale],
+            href: `/${locale}/opportunities/food-drive`,
+          },
+        ],
+      },
+    },
     { event: 'done', data: { finishReason: 'stop' } },
   ]);
 }
@@ -303,6 +321,12 @@ test.describe('assistant panel', () => {
       '/en/opportunities/food-drive',
     );
 
+    await expect(panel.getByTestId('ai-agent-cards')).toBeVisible();
+    await expect(panel.getByText(CARD_TITLE.en)).toBeVisible();
+    await expect(
+      panel.getByRole('link', { name: /View opportunity/ }),
+    ).toHaveAttribute('href', '/en/opportunities/food-drive');
+
     expect(mock.chatBodies[0]).toMatchObject({
       message: 'Where can I volunteer?',
       locale: 'en',
@@ -339,6 +363,12 @@ test.describe('assistant panel', () => {
     await expect(answer).toHaveAttribute('dir', 'auto');
     await expect(
       panel.getByRole('link', { name: /حملة الطعام المجتمعية/ }),
+    ).toHaveAttribute('href', '/ar/opportunities/food-drive');
+
+    await expect(panel.getByTestId('ai-agent-cards')).toBeVisible();
+    await expect(panel.getByText(CARD_TITLE.ar)).toBeVisible();
+    await expect(
+      panel.getByRole('link', { name: /عرض الفرصة/ }),
     ).toHaveAttribute('href', '/ar/opportunities/food-drive');
     expect(mock.chatBodies[0]).toMatchObject({
       message: ARABIC_PROMPT,

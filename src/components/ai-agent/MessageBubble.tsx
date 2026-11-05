@@ -8,6 +8,11 @@ import type { AiAgentError } from '@/lib/api/aiAgent';
 import type { AiChatMessage } from '@/hooks/useAiChat';
 import { TypingIndicator, type TypingPhase } from './TypingIndicator';
 import {
+  OrganizationChatCard,
+  OpportunityChatCard,
+  StatsChatCard,
+} from './cards';
+import {
   detectTextDirection,
   errorMessageKey,
   parseChatContent,
@@ -55,6 +60,25 @@ export function MessageBubble({
   const waitingForFirstToken =
     message.status === 'streaming' && message.content.length === 0;
 
+  const cards = isUser ? [] : (message.cards?.cards ?? []);
+  const structuredCardHrefs = new Set(
+    cards
+      .filter((card) => card.kind !== 'stats')
+      .map((card) => stripChatLocalePrefix(card.href)),
+  );
+  const renderedCards: typeof cards = [];
+  const seenCardHrefs = new Set<string>();
+  for (const card of cards) {
+    if (card.kind === 'stats') {
+      renderedCards.push(card);
+      continue;
+    }
+    const href = stripChatLocalePrefix(card.href);
+    if (seenCardHrefs.has(href)) continue;
+    seenCardHrefs.add(href);
+    renderedCards.push(card);
+  }
+
   return (
     <article
       data-testid="ai-agent-message"
@@ -80,7 +104,11 @@ export function MessageBubble({
             >
               {segments.map((segment, index) =>
                 segment.type === 'link' ? (
-                  isUser || segment.kind === 'inline' ? (
+                  isUser ||
+                  segment.kind === 'inline' ||
+                  structuredCardHrefs.has(
+                    stripChatLocalePrefix(segment.href),
+                  ) ? (
                     <Link
                       key={`${segment.href}-${index}`}
                       href={stripChatLocalePrefix(segment.href)}
@@ -174,6 +202,33 @@ export function MessageBubble({
           </div>
         ) : null}
       </div>
+
+      {renderedCards.length > 0 ? (
+        <div
+          data-testid="ai-agent-cards"
+          className="mt-2 w-full max-w-[85%] space-y-2"
+        >
+          {renderedCards.map((card) => {
+            if (card.kind === 'opportunity') {
+              return (
+                <OpportunityChatCard
+                  key={`opportunity-${card.href}`}
+                  card={card}
+                />
+              );
+            }
+            if (card.kind === 'organization') {
+              return (
+                <OrganizationChatCard
+                  key={`organization-${card.href}`}
+                  card={card}
+                />
+              );
+            }
+            return <StatsChatCard key="stats" card={card} />;
+          })}
+        </div>
+      ) : null}
     </article>
   );
 }

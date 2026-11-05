@@ -93,6 +93,60 @@ export interface AiAgentSourcesEvent {
   data: AiAgentDataSource[];
 }
 
+/** Optional bilingual label carried by a generated UI card. */
+export interface AiAgentCardName {
+  ar?: string;
+  fr?: string;
+}
+
+export interface AiAgentOpportunityCard {
+  kind: 'opportunity';
+  slug: string;
+  title: string;
+  organizationName?: AiAgentCardName;
+  wilayaName?: AiAgentCardName;
+  startDate?: string;
+  applicationDeadline?: string;
+  openPositions?: number;
+  mode?: string;
+  status?: string;
+  href: string;
+}
+
+export interface AiAgentOrganizationCard {
+  kind: 'organization';
+  slug: string;
+  nameAr?: string;
+  nameFr?: string;
+  type?: string;
+  wilayaName?: AiAgentCardName;
+  foundedYear?: number;
+  href: string;
+}
+
+export interface AiAgentStatsCard {
+  kind: 'stats';
+  publishedOpportunities: number;
+  verifiedOrganizations: number;
+  activeSkills: number;
+  wilayas: number;
+  municipalities: number;
+}
+
+export type AiAgentCard =
+  | AiAgentOpportunityCard
+  | AiAgentOrganizationCard
+  | AiAgentStatsCard;
+
+/**
+ * Generated UI cards are additive: at most one event per turn, emitted after
+ * the answer has been sanitized and before `done`. Cards never carry source,
+ * citation, or internal identifier data.
+ */
+export interface AiAgentCardsEvent {
+  cards: AiAgentCard[];
+}
+
 /**
  * The backend keeps its error code a string so a future policy code can reach
  * an older client without crashing it. Known codes are mapped to safe copy
@@ -132,7 +186,8 @@ export type AiAgentLiveEvent =
   | { event: 'meta'; data: AiAgentMetaEvent }
   | { event: 'status'; data: AiAgentStatusEvent }
   | { event: 'sources'; data: AiAgentSourcesEvent }
-  | { event: 'token'; data: AiAgentTokenEvent };
+  | { event: 'token'; data: AiAgentTokenEvent }
+  | { event: 'cards'; data: AiAgentCardsEvent };
 
 export interface AiAgentStreamOptions {
   signal?: AbortSignal;
@@ -145,6 +200,7 @@ export interface AiAgentStreamResult {
   text: string;
   meta?: AiAgentMetaEvent;
   sources?: AiAgentSourcesEvent;
+  cards?: AiAgentCardsEvent;
   done?: AiAgentDoneEvent;
   aborted: boolean;
 }
@@ -256,6 +312,65 @@ export const AiAgentSourcesEventSchema = z
   .object({
     knowledge: z.array(AiAgentKnowledgeSourceSchema),
     data: z.array(AiAgentDataSourceSchema),
+  })
+  .passthrough();
+
+export const AiAgentCardNameSchema = z
+  .object({
+    ar: z.string().optional(),
+    fr: z.string().optional(),
+  })
+  .passthrough();
+
+export const AiAgentOpportunityCardSchema = z
+  .object({
+    kind: z.literal('opportunity'),
+    slug: z.string().min(1),
+    title: z.string().min(1),
+    organizationName: AiAgentCardNameSchema.optional(),
+    wilayaName: AiAgentCardNameSchema.optional(),
+    startDate: z.string().optional(),
+    applicationDeadline: z.string().optional(),
+    openPositions: nonNegativeInteger.optional(),
+    mode: z.string().optional(),
+    status: z.string().optional(),
+    href: z.string().min(1),
+  })
+  .passthrough();
+
+export const AiAgentOrganizationCardSchema = z
+  .object({
+    kind: z.literal('organization'),
+    slug: z.string().min(1),
+    nameAr: z.string().optional(),
+    nameFr: z.string().optional(),
+    type: z.string().optional(),
+    wilayaName: AiAgentCardNameSchema.optional(),
+    foundedYear: nonNegativeInteger.optional(),
+    href: z.string().min(1),
+  })
+  .passthrough();
+
+export const AiAgentStatsCardSchema = z
+  .object({
+    kind: z.literal('stats'),
+    publishedOpportunities: nonNegativeInteger,
+    verifiedOrganizations: nonNegativeInteger,
+    activeSkills: nonNegativeInteger,
+    wilayas: nonNegativeInteger,
+    municipalities: nonNegativeInteger,
+  })
+  .passthrough();
+
+export const AiAgentCardSchema = z.discriminatedUnion('kind', [
+  AiAgentOpportunityCardSchema,
+  AiAgentOrganizationCardSchema,
+  AiAgentStatsCardSchema,
+]);
+
+export const AiAgentCardsEventSchema = z
+  .object({
+    cards: z.array(AiAgentCardSchema).max(6),
   })
   .passthrough();
 
@@ -386,6 +501,7 @@ const KNOWN_EVENT_NAMES = new Set([
   'status',
   'sources',
   'token',
+  'cards',
   'done',
   'error',
 ]);
@@ -583,6 +699,7 @@ export async function streamChat(
   let text = '';
   let meta: AiAgentMetaEvent | undefined;
   let sources: AiAgentSourcesEvent | undefined;
+  let cards: AiAgentCardsEvent | undefined;
   let done: AiAgentDoneEvent | undefined;
 
   try {
@@ -628,6 +745,14 @@ export async function streamChat(
           if (!parsed.success) continue;
           sources = parsed.data;
           options.onEvent?.({ event: 'sources', data: parsed.data });
+          continue;
+        }
+
+        if (frame.event === 'cards') {
+          const parsed = AiAgentCardsEventSchema.safeParse(payload);
+          if (!parsed.success) continue;
+          cards = parsed.data;
+          options.onEvent?.({ event: 'cards', data: parsed.data });
           continue;
         }
 
@@ -677,6 +802,7 @@ export async function streamChat(
         text,
         ...(meta !== undefined ? { meta } : {}),
         ...(sources !== undefined ? { sources } : {}),
+        ...(cards !== undefined ? { cards } : {}),
         done,
         aborted: false,
       };
@@ -696,6 +822,7 @@ export async function streamChat(
         text,
         ...(meta !== undefined ? { meta } : {}),
         ...(sources !== undefined ? { sources } : {}),
+        ...(cards !== undefined ? { cards } : {}),
         aborted: true,
       };
     }

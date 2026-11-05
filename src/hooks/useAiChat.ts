@@ -8,11 +8,13 @@ import {
   AI_AGENT_MESSAGE_CHARS,
   AiAgentError,
   AiAgentModeSchema,
+  AiAgentCardsEventSchema,
   AiAgentSourcesEventSchema,
   normalizeAiAgentLocale,
   streamChat,
   type AiAgentChatMessage,
   type AiAgentChatRole,
+  type AiAgentCardsEvent,
   type AiAgentDoneEvent,
   type AiAgentLiveEvent,
   type AiAgentMetaEvent,
@@ -55,6 +57,7 @@ export interface AiChatMessage {
   createdAt: string;
   status: 'streaming' | 'complete' | 'error' | 'aborted';
   sources?: AiAgentSourcesEvent;
+  cards?: AiAgentCardsEvent;
   mode?: AiAgentMode;
   truncated?: boolean;
 }
@@ -78,6 +81,7 @@ export type AiChatAction =
   | { type: 'META'; data: AiAgentMetaEvent }
   | { type: 'STATUS'; data: AiAgentStatusEvent }
   | { type: 'SOURCES'; data: AiAgentSourcesEvent }
+  | { type: 'CARDS'; data: AiAgentCardsEvent }
   | { type: 'TOKEN'; delta: string; assistantId?: string }
   | { type: 'DONE'; data: AiAgentDoneEvent }
   | { type: 'STREAM_ERROR'; error: AiAgentError }
@@ -169,6 +173,16 @@ export function aiChatReducer(
           (message) => ({ ...message, sources: action.data }),
         ),
         sources: action.data,
+      };
+
+    case 'CARDS':
+      return {
+        ...state,
+        messages: updateActiveMessage(
+          state.messages,
+          state.activeAssistantId,
+          (message) => ({ ...message, cards: action.data }),
+        ),
       };
 
     case 'TOKEN': {
@@ -316,6 +330,7 @@ const PersistedAiChatMessageSchema = z
     content: z.string(),
     createdAt: z.string().min(1),
     sources: AiAgentSourcesEventSchema.optional(),
+    cards: AiAgentCardsEventSchema.optional(),
     mode: AiAgentModeSchema.optional(),
     truncated: z.boolean().optional(),
   })
@@ -351,6 +366,7 @@ interface PersistedAiChatMessage {
   content: string;
   createdAt: string;
   sources?: AiAgentSourcesEvent;
+  cards?: AiAgentCardsEvent;
   mode?: AiAgentMode;
   truncated?: boolean;
 }
@@ -362,6 +378,7 @@ function toPersistedMessage(message: AiChatMessage): PersistedAiChatMessage {
     content: message.content,
     createdAt: message.createdAt,
     ...(message.sources !== undefined ? { sources: message.sources } : {}),
+    ...(message.cards !== undefined ? { cards: message.cards } : {}),
     ...(message.mode !== undefined ? { mode: message.mode } : {}),
     ...(message.truncated !== undefined
       ? { truncated: message.truncated }
@@ -409,6 +426,7 @@ export function loadAiChatHistory(
       createdAt: message.createdAt,
       status: 'complete' as const,
       ...(message.sources !== undefined ? { sources: message.sources } : {}),
+      ...(message.cards !== undefined ? { cards: message.cards } : {}),
       ...(message.mode !== undefined ? { mode: message.mode } : {}),
       ...(message.truncated !== undefined
         ? { truncated: message.truncated }
@@ -605,6 +623,10 @@ export function useAiChat(options: UseAiChatOptions = {}) {
         }
         if (event.event === 'sources') {
           dispatch({ type: 'SOURCES', data: event.data });
+          return;
+        }
+        if (event.event === 'cards') {
+          dispatch({ type: 'CARDS', data: event.data });
           return;
         }
         dispatch({

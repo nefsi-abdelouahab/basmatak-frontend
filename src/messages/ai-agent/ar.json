@@ -71,6 +71,27 @@
     "reference": "مرجع",
     "stats": "إحصاءات المنصة"
   },
+  "cards": {
+    "opportunity": "فرصة",
+    "organization": "منظمة",
+    "stats": "المنصة في لمحة",
+    "viewOpportunity": "عرض الفرصة",
+    "viewOrganization": "عرض المنظمة",
+    "startsOn": "تبدأ في {date}",
+    "applyBy": "آخر موعد للتقديم {date}",
+    "foundedYear": "تأسست عام {year}",
+    "openPositions": "{count, plural, one {منصب واحد متاح} two {منصبان متاحان} few {# مناصب متاحة} other {# منصب متاح}}",
+    "publishedOpportunities": "الفرص المنشورة",
+    "verifiedOrganizations": "المنظمات الموثّقة",
+    "activeSkills": "المهارات النشطة",
+    "wilayas": "الولايات",
+    "municipalities": "البلديات",
+    "modes": {
+      "onsite": "حضوري",
+      "hybrid": "مختلط",
+      "remote": "عن بُعد"
+    }
+  },
   "banners": {
     "waking": {
       "title": "جارٍ تشغيل بصمة",

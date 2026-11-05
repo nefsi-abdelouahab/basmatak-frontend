@@ -10,10 +10,12 @@ import {
   availabilityFor,
   clampLauncherInset,
   clampLauncherY,
+  clampLauncherYAboveNav,
   defaultLauncherY,
   detectTextDirection,
   errorMessageKey,
   isQuotaExhaustedError,
+  launcherBottomMargin,
   launcherInsetFromRect,
   launcherSizeFor,
   nearestLauncherEdge,
@@ -337,6 +339,18 @@ describe('aiAgentUi launcher geometry', () => {
     expect(clampLauncherY(799, 800, 56)).toBe(728);
     expect(clampLauncherY(200, 800, 56)).toBe(200);
     expect(defaultLauncherY(800, 56)).toBe(720);
+  });
+
+  it('reserves the bottom navigation below the lg breakpoint', () => {
+    expect(launcherBottomMargin(390)).toBe(96);
+    expect(launcherBottomMargin(1023)).toBe(96);
+    expect(launcherBottomMargin(1024)).toBe(24);
+    expect(launcherBottomMargin(1440)).toBe(24);
+
+    expect(defaultLauncherY(800, 52, 390)).toBe(652);
+    expect(defaultLauncherY(800, 56, 1280)).toBe(720);
+    expect(clampLauncherYAboveNav(799, 800, 52, 390)).toBe(652);
+    expect(clampLauncherYAboveNav(799, 800, 56, 1280)).toBe(728);
   });
 
   it('clamps horizontal insets on both edges', () => {

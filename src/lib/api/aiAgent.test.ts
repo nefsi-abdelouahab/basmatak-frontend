@@ -7,6 +7,7 @@ import {
   normalizeAiAgentLocale,
   streamChat,
   type AiAgentChatRequest,
+  type AiAgentCardsEvent,
   type AiAgentLiveEvent,
   type AiAgentMetaEvent,
   type AiAgentSourcesEvent,
@@ -36,6 +37,27 @@ const sources: AiAgentSourcesEvent = {
       type: 'opportunity',
       title: 'Volunteer opportunity',
       path: '/opportunities/abc',
+    },
+  ],
+};
+
+const cards: AiAgentCardsEvent = {
+  cards: [
+    {
+      kind: 'opportunity',
+      slug: 'beach-cleanup',
+      title: 'Beach cleanup',
+      organizationName: { ar: 'الأرض الخضراء', fr: 'Green Earth' },
+      openPositions: 2,
+      href: '/en/opportunities/beach-cleanup',
+    },
+    {
+      kind: 'stats',
+      publishedOpportunities: 11,
+      verifiedOrganizations: 4,
+      activeSkills: 9,
+      wilayas: 58,
+      municipalities: 1541,
     },
   ],
 };
@@ -232,6 +254,63 @@ describe('streamChat success', () => {
     ]);
     expect(events[0]).toEqual({ event: 'meta', data: meta });
     expect(events[3]).toEqual({ event: 'sources', data: sources });
+  });
+
+  it('parses one cards event after tokens and exposes it on the result', async () => {
+    const events: AiAgentLiveEvent[] = [];
+    const { fetchImpl } = mockFetch(async () =>
+      sseResponse([
+        frame('meta', meta),
+        frame('status', { state: 'answering' }),
+        frame('token', { delta: 'See [Beach cleanup]' }),
+        frame('cards', cards),
+        frame('done', { finishReason: 'stop' }),
+      ]),
+    );
+
+    const result = await streamChat(
+      { message: 'Show me opportunities', locale: 'en' },
+      { fetchImpl, onEvent: (event) => events.push(event) },
+    );
+
+    expect(result.text).toBe('See [Beach cleanup]');
+    expect(result.cards).toEqual(cards);
+    expect(events.map((event) => event.event)).toEqual([
+      'meta',
+      'status',
+      'token',
+      'cards',
+    ]);
+    expect(events[3]).toEqual({ event: 'cards', data: cards });
+  });
+
+  it('ignores invalid cards payloads and more than six cards', async () => {
+    const sevenCards = {
+      cards: Array.from({ length: 7 }, (_, index) => ({
+        kind: 'opportunity',
+        slug: `opportunity-${index + 1}`,
+        title: `Opportunity ${index + 1}`,
+        href: `/en/opportunities/opportunity-${index + 1}`,
+      })),
+    };
+    const { fetchImpl } = mockFetch(async () =>
+      sseResponse([
+        frame('cards', sevenCards),
+        frame('cards', {
+          cards: [{ kind: 'unknown', title: 'Nope' }],
+        }),
+        frame('token', { delta: 'ok' }),
+        frame('done', { finishReason: 'stop' }),
+      ]),
+    );
+
+    const result = await streamChat(
+      { message: 'Cards', locale: 'en' },
+      { fetchImpl },
+    );
+
+    expect(result.text).toBe('ok');
+    expect(result.cards).toBeUndefined();
   });
 
   it('parses split CRLF frames through the streaming transport', async () => {
